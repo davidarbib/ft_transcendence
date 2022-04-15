@@ -10,7 +10,7 @@ RUN npm install --silent
 
 COPY . .
 
-EXPOSE 3000
+EXPOSE 3030
 
 CMD ["npm", "run", "dev"]
 # for production build
