@@ -1,4 +1,4 @@
-FROM node:latest
+FROM node:17-buster-slim
 
 WORKDIR /app
 
@@ -10,8 +10,6 @@ RUN npm install --silent
 
 COPY . .
 
-EXPOSE 3030
+EXPOSE 8000
 
 CMD ["npm", "run", "dev"]
-# for production build
-#CMD ["npm", "run", "build"]
