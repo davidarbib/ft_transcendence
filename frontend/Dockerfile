@@ -6,10 +6,15 @@ ENV PATH /app/node_modules/.bin:$PATH
 
 COPY package*.json .
 
-RUN npm install --silent
+RUN groupadd -r front && useradd -r -g front frontDev
+
+RUN npm install --silent \
+&& chown -R frontDev .
 
 COPY . .
 
 EXPOSE 8000
+
+USER frontDev
 
 CMD ["npm", "run", "dev"]
