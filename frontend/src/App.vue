@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from "vue-router";
+import '../src/assets/variables.scss'
 </script>
 
 <template>
@@ -23,6 +24,8 @@ import { RouterLink, RouterView } from "vue-router";
   } 
 
   body {
-      background: linear-gradient(rgb(74, 65, 131), rgb(226, 54, 130)) fixed;
+    font-family: "Comic Sans MS", "Comic Sans", cursive;
+    background: linear-gradient(rgb(74, 65, 131), rgb(226, 54, 130)) fixed;
   }
+
 </style>
