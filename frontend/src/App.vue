@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from "vue-router";
-import '../src/assets/variables.scss'
 </script>
 
 <template>
@@ -15,6 +14,7 @@ import '../src/assets/variables.scss'
 
 <style lang="scss">
 
+  @use './assets/variables.scss' as v;
   @import url('https://fonts.googleapis.com/css2?family=Vazirmatn&display=swap');
 
   * {
@@ -24,8 +24,25 @@ import '../src/assets/variables.scss'
   } 
 
   body {
-    font-family: "Comic Sans MS", "Comic Sans", cursive;
-    background: linear-gradient(rgb(74, 65, 131), rgb(226, 54, 130)) fixed;
+    font-family: 'Vazirmatn', sans-serif;
+    background: linear-gradient(v.$dark-blue, v.$primary) fixed;
+    text-align: center;
+  }
+
+  .main-content {
+
+    background: linear-gradient(v.$secondary-light, v.$secondary);
+
+    h1 {
+      color: v.$secondary;
+      font-size: v.$primary-title;
+    }
+
+    p a {
+      color: v.$primary;
+      font-size: v.$secondary-title;
+      text-decoration: none;
+    }
   }
 
 </style>
