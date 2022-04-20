@@ -37,8 +37,7 @@
     text-align: center;
   }
 
-  .main-content {
-    
+  .main-content {    
     width: 1000px;
     height: 1000px;
     margin: auto;
@@ -83,22 +82,47 @@
     }
   }
 
-    .ball-shape {
-      background-image: url('./assets/sphere.png');
-      width: 1000px;
-      height: 1000px;
-      animation: up-down 2s ease-in-out infinite alternate-reverse both;
-      
+  .ball-shape {
+    background-image: url('./assets/sphere.png');
+    width: 1000px;
+    height: 1000px;
+    animation: up-down 2s ease-in-out infinite alternate-reverse both;
+  }
+
+    @keyframes up-down {
+    0% {
+      transform: translateY(1%);
     }
 
-        @keyframes up-down {
-      0% {
-        transform: translateY(2%);
+    100% {
+      transform: translateY(-1%);
+    }
+  }
+
+  @media only screen and (max-height: 1920px) {
+    .main-content {
+      width: 700px;
+      height: 700px;
+
+      h1 {
+        font-size: 5rem;
+        padding-top: 8rem;
       }
 
-      100% {
-        transform: translateY(-2%);
+      p:nth-of-type(1) {
+      margin-top: 8.5rem;
+      }
+
+    p:nth-of-type(2) {
+      margin-top: 1rem;
+    }
+
+      .ball-shape {
+        width: 700px;
+        height: 700px;
+        background-image: url('./assets/sphere_mini.png');
       }
     }
+}
 
 </style>
