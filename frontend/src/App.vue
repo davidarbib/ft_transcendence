@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from "vue-router";
 </script>
 
 <template>
@@ -17,6 +16,11 @@ import { RouterLink, RouterView } from "vue-router";
   @use './assets/variables.scss' as v;
   @import url('https://fonts.googleapis.com/css2?family=Vazirmatn&display=swap');
 
+  @font-face {
+    font-family: 'Kallisto-bold';
+    src: url('./assets/fonts/Kallisto/Kallisto_bold.otf');
+  }
+
   * {
     margin: 0;
     padding: 0;
@@ -24,7 +28,9 @@ import { RouterLink, RouterView } from "vue-router";
   } 
 
   body {
-    font-family: 'Vazirmatn', sans-serif;
+    font-family: kallisto-bold, sans-serif;
+    font-style: normal;
+    font-weight: 800;
     background: linear-gradient(v.$dark-blue, v.$primary) fixed;
     text-align: center;
   }
