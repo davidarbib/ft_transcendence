@@ -5,8 +5,8 @@
   <section class="main-content">
     <div class="ball-shape">
       <h1>Pong 2.0</h1>
-      <p><a href="#">1 Joueur</a></p>
-      <p><a href="#">2 Joueurs</a></p>
+      <p><a href="#">Register</a></p>
+      <p><a href="#">Login</a></p>
     </div>
   </section>
 </template>
@@ -37,8 +37,13 @@
   }
 
   .main-content {
-
-    background: linear-gradient(v.$secondary-light, v.$secondary);
+    
+    width: 1000px;
+    height: 1000px;
+    background-image: url('./assets/sphere.png');
+    margin: auto;
+    margin-top: 50vh;
+    transform: translateY(-50%);
 
     h1 {
       font-family: Kallisto-bold, sans-serif;
@@ -46,6 +51,21 @@
       font-weight: 800;
       color: v.$secondary;
       font-size: v.$primary-title;
+      padding-top: 12rem;
+    }
+
+    p {
+      padding-bottom: 3rem;
+    }
+
+    p:nth-of-type(1) {
+      margin-top: 13.5rem;
+    }
+
+    p:nth-of-type(2)
+    {
+      margin-top: 3rem;
+      padding-bottom: 5rem;
     }
 
     p a {
@@ -54,6 +74,12 @@
       color: v.$primary;
       font-size: v.$secondary-title;
       text-decoration: none;
+      transition: 0.3s;
+      &:hover {
+        font-size: 2.1rem;
+        opacity: 0.8;
+        text-shadow: 0 0.3rem 0.5rem v.$primary-light;
+      }
     }
   }
 
