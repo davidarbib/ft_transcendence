@@ -1,4 +1,5 @@
 <script setup lang="ts">
+
 </script>
 
 <template>
@@ -40,7 +41,6 @@
     
     width: 1000px;
     height: 1000px;
-    background-image: url('./assets/sphere.png');
     margin: auto;
     margin-top: 50vh;
     transform: translateY(-50%);
@@ -82,5 +82,23 @@
       }
     }
   }
+
+    .ball-shape {
+      background-image: url('./assets/sphere.png');
+      width: 1000px;
+      height: 1000px;
+      animation: up-down 2s ease-in-out infinite alternate-reverse both;
+      
+    }
+
+        @keyframes up-down {
+      0% {
+        transform: translateY(2%);
+      }
+
+      100% {
+        transform: translateY(-2%);
+      }
+    }
 
 </style>
