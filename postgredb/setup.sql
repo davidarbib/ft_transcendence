@@ -1,0 +1,4 @@
+DROP DATABASE pong_db;
+CREATE DATABASE pong_db;
+CREATE USER transcended WITH ENCRYPTED PASSWORD 'transcended';
+GRANT ALL PRIVILEGES ON DATABASE pong_db to transcended;

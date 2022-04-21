@@ -1,0 +1,11 @@
+{
+    "type": "postgres",
+    "host": "localhost",
+    "port": 8432,
+    "username": "transcended",
+    "password": "transcended",
+    "database": "pong_db",
+    "entities": [ "dist /**/*.entity{.ts,.js}" ],
+    "synchronize": true,
+    "logging": false
+}
