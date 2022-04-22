@@ -1,0 +1,10 @@
+@use './variables.scss' as v;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+} 
+body {
+  background: linear-gradient(v.$dark-blue, v.$primary) fixed;
+}

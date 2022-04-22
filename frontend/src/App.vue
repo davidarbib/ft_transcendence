@@ -4,4 +4,7 @@
   <h1 class="text-3xl font-bold underline">Hello world!</h1>
 </template>
 
-<style lang="scss"></style>
+<style lang="scss">
+  @use './assets/variables.scss' as v;
+  @import "@/assets/_base.scss";
+</style>
