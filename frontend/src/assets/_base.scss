@@ -4,7 +4,17 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-} 
+}
+
+@font-face {
+  font-family: 'Kallisto-bold';
+  src: url('./fonts/Kallisto/Kallisto_bold.otf');
+}
+@font-face {
+  font-family: 'Kallisto-regular';
+  src: url('./fonts/Kallisto/Kallisto_medium.otf');
+}
+
 body {
   background: linear-gradient(v.$dark-blue, v.$primary) fixed;
 }
