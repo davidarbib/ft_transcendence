@@ -4,12 +4,10 @@ import Title from "@/components/Title.vue";
 </script>
 
 <template>
-  <Title/>
   <div id="signin-section">
-    <div
-      class="min-h-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8"
-    >
+    <div class="min-h-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8" id="prout">
       <div class="max-w-md w-full space-y-8">
+        <Title/>
         <form class="mt-8 space-y-6" action="#" method="POST">
           <input type="hidden" name="remember" value="true" />
           <div class="rounded-md shadow-sm -space-y-px">
@@ -94,4 +92,9 @@ import Title from "@/components/Title.vue";
     background-color: black;
   }
 }
+
+  #prout {
+    padding: 0;
+    margin: 0;
+  }
 </style>

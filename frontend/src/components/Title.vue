@@ -14,29 +14,32 @@
     @import url('https://fonts.googleapis.com/css2?family=Caveat&family=Fredoka+One&display=swap');
     .container {
         text-align: center;
+        padding: 0;
+        margin: 0;
     }
 
     .title {
-      font-size: 8rem;
+      font-size: 7rem;
       font-family: 'Fredoka One', sans-serif;
       font-weight: 500;
       text-transform: uppercase;
+      padding: 0;
+      margin: 0;
     }
 
     .subtitle {
         font-family: Caveat, cursive;
         text-transform: capitalize;
-        font-size: 8rem;
+        font-size: 5rem;
         position: relative;
-        top: -120px;
-        right: -150px;
+        top: -90px;
+        right: -120px;
         font-weight: 600;
         padding: 0;
         margin: 0;
         transform: rotateZ(-10deg);
         color: hsl(318, 100%, 51%);
         text-shadow: -2px -3px hsl(53, 100%, 81%), 5px 5px hsl(240, 90%, 61%);
-        border: 2px solid red;
     }
     .metal {
       background: linear-gradient(
