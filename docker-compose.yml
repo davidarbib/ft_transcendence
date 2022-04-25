@@ -1,6 +1,7 @@
 version: '3.7'
 services:
   frontend:
+    dns: 1.1.1.1
     container_name: vue-app
     build:
       context: ./frontend
