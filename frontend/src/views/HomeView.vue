@@ -11,7 +11,7 @@ export default {
 <template>
   <div id="signin-section">
     <div>
-      <h1 class="title"><span class="metal clip raise">Pong</span><br /></h1>
+      <h1 class="title"><span class="metal clip raise">PONG</span><br /></h1>
       <h2 class="subtitle">Vice</h2>
     </div>
     <div
@@ -48,22 +48,24 @@ export default {
           </div>
 
           <div class="auth-buttons">
-            <!-- <router-link to="/Home"> -->
+            <router-link to="/main">
             <button
               type="submit"
               class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             >
               Sign in
             </button>
-            <!-- </router-link> -->
-            <!-- <router-link to="/Register"> -->
+            </router-link>
+
+            <router-link to="/register">
             <button
               class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             >
               Register
             </button>
-            <!-- </router-link> -->
-            <button
+            </router-link>
+
+            <button id="ConnectWith42"
               class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             >
               Connect with 42
@@ -109,7 +111,7 @@ h1 {
     }
   }
 
-  button:nth-of-type(3) {
+  #ConnectWith42 {
     background-color: black;
   }
 }
