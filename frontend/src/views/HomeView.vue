@@ -1,11 +1,5 @@
 <script setup lang="ts">
-import { LockClosedIcon } from "@heroicons/vue/solid";
-
-export default {
-  components: {
-    LockClosedIcon,
-  },
-};
+import LockClosedIcon from "@heroicons/vue/solid";
 </script>
 
 <template>
