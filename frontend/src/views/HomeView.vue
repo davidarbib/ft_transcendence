@@ -11,8 +11,11 @@ export default {
 <template>
   <div id="signin-section">
     <div>
-      <h1 class="title"><span class="metal clip raise">PONG</span><br /></h1>
-      <h2 class="subtitle">Vice</h2>
+      <h1 class="title">
+        <span class="metal clip raise">Retro</span>
+        <span class="metal clip raise">Effect</span>
+      </h1>
+      <h2 class="subtitle">With CSS</h2>
     </div>
     <div
       class="min-h-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8"
