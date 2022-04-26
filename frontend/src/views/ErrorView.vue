@@ -1,4 +1,10 @@
+<script setup lang="ts">
+import NavbarItem from "@/components/NavbarItem.vue"
+</script>
+
+
 <template>
+  <NavbarItem/>
   <div class="error">
     <div class="title">
       <p>4</p>
@@ -21,9 +27,11 @@
 }
 
 .error {
-  width: 80%;
+  margin-top: 7rem;
   text-align: center;
-  margin: auto;
+  display: flex;
+  flex-flow: column;
+  justify-content: end;
 
   button {
   margin-bottom: 1rem;
