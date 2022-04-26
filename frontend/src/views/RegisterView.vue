@@ -15,7 +15,7 @@ export default {
         <span class="metal clip raise">Retro</span>
         <span class="metal clip raise">Effect</span>
       </h1>
-      <h2 class="subtitle">With SCSS</h2>
+      <h2 class="subtitle">With CSS</h2>
     </div>
     <div
       class="min-h-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8"
@@ -37,6 +37,30 @@ export default {
               />
             </div>
             <div>
+              <label for="email-address" class="sr-only">Pseudo</label>
+              <input
+                id="pseudo"
+                name="pseudo"
+                type="pseudo"
+                autocomplete="pseudo"
+                required="yes"
+                class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                placeholder="Pseudo"
+              />
+            </div>
+            <div>
+              <label for="password" class="sr-only">Password</label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                autocomplete="current-password"
+                required=""
+                class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                placeholder="Password"
+              />
+            </div>
+            <div>
               <label for="password" class="sr-only">Password</label>
               <input
                 id="password"
@@ -45,21 +69,12 @@ export default {
                 autocomplete="current-password"
                 required=""
                 class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Password"
+                placeholder="Confirm password"
               />
             </div>
           </div>
 
           <div class="auth-buttons">
-            <router-link to="/main">
-            <button
-              type="submit"
-              class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-            >
-              Sign in
-            </button>
-            </router-link>
-
             <router-link to="/register">
             <button
               class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
@@ -71,7 +86,7 @@ export default {
             <button id="ConnectWith42"
               class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             >
-              Connect with 42
+              Register with 42
             </button>
           </div>
         </form>

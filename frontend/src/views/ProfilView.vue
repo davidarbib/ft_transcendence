@@ -1,15 +1,24 @@
+<script>
+import { LockClosedIcon } from "@heroicons/vue/solid";
+import NavbarItem from '../components/NavbarItem.vue';
+
+export default {
+  components: {
+    LockClosedIcon,
+    NavbarItem,
+  },
+};
+</script>
+
 <template>
-  <div class="about">
-    <h1>This is profil page</h1>
+  <div class="navbar">
+    <navbar-item></navbar-item>
   </div>
 </template>
 
 <style>
-@media (min-width: 1024px) {
-  .about {
+  .navbar {
     min-height: 100vh;
-    display: flex;
-    align-items: center;
+    align-items: top;
   }
-}
 </style>
