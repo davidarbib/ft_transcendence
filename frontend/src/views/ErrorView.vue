@@ -31,7 +31,7 @@ import NavbarItem from "@/components/NavbarItem.vue"
   text-align: center;
   display: flex;
   flex-flow: column;
-  justify-content: end;
+  justify-content: flex-end;
 
   button {
   margin-bottom: 1rem;
