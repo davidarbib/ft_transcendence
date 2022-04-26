@@ -1,6 +1,5 @@
 <template>
-  
-<nav class="bg-white shadow">
+  <nav class="min-h-full">
     <div class="container px-6 py-3 mx-auto">
         <div class="md:flex justify-between items-center">
             <!-- left section -->
@@ -22,5 +21,5 @@
             </div>
         </div>
     </div>
-</nav>
+  </nav>
 </template>
