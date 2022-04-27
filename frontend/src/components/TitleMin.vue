@@ -1,7 +1,7 @@
 <script setup lang="ts"></script>
 
 <template>
-    <div class="container">
+    <div class="container hidden lg:block h-8 w-auto">
         <h1 class="title">
             <span class="metal raise clip">PONG</span>
         </h1>
@@ -16,7 +16,7 @@
         text-align: center;
         padding: 0;
         margin: 0;
-        border: 2px solid crimson;
+        margin-bottom: 2.5rem;
     }
 
     .title {

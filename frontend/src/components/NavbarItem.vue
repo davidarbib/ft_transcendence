@@ -13,7 +13,8 @@
         <div class="flex-1 flex sm:items-stretch sm:justify-start">
           <div>
             <!-- Images icon gauche -->
-            <TitleMin/>
+            <img class="block lg:hidden h-12 w-auto" src="@/assets/logo.png" alt="Workflow" />
+            <img class="hidden lg:block h-12 w-auto" src="@/assets/logo.png" alt="Workflow" />
           </div>
           <div class="hidden sm:block sm:ml-6">
             <div class="flex space-x-4">

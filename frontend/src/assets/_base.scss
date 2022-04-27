@@ -1,4 +1,5 @@
 @use './variables.scss' as v;
+@import url('https://fonts.googleapis.com/css2?family=Caveat&family=Fredoka+One&display=swap');
 
 * {
   margin: 0;
@@ -10,7 +11,7 @@
 }
 
 @font-face {
-  font-family: 'Kallisto-bold';
+  font-family: 'Kallisto_bold';
   src: url('@/assets/fonts/Kallisto/Kallisto_bold.otf');
 }
 
@@ -21,5 +22,5 @@
 
 body {
   background: linear-gradient(v.$dark-blue, v.$primary) fixed;
-  // font-family: Kallisto-regular, sans-serif;
+  font-family: 'Fredoka One', sans-serif;
 }
