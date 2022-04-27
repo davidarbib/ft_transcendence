@@ -1,46 +1,39 @@
 <script setup lang="ts">
     import json from "@/assets/dataTest.json"
+    import { ref, computed } from 'vue'
 
     json.sort(user => {
         return user.status ? -1 : 1
     })
-    console.log(json);
+
+    const searched = ref('');
+    const userFriends = computed(() => json.filter(friend => friend.pseudo.toLowerCase().includes(searched.value.toLowerCase())));
 </script>
 
 <template>
     <div class="container w-3/12 h-screen">
-        <input placeholder="search" class="w-full">
-        <button v-for="user in json" :key="user.id" class="name w-full" :class="{ online: user.status === true, offline: user.status === false}">
+        <input placeholder="search" class="w-full" v-model="searched">
+        <button v-for="user in userFriends" :key="user.id" class="name w-full" :class="{ online: user.status === true, offline: user.status === false}">
             {{user.pseudo}}
         </button>
     </div>
 </template>
 
 <style scoped lang="scss">
-.container 
-{
+.container {
     border: 0.1rem crimson solid;
     overflow: scroll;
-    .name
-    {
-
-    }
-    .online
-    {
+    .online {
         background-color: green;
-        &:hover
-        {
-            background-color: greenyellow;
-        }
     }
-    .offline 
-    {
+    .offline {
         background-color: gray;
     }
-    .inGame 
-    {
+    .inGame {
         background-color: yellow;
     }
 }
-
+.name {
+    border: 0.1rem blue solid;
+}
 </style>
