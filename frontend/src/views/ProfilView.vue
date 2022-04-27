@@ -1,24 +1,13 @@
-<script>
+<script setup lang="ts">
 import { LockClosedIcon } from "@heroicons/vue/solid";
-import NavbarItem from '../components/NavbarItem.vue';
-
-export default {
-  components: {
-    LockClosedIcon,
-    NavbarItem,
-  },
-};
+import NavbarItem from "@/components/NavbarItem.vue"
 </script>
 
 <template>
   <div class="navbar">
-    <navbar-item></navbar-item>
+  <NavbarItem/>
   </div>
 </template>
 
 <style>
-  .navbar {
-    min-height: 100vh;
-    align-items: top;
-  }
 </style>

@@ -1,10 +1,4 @@
-<script setup lang="ts">
-import NavbarItem from "@/components/NavbarItem.vue"
-</script>
-
-
 <template>
-  <NavbarItem/>
   <div class="error">
     <div class="title">
       <p>4</p>

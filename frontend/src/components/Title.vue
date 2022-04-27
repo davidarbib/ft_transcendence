@@ -3,9 +3,9 @@
 <template>
     <div class="container">
         <h1 class="title">
-            <span class="metal raise clip">PONG</span>
+            <span class="metal raise clip">PORN</span>
         </h1>
-        <h2 class="subtitle">Vice</h2>
+        <h2 class="subtitle">hub</h2>
     </div>
 </template>
 

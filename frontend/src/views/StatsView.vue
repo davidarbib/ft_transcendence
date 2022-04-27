@@ -1,4 +1,9 @@
+<script setup lang="ts">
+import NavbarItem from "@/components/NavbarItem.vue"
+</script>
+
 <template>
+  <NavbarItem/>
   <div class="about">
     <h1>This is stats page</h1>
   </div>
