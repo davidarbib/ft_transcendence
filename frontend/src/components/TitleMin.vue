@@ -16,10 +16,11 @@
         text-align: center;
         padding: 0;
         margin: 0;
+        border: 2px solid crimson;
     }
 
     .title {
-      font-size: 7rem;
+      font-size: 2rem;
       font-family: 'Fredoka One', sans-serif;
       font-weight: 500;
       text-transform: uppercase;
@@ -30,10 +31,10 @@
     .subtitle {
         font-family: Caveat, cursive;
         text-transform: capitalize;
-        font-size: 5rem;
+        font-size: 1.5rem;
         position: relative;
-        top: -90px;
-        right: -120px;
+        top: -20px;
+        right: -40px;
         font-weight: 600;
         padding: 0;
         margin: 0;

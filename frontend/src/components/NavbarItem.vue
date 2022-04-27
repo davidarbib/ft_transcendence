@@ -10,11 +10,10 @@
             <XIcon v-else class="block h-6 w-6" aria-hidden="true" />
           </DisclosureButton>
         </div>
-        <div class="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
-          <div class="flex-shrink-0 flex items-center">
+        <div class="flex-1 flex sm:items-stretch sm:justify-start">
+          <div>
             <!-- Images icon gauche -->
-            <img class="block lg:hidden h-8 w-auto" src="https://images-eu.ssl-images-amazon.com/images/I/31IzNsMZ%2BzL.__AC_SY300_SX300_QL70_ML2_.jpg" alt="Workflow" />
-            <img class="hidden lg:block h-8 w-auto" src="https://images-eu.ssl-images-amazon.com/images/I/31IzNsMZ%2BzL.__AC_SY300_SX300_QL70_ML2_.jpg" alt="Workflow" />
+            <TitleMin/>
           </div>
           <div class="hidden sm:block sm:ml-6">
             <div class="flex space-x-4">
@@ -63,35 +62,17 @@
   </Disclosure>
 </template>
 
-<script>
+<script setup lang="ts">
 import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
 import { BellIcon, MenuIcon, XIcon } from '@heroicons/vue/outline'
+import Title from "@/components/TitleMin.vue";
+import TitleMin from "./TitleMin.vue";
 
 const navigation = [
   { name: 'Chat', href: '/chat', current: false },
   { name: 'Stats', href: '/stats', current: false },
   { name: 'Tuto', href: '/tuto', current: false },
 ]
-
-export default {
-  components: {
-    Disclosure,
-    DisclosureButton,
-    DisclosurePanel,
-    Menu,
-    MenuButton,
-    MenuItem,
-    MenuItems,
-    BellIcon,
-    MenuIcon,
-    XIcon,
-  },
-  setup() {
-    return {
-      navigation,
-    }
-  },
-}
 </script>
 
 <style lang="scss" scoped>
