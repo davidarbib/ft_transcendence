@@ -49,9 +49,6 @@ import NavbarItem from "@/components/NavbarItem.vue"
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  width: 80%;
-  margin: auto;
-  font-family: sans-serif;
   font-size: 17rem;
   color: rgb(221, 128, 87);
   font-family: 'Kallisto-bold', sans-serif;
@@ -66,9 +63,9 @@ import NavbarItem from "@/components/NavbarItem.vue"
  display: block;
  background: linear-gradient(v.$secondary-light, v.$primary-light);
  border-radius: 50%;
- height: 20vh;
- width: 20vh;
- margin: 0;
+ height: 12rem;
+ width: 12rem;
+ margin-top: 2rem;
 }
 
 </style>
