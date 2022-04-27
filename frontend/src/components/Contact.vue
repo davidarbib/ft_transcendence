@@ -10,9 +10,9 @@
 <template>
     <div class="container w-3/12 h-screen">
         <input placeholder="search" class="w-full">
-        <div v-for="user in json" :key="user.id" class="name" :class="{ online: user.status === true, offline: user.status === false}">
+        <button v-for="user in json" :key="user.id" class="name w-full" :class="{ online: user.status === true, offline: user.status === false}">
             {{user.pseudo}}
-        </div>
+        </button>
     </div>
 </template>
 
@@ -20,8 +20,16 @@
 .container {
     border: 0.1rem crimson solid;
     overflow: scroll;
+.name{
+    &:hover{
+
+    }
+}
     .online {
         background-color: green;
+            &:hover{
+                background-color: greenyellow;
+    }
     }
     .offline {
         background-color: gray;
@@ -31,6 +39,5 @@
     }
 }
 .name {
-    border: 0.1rem blue solid;
 }
 </style>
