@@ -5,7 +5,7 @@
         <h1 class="title">
             <span class="metal raise clip">PONG</span>
         </h1>
-        <h2 class="subtitle">Vice</h2>
+        <h2 class="subtitle">vice</h2>
     </div>
 </template>
 

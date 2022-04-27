@@ -1,105 +1,81 @@
 <template>
-  <div class="max-w-6xl mx-auto px-4">
+  <div class="mx-auto px-4 bg-black bg-opacity-10">
     <div class="flex justify-between">
       <div class="flex space-x-7">
         <div>
           <!-- Website Logo -->
-          <a href="#" class="flex items-center py-4 px-2">
-            <img src="logo.png" alt="Logo" class="h-8 w-8 mr-2" />
-            <span class="font-semibold text-gray-500 text-lg">Navigation</span>
+          <a class="flex items-center py-0 px-2">
+            <img src="@/assets/logo.png" alt="Logo" class="h-14 w-28 mr-2" />
           </a>
         </div>
         <!-- Primary Navbar items -->
         <div class="hidden md:flex items-center space-x-1">
           <a
-            href=""
             class="
               py-4
               px-2
-              text-green-500
-              border-b-4 border-green-500
+              text-gray-300
               font-semibold
-            "
-            >Home</a
-          >
+              hover:text-[#e63380]
+              transition
+              duration-300
+            ">Chat</a>
           <a
-            href=""
             class="
               py-4
               px-2
-              text-gray-500
+              text-gray-300
               font-semibold
-              hover:text-green-500
+              hover:text-[#e63380]
               transition
               duration-300
             "
-            >Services</a
-          >
+            >Stats</a>
           <a
-            href=""
             class="
               py-4
               px-2
-              text-gray-500
+              text-gray-300
               font-semibold
-              hover:text-green-500
+              hover:text-[#e63380]
               transition
               duration-300
             "
-            >About</a
-          >
+            >Tutorial</a>
           <a
-            href=""
             class="
               py-4
               px-2
-              text-gray-500
+              text-gray-300
               font-semibold
-              hover:text-green-500
+              hover:text-[#e63380]
               transition
               duration-300
             "
-            >Contact Us</a
-          >
+            >Profil</a>
         </div>
       </div>
       <!-- Secondary Navbar items -->
       <div class="hidden md:flex items-center space-x-3">
         <a
-          href=""
           class="
             py-2
             px-2
             font-medium
-            text-gray-500
+            text-gray-300
             rounded
-            hover:bg-green-500 hover:text-white
+            hover:bg-[#e63380]
             transition
             duration-300
           "
-          >Log In</a
-        >
-        <a
-          href=""
-          class="
-            py-2
-            px-2
-            font-medium
-            text-white
-            bg-green-500
-            rounded
-            hover:bg-green-400
-            transition
-            duration-300
-          "
-          >Sign Up</a
+          >Disconnect</a
         >
       </div>
       <!-- Mobile menu button -->
       <div class="md:hidden flex items-center">
         <button class="outline-none mobile-menu-button">
           <svg
-            class="w-6 h-6 text-gray-500 hover:text-green-500"
+            class="w-6 h-6 text-gray-500 hover:text-[#e63380]"
             x-show="!showMenu"
             fill="none"
             stroke-linecap="round"
