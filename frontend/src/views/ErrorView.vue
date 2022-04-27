@@ -15,11 +15,6 @@
 @use "../assets/variables.scss" as v;
 @import '@/assets/base.scss';
 
-@font-face {
-  font-family: 'Kallisto-bold';
-  src: url('@/assets/fonts/Kallisto_bold.otf');
-}
-
 .error {
   margin-top: 7rem;
   text-align: center;
