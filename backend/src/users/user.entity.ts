@@ -9,6 +9,10 @@ export class User
 
     @ApiProperty()
     @Column()
+    login: string;
+
+    @ApiProperty()
+    @Column()
     firstName: string;
 
     @ApiProperty()
