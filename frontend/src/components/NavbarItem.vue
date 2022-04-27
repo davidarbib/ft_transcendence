@@ -1,3 +1,11 @@
+<script setup lang="ts">
+  import { ref } from "vue";
+
+  const visible = ref(true);
+
+  const visibleToggle = () => { visible.value = !visible.value }
+</script>
+
 <template>
   <div class="max-w-6xl mx-auto px-4">
     <div class="flex justify-between">
@@ -97,7 +105,7 @@
       </div>
       <!-- Mobile menu button -->
       <div class="md:hidden flex items-center">
-        <button class="outline-none mobile-menu-button">
+        <button class="outline-none mobile-menu-button" @click="visibleToggle">
           <svg
             class="w-6 h-6 text-gray-500 hover:text-green-500"
             x-show="!showMenu"
@@ -115,7 +123,7 @@
     </div>
   </div>
   <!-- mobile menu -->
-  <div class="hidden mobile-menu">
+  <div class="mobile-menu" :class="{ hidden: visible }">
     <ul class="">
       <li class="active">
         <a
