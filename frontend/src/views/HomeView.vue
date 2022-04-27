@@ -71,8 +71,8 @@ import Title from "@/components/Title.vue";
 @use "../assets/variables.scss" as v;
 
 #signin-section {
-  margin-top: 50vh;
-  transform: translateY(-50%);
+  // margin-top: 50vh;
+  // transform: translateY(-50%);
 
   form {
     margin-top: -3rem;
