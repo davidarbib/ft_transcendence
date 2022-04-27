@@ -17,27 +17,30 @@
 </template>
 
 <style scoped lang="scss">
-.container {
+.container 
+{
     border: 0.1rem crimson solid;
     overflow: scroll;
-.name{
-    &:hover{
+    .name
+    {
 
     }
-}
-    .online {
+    .online
+    {
         background-color: green;
-            &:hover{
-                background-color: greenyellow;
+        &:hover
+        {
+            background-color: greenyellow;
+        }
     }
-    }
-    .offline {
+    .offline 
+    {
         background-color: gray;
     }
-    .inGame {
+    .inGame 
+    {
         background-color: yellow;
     }
 }
-.name {
-}
+
 </style>

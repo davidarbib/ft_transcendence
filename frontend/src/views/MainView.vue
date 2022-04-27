@@ -4,19 +4,16 @@ import Contact from "@/components/Contact.vue";
 </script>
 
 <template>
+  <div class="main max-h-screen">
   <NavbarItem/>
-  <Contact/>
   <div class="about">
-    <h1>This is main page</h1>
+  <Contact/>
   </div>
+  </div>
+    
 </template>
 
-<style>
-@media (min-width: 1024px) {
-  .about {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
+<style scoped>
+.about {
   }
-}
 </style>
