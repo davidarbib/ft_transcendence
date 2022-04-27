@@ -11,15 +11,15 @@
 
 @font-face {
   font-family: 'Kallisto-bold';
-  src: url('@/fonts/Kallisto/Kallisto_bold.otf');
+  src: url('@/assets/fonts/Kallisto/Kallisto_bold.otf');
 }
 
 @font-face {
   font-family: 'Kallisto-regular';
-  src: url('@/fonts/Kallisto/Kallisto_medium.otf');
+  src: url('@/asssets/fonts/Kallisto/Kallisto_medium.otf');
 }
 
 body {
   background: linear-gradient(v.$dark-blue, v.$primary) fixed;
-  font-family: Kallisto-regular, sans-serif;
+  // font-family: Kallisto-regular, sans-serif;
 }
