@@ -1,83 +1,174 @@
 <template>
-  <Disclosure as="nav" class="bg-black bg-opacity-10" v-slot="{ open }">
-    <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
-      <div class="relative flex items-center justify-between h-16">
-        <div class="absolute inset-y-0 left-0 flex items-center sm:hidden">
-          <!-- Mobile menu button-->
-          <DisclosureButton class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
-            <span class="sr-only">Open main menu</span>
-            <MenuIcon v-if="!open" class="block h-6 w-6" aria-hidden="true" />
-            <XIcon v-else class="block h-6 w-6" aria-hidden="true" />
-          </DisclosureButton>
+  <div class="max-w-6xl mx-auto px-4">
+    <div class="flex justify-between">
+      <div class="flex space-x-7">
+        <div>
+          <!-- Website Logo -->
+          <a href="#" class="flex items-center py-4 px-2">
+            <img src="logo.png" alt="Logo" class="h-8 w-8 mr-2" />
+            <span class="font-semibold text-gray-500 text-lg">Navigation</span>
+          </a>
         </div>
-        <div class="flex-1 flex sm:items-stretch sm:justify-start">
-          <div>
-            <!-- Images icon gauche -->
-            <img class="block lg:hidden h-12 w-auto" src="@/assets/logo.png" alt="Workflow" />
-            <img class="hidden lg:block h-12 w-auto" src="@/assets/logo.png" alt="Workflow" />
-          </div>
-          <div class="hidden sm:block sm:ml-6">
-            <div class="flex space-x-4">
-              <!-- Boutons de la navbar -->
-              <a v-for="item in navigation" :key="item.name" :href="item.href" :class="[item.current ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-red-700 hover:text-white', 'px-3 py-2 rounded-md text-sm font-medium']" :aria-current="item.current ? 'page' : undefined">{{ item.name }}</a>
-            </div>
-          </div>
+        <!-- Primary Navbar items -->
+        <div class="hidden md:flex items-center space-x-1">
+          <a
+            href=""
+            class="
+              py-4
+              px-2
+              text-green-500
+              border-b-4 border-green-500
+              font-semibold
+            "
+            >Home</a
+          >
+          <a
+            href=""
+            class="
+              py-4
+              px-2
+              text-gray-500
+              font-semibold
+              hover:text-green-500
+              transition
+              duration-300
+            "
+            >Services</a
+          >
+          <a
+            href=""
+            class="
+              py-4
+              px-2
+              text-gray-500
+              font-semibold
+              hover:text-green-500
+              transition
+              duration-300
+            "
+            >About</a
+          >
+          <a
+            href=""
+            class="
+              py-4
+              px-2
+              text-gray-500
+              font-semibold
+              hover:text-green-500
+              transition
+              duration-300
+            "
+            >Contact Us</a
+          >
         </div>
-        <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-          <button type="button" class="bg-gray-800 p-1 rounded-full text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
-            <span class="sr-only">View notifications</span>
-            <BellIcon class="h-6 w-6" aria-hidden="true" />
-          </button>
-
-          <!-- Profile dropdown -->
-          <Menu as="div" class="ml-3 relative">
-            <div>
-              <MenuButton class="bg-gray-800 flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
-                <span class="sr-only">Open user menu</span>
-                <img class="h-8 w-8 rounded-full" src="https://images-eu.ssl-images-amazon.com/images/I/31IzNsMZ%2BzL.__AC_SY300_SX300_QL70_ML2_.jpg" alt="" />
-              </MenuButton>
-            </div>
-            <transition enter-active-class="transition ease-out duration-100" enter-from-class="transform opacity-0 scale-95" enter-to-class="transform opacity-100 scale-100" leave-active-class="transition ease-in duration-75" leave-from-class="transform opacity-100 scale-100" leave-to-class="transform opacity-0 scale-95">
-              <MenuItems class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
-                <MenuItem v-slot="{ active }">
-                  <a href="/profil" :class="[active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700']">Your Profile</a>
-                </MenuItem>
-                <MenuItem v-slot="{ active }">
-                  <a href="#" :class="[active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700']">Settings</a>
-                </MenuItem>
-                <MenuItem v-slot="{ active }">
-                  <a href="#" :class="[active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700']">Sign out</a>
-                </MenuItem>
-              </MenuItems>
-            </transition>
-          </Menu>
-        </div>
+      </div>
+      <!-- Secondary Navbar items -->
+      <div class="hidden md:flex items-center space-x-3">
+        <a
+          href=""
+          class="
+            py-2
+            px-2
+            font-medium
+            text-gray-500
+            rounded
+            hover:bg-green-500 hover:text-white
+            transition
+            duration-300
+          "
+          >Log In</a
+        >
+        <a
+          href=""
+          class="
+            py-2
+            px-2
+            font-medium
+            text-white
+            bg-green-500
+            rounded
+            hover:bg-green-400
+            transition
+            duration-300
+          "
+          >Sign Up</a
+        >
+      </div>
+      <!-- Mobile menu button -->
+      <div class="md:hidden flex items-center">
+        <button class="outline-none mobile-menu-button">
+          <svg
+            class="w-6 h-6 text-gray-500 hover:text-green-500"
+            x-show="!showMenu"
+            fill="none"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </button>
       </div>
     </div>
-
-    <DisclosurePanel class="sm:hidden">
-      <div class="px-2 pt-2 pb-3 space-y-1">
-        <DisclosureButton v-for="item in navigation" :key="item.name" as="a" :href="item.href" :class="[item.current ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white', 'block px-3 py-2 rounded-md text-base font-medium']" :aria-current="item.current ? 'page' : undefined">{{ item.name }}</DisclosureButton>
-      </div>
-    </DisclosurePanel>
-  </Disclosure>
+  </div>
+  <!-- mobile menu -->
+  <div class="hidden mobile-menu">
+    <ul class="">
+      <li class="active">
+        <a
+          href="index.html"
+          class="block text-sm px-2 py-4 text-white bg-green-500 font-semibold"
+          >Home</a
+        >
+      </li>
+      <li>
+        <a
+          href="#services"
+          class="
+            block
+            text-sm
+            px-2
+            py-4
+            hover:bg-green-500
+            transition
+            duration-300
+          "
+          >Services</a
+        >
+      </li>
+      <li>
+        <a
+          href="#about"
+          class="
+            block
+            text-sm
+            px-2
+            py-4
+            hover:bg-green-500
+            transition
+            duration-300
+          "
+          >About</a
+        >
+      </li>
+      <li>
+        <a
+          href="#contact"
+          class="
+            block
+            text-sm
+            px-2
+            py-4
+            hover:bg-green-500
+            transition
+            duration-300
+          "
+          >Contact Us</a
+        >
+      </li>
+    </ul>
+  </div>
 </template>
-
-<script setup lang="ts">
-import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
-import { BellIcon, MenuIcon, XIcon } from '@heroicons/vue/outline'
-import Title from "@/components/TitleMin.vue";
-import TitleMin from "./TitleMin.vue";
-
-const navigation = [
-  { name: 'Chat', href: '/chat', current: false },
-  { name: 'Stats', href: '/stats', current: false },
-  { name: 'Tuto', href: '/tuto', current: false },
-]
-</script>
-
-<style lang="scss" scoped>
-.bg-grey-800 {
-  opacity: 0;
-}
-</style>
