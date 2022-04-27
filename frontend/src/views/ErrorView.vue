@@ -41,7 +41,7 @@
   align-items: center;
   font-size: 17rem;
   color: rgb(221, 128, 87);
-  font-family: 'Kallisto-bold', sans-serif;
+  font-family: 'Fredoka One', sans-serif;
   p {
     margin-right: 4rem;
     margin-left: 4rem;
