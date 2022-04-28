@@ -13,7 +13,7 @@
 <template>
     <div class="container w-2/5 mx-2 h-auto">
         <input placeholder="search" class="w-full rounded px-2" v-model="searched">
-        <div v-for="user in userFriends" :key="user.id" class="name my-2 w-full bg-black bg-opacity-10" :class="{ online: user.status === true, offline: user.status === false}">
+        <div v-for="user in userFriends" :key="user.id" class="name my-2 w-full bg-black bg-opacity-10 rounded" :class="{ online: user.status === true, offline: user.status === false}">
         <div class="mx-3  status-composant">
             <img class="h-8 w-8 rounded-full" src="@/assets/sphere.png" alt="">
             <i class="fa-solid fa-circle" :class="{ online: user.status === true, offline: user.status === false}"></i>
