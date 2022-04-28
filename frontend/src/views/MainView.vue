@@ -4,7 +4,7 @@ import Contact from "@/components/Contact.vue";
 </script>
 
 <template>
-  <div class="main max-h-screen">
+  <div class="main max-h-full max-w-full">
   <NavbarItem/>
   <div class="about">
   <Contact/>
@@ -14,6 +14,7 @@ import Contact from "@/components/Contact.vue";
 </template>
 
 <style scoped>
-.about {
+.main {
+  position: fixed;
   }
 </style>

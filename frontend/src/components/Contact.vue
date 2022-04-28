@@ -11,7 +11,7 @@
 </script>
 
 <template>
-    <div class="container w-3/12 h-screen">
+    <div class="container w-3/12 h-auto">
         <input placeholder="search" class="w-full" v-model="searched">
         <button v-for="user in userFriends" :key="user.id" class="name w-full" :class="{ online: user.status === true, offline: user.status === false}">
             {{user.pseudo}}
