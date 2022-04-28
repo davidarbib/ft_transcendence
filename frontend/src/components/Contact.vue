@@ -13,7 +13,7 @@
 <template>
     <div class="container w-1/5 mx-2 mt-10 h-auto">
         <input placeholder="search" class="w-full rounded px-2 py-1" v-model="searched">
-        <div v-for="user in userFriends" :key="user.id" class="name my-2 w-full bg-black bg-opacity-10 rounded" :class="{ online: user.status === true, offline: user.status === false}">
+        <div v-for="user in userFriends" :key="user.id" class="name my-2 w-full bg-black bg-opacity-10 rounded hover:bg-white hover:bg-opacity-10" :class="{ online: user.status === true, offline: user.status === false}">
         <div class="mx-3  status-composant">
             <img class="h-8 w-8 rounded-full" src="@/assets/sphere.png" alt="">
             <i class="fa-solid fa-circle" :class="{ online: user.status === true, offline: user.status === false}"></i>
@@ -25,7 +25,7 @@
 
 <style scoped lang="scss">
 .container {
-    overflow: scroll;;
+    overflow: scroll;
     .status-composant {
         display: flex;
         justify-content: flex-start;
@@ -52,6 +52,10 @@
     flex-flow: row nowrap;
     justify-content: baseline;
     align-items: center;
+    transition: 0.3s;
+    &:hover {
+        cursor: pointer;
+    }
 
     .friend-pseudo {
         color: rgb(160, 165, 141);
