@@ -13,27 +13,40 @@
 <template>
     <div class="container w-3/12 h-auto">
         <input placeholder="search" class="w-full" v-model="searched">
-        <button v-for="user in userFriends" :key="user.id" class="name w-full" :class="{ online: user.status === true, offline: user.status === false}">
-            {{user.pseudo}}
-        </button>
+        <div v-for="user in userFriends" :key="user.id" class="name w-full" :class="{ online: user.status === true, offline: user.status === false}">
+        <div class="status-composant">
+            <img class="h-8 w-8 rounded-full" src="@/assets/sphere.png" alt="">
+            <i class="fa-solid fa-circle" :class="{ online: user.status === true, offline: user.status === false}"></i>
+        </div>
+            <h3>{{user.pseudo}}</h3>
+        </div>
     </div>
 </template>
 
 <style scoped lang="scss">
 .container {
-    border: 0.1rem crimson solid;
     overflow: scroll;
+    .status-composant {
+        display: flex;
+        justify-content: flex-start;
+
+        .fa-circle {
+            position: relative;
+            top: 1rem;
+            right: 0.5rem;
+        }
+    }
     .online {
-        background-color: green;
+        color: green;
     }
     .offline {
-        background-color: gray;
+        color: gray;
     }
     .inGame {
-        background-color: yellow;
+        color: yellow;
     }
 }
 .name {
-    border: 0.1rem blue solid;
+    border: 2px solid blue;
 }
 </style>
