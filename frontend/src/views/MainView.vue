@@ -36,6 +36,7 @@ import Contact from "@/components/Contact.vue";
     height: 500px;
     width: 500px;
     margin: auto;
+    margin-top: 5rem;
 
     h1 {
       font-family: Kallisto-bold, sans-serif;
@@ -48,11 +49,13 @@ import Contact from "@/components/Contact.vue";
     }
 
     p:nth-of-type(1) {
-      margin-top: 2.5rem;
+      position: relative;
+      top: 2.5rem;
     }
     p:nth-of-type(2)
     {
-      margin-top: 1.5rem;
+      position: relative;
+      top: 4rem;
     }
 
     p a {
@@ -63,7 +66,6 @@ import Contact from "@/components/Contact.vue";
       text-decoration: none;
       transition: 0.3s;
       &:hover {
-        font-size: 2.1rem;
         opacity: 0.8;
         text-shadow: 0 0.3rem 0.5rem v.$primary-light;
       }
