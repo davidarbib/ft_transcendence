@@ -4,8 +4,15 @@ import Title from "@/components/Title.vue";
 import { ref } from 'vue'
 
 const volumeButton = ref(true);
+const muted = ref('');
 
-const toggleMusic = () => { volumeButton.value = !volumeButton.value};
+const toggleMusic = () => {
+  volumeButton.value = !volumeButton.value
+  if (volumeButton.value === false)
+    muted.value = '';
+  else
+    muted.value = 'muted';
+  };
 </script>
 
 <template>
@@ -76,11 +83,18 @@ const toggleMusic = () => { volumeButton.value = !volumeButton.value};
       </div>
     </div>
   </div>
-  <audio controls id="myVideo" autoplay loop hidden muted>
-  <source src="@/assets/homepage_music.mp3" type="audio/mpeg">
-  Your browser does not support the audio element.
-  </audio>
-  <!-- <p>{{ volumeButton }}</p> -->
+  <div v-if="volumeButton">
+    <audio controls id="myVideo" autoplay loop hidden>
+    <source src="@/assets/homepage_music.mp3" type="audio/mpeg">
+    ser does not support the audio element.
+    </audio>
+  </div>
+  <div v-else>
+    <audio controls id="myVideo" autoplay loop hidden muted>
+    <source src="@/assets/homepage_music.mp3" type="audio/mpeg">
+    ser does not support the audio element.
+    </audio>
+  </div>
 </template>
 
 <style lang="scss">
