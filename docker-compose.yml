@@ -12,3 +12,25 @@ services:
       - '/app/node_modules'
     ports:
       - "8000:8000"
+    depends_on:
+      - adminer
+  db:
+    image: postgres
+    restart: always
+    ports:
+      - 8432:5432
+    environment:
+      POSTGRES_USER: transcended
+      POSTGRES_PASSWORD: transcended
+      POSTGRES_DB: pong_db
+    volumes:
+      - transcendence_db:/var/lib/postgresql
+  adminer:
+    image: adminer
+    restart: always
+    depends_on:
+      - db
+    ports:
+      - 8100:8080
+volumes:
+  transcendence_db: {}
