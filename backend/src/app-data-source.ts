@@ -3,8 +3,7 @@ import { User } from './users/user.entity';
 
 export const myDataSource = new DataSource({
     type: "postgres",
-    host: "localhost",
-    port: 8432,
+    host: "db",
     username: "transcended",
     password: "transcended",
     database: "pong_db",

@@ -30,6 +30,8 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+      args:
+        - NODE_ENV=development
     volumes:
       - './backend:/app'
       - '/app/node_modules'
@@ -42,9 +44,9 @@ services:
   adminer:
     image: adminer
     restart: always
-    depends_on:
-      - backend
     ports:
       - 8100:8080
+    depends_on:
+      - backend
 volumes:
   transcendence_db: {}
