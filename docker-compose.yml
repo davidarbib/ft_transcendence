@@ -25,11 +25,25 @@ services:
       POSTGRES_DB: pong_db
     volumes:
       - transcendence_db:/var/lib/postgresql
+  backend:
+    container_name: nestjs-app
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    volumes:
+      - './backend:/app'
+      - '/app/node_modules'
+    ports:
+      - "8090:8090"
+    expose:
+      - 8090
+    depends_on:
+      - db
   adminer:
     image: adminer
     restart: always
     depends_on:
-      - db
+      - backend
     ports:
       - 8100:8080
 volumes:

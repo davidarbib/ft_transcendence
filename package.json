@@ -1,7 +1,0 @@
-{
-  "dependencies": {
-    "@nestjs/swagger": "github:nestjs/swagger",
-    "swagger-ui-express": "^4.3.0",
-    "vue": "^3.2.33"
-  }
-}
