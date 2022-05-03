@@ -12,3 +12,41 @@ services:
       - '/app/node_modules'
     ports:
       - "8000:8000"
+    depends_on:
+      - adminer
+  db:
+    image: postgres
+    restart: always
+    ports:
+      - 8432:5432
+    environment:
+      POSTGRES_USER: transcended
+      POSTGRES_PASSWORD: transcended
+      POSTGRES_DB: pong_db
+    volumes:
+      - transcendence_db:/var/lib/postgresql
+  backend:
+    container_name: nestjs-app
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        - NODE_ENV=development
+    volumes:
+      - './backend:/app'
+      - '/app/node_modules'
+    ports:
+      - "8090:8090"
+    expose:
+      - 8090
+    depends_on:
+      - db
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8100:8080
+    depends_on:
+      - backend
+volumes:
+  transcendence_db: {}

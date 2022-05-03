@@ -7,6 +7,21 @@ async function bootstrap()
 {
   const app = await NestFactory.create(AppModule);
 
+  /*
+  let allowlist = ['http://localhost:8080'];
+  let corsOptionsDelegate = function (req, callback) {
+  let corsOptions;
+
+  if (allowlist.indexOf(req.header('Origin')) !== -1) {
+    corsOptions = { origin: true } // reflect (enable) the requested origin in the CORS response
+    console.log("cors allowed");
+  } else {
+    corsOptions = { origin: false } // disable CORS for this request
+  }
+  callback(null, corsOptions) // callback expects two parameters: error and options
+*/
+
+
   const config = new DocumentBuilder()
     .setTitle('API example')
     .setDescription('API description')
@@ -18,6 +33,5 @@ async function bootstrap()
 
   await app.listen(8090); //TODO env variable
 }
-
 
 bootstrap();
