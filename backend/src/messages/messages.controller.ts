@@ -31,4 +31,9 @@ export class MessagesController {
   remove(@Param('id') id: string) {
     return this.messagesService.remove(+id);
   }
+  @Post('new')
+  postmsg() {
+    console.log("msg insert");
+    this.messagesService.insertMsg();
+  }
 }

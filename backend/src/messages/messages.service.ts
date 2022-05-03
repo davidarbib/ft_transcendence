@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
+import { myDataSource } from 'src/app-data-source';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { UpdateMessageDto } from './dto/update-message.dto';
+import { Message } from './entities/message.entity';
 
 @Injectable()
 export class MessagesService {
@@ -22,5 +24,15 @@ export class MessagesService {
 
   remove(id: number) {
     return `This action removes a #${id} message`;
+  }
+
+  async insertMsg() : Promise<string>
+  {
+    const msg : Message = new Message;
+    msg.content =  'cc dav c le back end ki parle';
+    msg.time = new Date();
+    await myDataSource.getRepository(Message).save(msg);
+    console.log("my msg is created");
+    return "my msg is ok";
   }
 }
