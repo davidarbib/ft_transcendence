@@ -1,92 +1,109 @@
 <script setup lang="ts">
 import { LockClosedIcon } from "@heroicons/vue/solid";
 import Title from "@/components/Title.vue";
+import MusicLoop from "../components/MusicLoop.vue";
 </script>
 
 <template>
-  <div id="signin-section">
-    <div class="min-h-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div class="max-w-md w-full space-y-8">
-        <Title/>
-        <form class="mt-8 space-y-6" action="#" method="POST">
-          <input type="hidden" name="remember" value="true" />
-          <div class="rounded-md shadow-sm -space-y-px">
-            <div>
-              <label for="email-address" class="sr-only">Email address</label>
-              <input
-                id="email-address"
-                name="email"
-                type="email"
-                autocomplete="email"
-                required=""
-                class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Email address"
-              />
-            </div>
-            <div>
-              <label for="email-address" class="sr-only">Pseudo</label>
-              <input
-                id="pseudo"
-                name="pseudo"
-                type="pseudo"
-                autocomplete="pseudo"
-                required="yes"
-                class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Pseudo"
-              />
-            </div>
-            <div>
-              <label for="password" class="sr-only">Password</label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autocomplete="current-password"
-                required=""
-                class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Password"
-              />
-            </div>
-            <div>
-              <label for="password" class="sr-only">Password</label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autocomplete="current-password"
-                required=""
-                class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Confirm password"
-              />
-            </div>
-          </div>
-
-          <div class="auth-buttons">
-            <router-link to="/register">
-            <button
-              class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-            >
-              Register
-            </button>
-            </router-link>
-
-            <button id="ConnectWith42"
-              class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-            >
-              Register with 42
-            </button>
-          </div>
-        </form>
-      </div>
+  <div class="register-section">
+    <div class="logo"><Title /></div>
+    <div class="sound"><MusicLoop /></div>
+    <div class="input">
+      <input
+        id="email-address"
+        name="email"
+        type="email"
+        autocomplete="email"
+        required="true"
+        class="w-full h-1/4 rounded-t-md focus:outline-none border border-gray-300"
+        placeholder="Email address"
+      />
+      <br />
+      <input
+        id="pseudo"
+        name="pseudo"
+        type="text"
+        autocomplete="current-password"
+        required="true"
+        class="w-full h-1/4 focus:outline-none border border-gray-300"
+        placeholder="Pseudo"
+      />
+      <br />
+      <input
+        id="password"
+        name="password"
+        type="password"
+        autocomplete="current-password"
+        required="true"
+        class="w-full h-1/4 focus:outline-none border border-gray-300"
+        placeholder="Password"
+      />
+      <br />
+      <input
+        id="comfirm_password"
+        name="comfirm_password"
+        type="password"
+        autocomplete="current-password"
+        required="true"
+        class="w-full h-1/4 rounded-b-md focus:outline-none border border-gray-300"
+        placeholder="Comfirm password"
+      />
+    </div>
+    <div class="register primary-button">
+      <router-link to="/main" class="b-submit"> register </router-link>
+    </div>
+    <div class="register-with-42 primary-button">
+      <router-link to="/main" class="b42-submit">
+        register with 42
+      </router-link>
     </div>
   </div>
 </template>
-<style>
-@media (min-width: 1024px) {
-  .about {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
+
+<style lang="scss">
+.register-section {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: 4.8fr 3fr repeat(2, 0.5fr) 1fr 1fr;
+  gap: 2% 0px;
+  grid-auto-flow: row;
+  grid-template-areas:
+    ". logo sound"
+    ". input ."
+    ". register ."
+    ". register-with-42 ."
+    ". . .";
+
+  .logo {
+    // border: 2px solid red;
+    grid-area: logo;
+    margin-top: 3rem;
+  }
+
+  .sound {
+    text-align: right;
+    margin-right: 1rem;
+    grid-area: sound;
+  }
+
+  .input {
+    grid-area: input;
+
+    input {
+      padding-left: 1rem;
+    }
+  }
+
+  .sign-in {
+    grid-area: sign-in;
+  }
+
+  .register {
+    grid-area: register;
+  }
+
+  .register-with-42 {
+    grid-area: register-with-42;
   }
 }
 </style>
