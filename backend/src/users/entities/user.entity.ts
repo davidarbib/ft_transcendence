@@ -59,10 +59,10 @@ export class User
     avatarRef: string;
 
     @ApiProperty()
-    @Column({type: "int64"})
+    @Column({type: "int8"})
     winCount: number;
 
     @ApiProperty()
-    @Column({type: "int64"})
+    @Column({type: "int8"})
     lossCount: number;
 }

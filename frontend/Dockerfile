@@ -4,7 +4,7 @@ WORKDIR /app
 
 ENV PATH /app/node_modules/.bin:$PATH
 
-COPY package*.json .
+COPY package*.json ./
 
 RUN groupadd -r front && useradd -r -g front frontDev
 

@@ -33,6 +33,10 @@ export class UsersService {
     user.login = 'jojo';
     user.mail = 'jojo@randomail.com';
     user.status = UserStatus.INGAME;
+    user.password='jojo';
+    user.authToken="1234";
+    user.winCount=0;
+    user.lossCount=0;
     await myDataSource.getRepository(User).save(user);
     return "my user is created";
   }
