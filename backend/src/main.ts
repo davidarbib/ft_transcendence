@@ -7,6 +7,7 @@ async function bootstrap()
 {
   const app = await NestFactory.create(AppModule);
 
+  /*
   let allowlist = ['http://localhost:8080'];
   let corsOptionsDelegate = function (req, callback) {
   let corsOptions;
@@ -18,7 +19,7 @@ async function bootstrap()
     corsOptions = { origin: false } // disable CORS for this request
   }
   callback(null, corsOptions) // callback expects two parameters: error and options
-}
+*/
 
 
   const config = new DocumentBuilder()
