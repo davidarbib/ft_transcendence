@@ -1,5 +1,8 @@
 import { DataSource } from "typeorm"
 import { User } from './users/entities/user.entity';
+import { Message } from './messages/entities/message.entity';
+import { Channel } from './channels/entities/channel.entity';
+import { ChanParticipant } from './chan-participants/entities/chan-participant.entity';
 
 export const myDataSource = new DataSource({
     type: "postgres",
@@ -7,7 +10,11 @@ export const myDataSource = new DataSource({
     username: "transcended",
     password: "transcended",
     database: "pong_db",
-    entities: [ User ],
+    entities: [
+        User,
+        Message,
+        Channel,
+        ChanParticipant ],
     synchronize: true,
     logging: false
 })
