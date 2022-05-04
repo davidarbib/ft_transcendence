@@ -22,54 +22,22 @@ const visibleToggle = () => {
         <div class="hidden md:flex items-center space-x-1">
           <router-link
             to="/chat"
-            class="
-              py-4
-              px-2
-              text-gray-300
-              font-semibold
-              hover:text-[#e63380]
-              transition
-              duration-700
-            "
+            class="py-4 px-2 text-gray-300 font-semibold hover:text-[#e63380] transition duration-700"
             >Chat</router-link
           >
           <router-link
             to="/stats"
-            class="
-              py-4
-              px-2
-              text-gray-300
-              font-semibold
-              hover:text-[#e63380]
-              transition
-              duration-700
-            "
+            class="py-4 px-2 text-gray-300 font-semibold hover:text-[#e63380] transition duration-700"
             >Stats</router-link
           >
           <router-link
             to="/tuto"
-            class="
-              py-4
-              px-2
-              text-gray-300
-              font-semibold
-              hover:text-[#e63380]
-              transition
-              duration-700
-            "
+            class="py-4 px-2 text-gray-300 font-semibold hover:text-[#e63380] transition duration-700"
             >Tutorial</router-link
           >
           <router-link
             to="/profil"
-            class="
-              py-4
-              px-2
-              text-gray-300
-              font-semibold
-              hover:text-[#e63380]
-              transition
-              duration-700
-            "
+            class="py-4 px-2 text-gray-300 font-semibold hover:text-[#e63380] transition duration-700"
             >Profil</router-link
           >
         </div>
@@ -78,16 +46,7 @@ const visibleToggle = () => {
       <div class="hidden md:flex items-center space-x-3">
         <router-link
           to="/"
-          class="
-            py-2
-            px-2
-            font-medium
-            text-gray-300
-            rounded
-            hover:bg-red-700
-            transition
-            duration-700
-          "
+          class="py-2 px-2 font-medium text-gray-300 rounded hover:bg-red-700 transition duration-700"
           >Disconnect</router-link
         >
       </div>
@@ -116,64 +75,28 @@ const visibleToggle = () => {
       <li>
         <router-link
           to="/chat"
-          class="
-            block
-            text-sm
-            px-2
-            py-4
-            text-gray-300
-            hover:bg-[#e63380]
-            transition
-            duration-700
-          "
+          class="block text-sm px-2 py-4 text-gray-300 hover:bg-[#e63380] transition duration-700"
           >Chat</router-link
         >
       </li>
       <li>
         <router-link
           to="/stats"
-          class="
-            block
-            text-sm
-            px-2
-            py-4
-            text-gray-300
-            hover:bg-[#e63380]
-            transition
-            duration-700
-          "
+          class="block text-sm px-2 py-4 text-gray-300 hover:bg-[#e63380] transition duration-700"
           >Stats</router-link
         >
       </li>
       <li>
         <router-link
           to="/tuto"
-          class="
-            block
-            text-sm
-            px-2
-            py-4
-            text-gray-300
-            hover:bg-[#e63380]
-            transition
-            duration-700
-          "
+          class="block text-sm px-2 py-4 text-gray-300 hover:bg-[#e63380] transition duration-700"
           >Tutorial</router-link
         >
       </li>
       <li>
         <router-link
           to="/profil"
-          class="
-            block
-            text-sm
-            px-2
-            py-4
-            text-gray-300
-            hover:bg-[#e63380]
-            transition
-            duration-700
-          "
+          class="block text-sm px-2 py-4 text-gray-300 hover:bg-[#e63380] transition duration-700"
           >Profil</router-link
         >
       </li>

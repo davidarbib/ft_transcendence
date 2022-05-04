@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import NavbarItem from "@/components/NavbarItem.vue";
-import Contact from "@/components/contact.vue";
+import Contact from "@/components/Contact.vue";
 </script>
 
 <template>
   <div class="main-section">
-    <div class="game"></div>
+    <div class="game">SUCE</div>
     <div class="navbar"><NavbarItem /></div>
     <div class="contact"><Contact /></div>
   </div>

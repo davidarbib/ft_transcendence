@@ -23,21 +23,22 @@ function toggleFriendMenu(id: number) {
 
 <template>
   <div class="contact-section">
-    <input placeholder="search" class="" v-model="searched" />
+    <input placeholder="search" class="searchbar" v-model="searched" />
     <div
+      class="user-card"
       v-for="user in userFriends"
       :key="user.id"
       @click="toggleFriendMenu(user.id)"
     >
-      <div>
-        <img src="@/assets/sphere.png" alt="" />
-        <p><i class="fa-solid fa-circle"></i></p>
-        <h3>
-          <span> {{ user.pseudo }} </span> <br />
-          <span>online</span>
-        </h3>
+      <div class="user-icon">
+        <img src="@/assets/sphere.png" alt="" class="h-10 w-10" />
+        <p><i class="fa-solid fa-circle status-dot"></i></p>
       </div>
-      <div v-if="friendMenu && friendSelected === user.id">
+      <div class="user-pseudo">
+        <p>{{ user.pseudo }}</p>
+        <p>online</p>
+      </div>
+      <!-- <div v-if="friendMenu && friendSelected === user.id">
         <ul>
           <li>chat</li>
           <li>profil de {{ user.pseudo }}</li>
@@ -45,16 +46,39 @@ function toggleFriendMenu(id: number) {
           <li>block</li>
           <li>spectate</li>
         </ul>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
 
 <style scoped lang="scss">
 .contact-section {
-  display: grid;
-  grid-template: 1fr / 10% 90%;
-  max-height: 100%;
+  max-height: 92vh;
   overflow: scroll;
+
+  .user-card {
+    display: grid;
+    grid-template-columns: 20% 1fr;
+    grid-template-rows: 10% 1fr;
+  }
+  .searchbar {
+    width: 100%;
+  }
+  .status-dot {
+    position: relative;
+    top: -1.3rem;
+    right: -1.8rem;
+    color: blue;
+  }
+
+  .user-icon {
+    // background-color: aqua;
+    grid-area: 2 / 1 / 3 / 2;
+  }
+
+  .user-pseudo {
+    // background-color: orange;
+    grid-area: 2 / 2 / 3 / 3;
+  }
 }
 </style>
