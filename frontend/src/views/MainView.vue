@@ -7,7 +7,7 @@ import Contact from "@/components/contact.vue";
   <div class="main-section">
     <div class="game"></div>
     <div class="navbar"><NavbarItem /></div>
-    <div class="contact"></div>
+    <div class="contact"><Contact /></div>
   </div>
 </template>
 
@@ -15,8 +15,8 @@ import Contact from "@/components/contact.vue";
 @use "@/assets/variables.scss" as v;
 .main-section {
   display: grid;
-  grid-template-columns: 1.6fr 0.4fr;
-  grid-template-rows: 0.2fr 1.8fr;
+  grid-template-columns: 80% 20%;
+  grid-template-rows: 10% 90%;
   gap: 0% 0px;
   grid-auto-flow: row;
   grid-template-areas:
@@ -26,13 +26,16 @@ import Contact from "@/components/contact.vue";
 
 .game {
   grid-area: game;
+  background-color: crimson;
 }
 
 .navbar {
   grid-area: navbar;
+  // background-color: darkcyan;
 }
 
 .contact {
   grid-area: contact;
+  background-color: dimgrey;
 }
 </style>
