@@ -8,6 +8,7 @@ import { MatchesModule } from './matches/matches.module';
 import { MessagesModule } from './messages/messages.module';
 import { ChanParticipantsModule } from './chan-participants/chan-participants.module';
 import { PlayersModule } from './players/players.module';
+import { DatabaseModule } from './database/database.module';
 
 @Module({
   imports:
@@ -18,6 +19,7 @@ import { PlayersModule } from './players/players.module';
       MessagesModule,
       ChanParticipantsModule,
       PlayersModule,
+      DatabaseModule,
     ], 
 })
 export class AppModule {

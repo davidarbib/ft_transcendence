@@ -26,7 +26,7 @@ export class Message {
     
     @ApiProperty()
     @Column({
-        type: "timestamp",
+        type: 'timestamp',
         nullable: false
     })
     time: Date;

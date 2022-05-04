@@ -8,7 +8,7 @@ export const myDataSource = new DataSource({
     username: "transcended",
     password: "transcended",
     database: "pong_db",
-    entities: [ User ],
+    entities: [ User, Message ],
     synchronize: true,
     logging: false
 })

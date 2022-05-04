@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { DataSource } from 'typeorm';
+ import { Put_Data } from './put-data-db/data'
 
 async function bootstrap()
 {
@@ -30,7 +31,8 @@ async function bootstrap()
     .build();
   const doc = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('/', app, doc);
-
+  
+  await Put_Data();
   await app.listen(8090); //TODO env variable
 }
 
