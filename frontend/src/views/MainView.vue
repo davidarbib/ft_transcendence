@@ -5,7 +5,8 @@ import Contact from "@/components/Contact.vue";
 
 <template>
   <div class="main-section">
-    <div class="game">SUCE</div>
+    <div class="game">
+    </div>
     <div class="navbar"><NavbarItem /></div>
     <div class="contact"><Contact /></div>
   </div>
@@ -26,7 +27,8 @@ import Contact from "@/components/Contact.vue";
 
 .game {
   grid-area: game;
-  background-color: crimson;
+  background-image: "@/assets/sphere.png";
+  // background-color: crimson;
 }
 
 .navbar {
@@ -36,6 +38,6 @@ import Contact from "@/components/Contact.vue";
 
 .contact {
   grid-area: contact;
-  background-color: dimgrey;
+  // background-color: dimgrey;
 }
 </style>

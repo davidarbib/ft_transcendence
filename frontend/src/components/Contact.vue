@@ -2,7 +2,7 @@
 import json from "@/assets/dataTest.json";
 import { ref, computed } from "vue";
 
-json.sort((user) => {
+json.sort((user: { status: any }) => {
   return user.status ? -1 : 1;
 });
 
@@ -23,62 +23,115 @@ function toggleFriendMenu(id: number) {
 
 <template>
   <div class="contact-section">
-    <input placeholder="search" class="searchbar" v-model="searched" />
+    <input placeholder="search" class="rounded searchbar" v-model="searched" />
+    <br />
+    <br />
     <div
-      class="user-card"
+      class="
+        user-card
+        rounded
+        my-2
+        bg-black bg-opacity-10
+        font-medium
+        hover:bg-opacity-30
+        transition
+        duration-300
+      "
       v-for="user in userFriends"
       :key="user.id"
       @click="toggleFriendMenu(user.id)"
     >
       <div class="user-icon">
         <img src="@/assets/sphere.png" alt="" class="h-10 w-10" />
-        <p><i class="fa-solid fa-circle status-dot"></i></p>
+        <p v-if="user.status" class="online">
+          <i class="fa-solid fa-circle status-dot outline-inherit"></i>
+        </p>
+        <p v-else class="offline">
+          <i class="fa-solid fa-circle status-dot outline-inherit"></i>
+        </p>
       </div>
-      <div class="user-pseudo">
+      <div class="user-pseudo py-2">
         <p>{{ user.pseudo }}</p>
-        <p>online</p>
+        <p v-if="user.status" class="online">online</p>
+        <p v-else class="offline">offline</p>
+        <Transition name="slide-fade">
+          <div v-if="friendMenu && friendSelected === user.id">
+            <ul class="liste">
+              <li><router-link to="/chat">chat</router-link></li>
+              <li><router-link to="/profil">profil de {{ user.pseudo }}</router-link></li>
+              <li><router-link to="/qiwjeoi">invite</router-link></li>
+              <li><router-link to="/qwpeok">block</router-link></li>
+              <li><router-link to="/sekse">spectate</router-link></li>
+            </ul>
+          </div>
+        </Transition>
       </div>
-      <!-- <div v-if="friendMenu && friendSelected === user.id">
-        <ul>
-          <li>chat</li>
-          <li>profil de {{ user.pseudo }}</li>
-          <li>invite</li>
-          <li>block</li>
-          <li>spectate</li>
-        </ul>
-      </div> -->
     </div>
   </div>
 </template>
 
 <style scoped lang="scss">
+@use "../assets/variables.scss" as v;
 .contact-section {
+  background: rgba($color: #000000, $alpha: 0.1);
   max-height: 92vh;
   overflow: scroll;
 
+  .liste {
+    list-style: inside;
+  }
+
   .user-card {
+    // border: solid 1px red;
     display: grid;
     grid-template-columns: 20% 1fr;
     grid-template-rows: 10% 1fr;
+    .user-icon {
+      padding-top: 1rem;
+      padding-left: 0.4rem;
+      grid-area: 2 / 1 / 3 / 2;
+      .status-dot {
+        position: relative;
+        top: -1.3rem;
+        right: -1.8rem;
+      }
+    }
+    .user-pseudo {
+      color: v.$primary;
+      padding-left: 0.5rem;
+      // background-color: orange;
+      grid-area: 2 / 2 / 3 / 3;
+    }
+
+    .online {
+      color: green;
+    }
+
+    .offline {
+      color: gray;
+    }
   }
+
+  .slide-fade-enter-active {
+    transition: all 0.3s ease-out;
+  }
+
+  .slide-fade-leave-active {
+    transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
+  }
+
+  .slide-fade-enter-from,
+  .slide-fade-leave-to {
+    transform: translateX(20px);
+    opacity: 0;
+  }
+
   .searchbar {
+    position: fixed;
+    z-index: 3;
+    padding-left: 1rem;
+    height: 3rem;
     width: 100%;
-  }
-  .status-dot {
-    position: relative;
-    top: -1.3rem;
-    right: -1.8rem;
-    color: blue;
-  }
-
-  .user-icon {
-    // background-color: aqua;
-    grid-area: 2 / 1 / 3 / 2;
-  }
-
-  .user-pseudo {
-    // background-color: orange;
-    grid-area: 2 / 2 / 3 / 3;
   }
 }
 </style>
