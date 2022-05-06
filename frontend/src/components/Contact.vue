@@ -74,6 +74,10 @@ function toggleFriendMenu(id: number) {
 
   .liste {
     list-style: inside;
+
+    li:hover {
+      color: white;
+    }
   }
 
   .user-card {
@@ -81,6 +85,12 @@ function toggleFriendMenu(id: number) {
     display: grid;
     grid-template-columns: 20% 1fr;
     grid-template-rows: 10% 1fr;
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+    -khtml-user-select: none; /* Konqueror HTML */
+    -moz-user-select: none; /* Old versions of Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; /* Non-prefixed version, currently */
     .user-icon {
       padding-top: 1rem;
       padding-left: 0.4rem;

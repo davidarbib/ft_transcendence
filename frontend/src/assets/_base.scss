@@ -28,6 +28,21 @@ body {
   text-transform: capitalize;
 }
 
+.secondary-button {
+  text-align: center;
+  color: #fff;
+  text-transform: capitalize;
+  display: block;
+  padding: 0.5rem 1rem;
+  background-color: rgb(228, 51, 128);
+  border-radius: 0.375rem;
+  transition: 0.3s;
+  &:hover {
+    background-color: rgb(201, 47, 113);
+    cursor: pointer;
+  }
+}
+
 .b-submit {
   display: block;
   padding: 0.5rem 1rem;

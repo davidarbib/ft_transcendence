@@ -8,8 +8,8 @@ import Title from "@/components/Title.vue";
   <div class="main-section">
     <div class="game">
       <div id="title"><Title /></div>
-      <div class="primary-button b-submit" id="b1">Quick game</div>
-      <div class="primary-button b-submit" id="b2">Custom</div>
+      <div class="secondary-button" id="b1">Quick game</div>
+      <div class="secondary-button" id="b2">Custom</div>
     </div>
     <div class="navbar"><NavbarItem /></div>
     <div class="contact"><Contact /></div>
