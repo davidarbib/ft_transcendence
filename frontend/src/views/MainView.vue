@@ -40,9 +40,7 @@ import Title from "@/components/Title.vue";
 
   #title {
     grid-area: 1 / 2 / 2 / 3;
-    // background-color: aqua;
-    margin-left: 7rem;
-    margin-top: 6.5rem;
+    margin-top: 12rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -50,7 +48,6 @@ import Title from "@/components/Title.vue";
 
   #b1 {
     grid-area: 2 / 2 / 3 / 3;
-    // background-color: orange;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -60,7 +57,6 @@ import Title from "@/components/Title.vue";
 
   #b2 {
     grid-area: 3 / 2 / 4 / 3;
-    // background-color: olive;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -71,11 +67,9 @@ import Title from "@/components/Title.vue";
 
 .navbar {
   grid-area: navbar;
-  // background-color: darkcyan;
 }
 
 .contact {
   grid-area: contact;
-  // background-color: dimgrey;
 }
 </style>

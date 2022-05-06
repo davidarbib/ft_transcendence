@@ -59,7 +59,6 @@ import MusicLoop from "../components/MusicLoop.vue";
     ". . .";
 
   .logo {
-    // border: 2px solid red;
     grid-area: logo;
     margin-top: 3rem;
   }

@@ -13,9 +13,7 @@
 @use "../assets/variables.scss" as v;
 @import url("https://fonts.googleapis.com/css2?family=Caveat&family=Fredoka+One&display=swap");
 .title-section {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  text-align: center;
   padding: 0;
   margin: 0;
 }
@@ -34,8 +32,8 @@
   text-transform: capitalize;
   font-size: 5rem;
   position: relative;
-  top: 2.5rem;
-  right: 3.5rem;
+  top: -5.5rem;
+  right: -6.5rem;
   font-weight: 600;
   padding: 0;
   margin: 0;
