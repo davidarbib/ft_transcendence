@@ -1,7 +1,7 @@
 <script setup lang="ts"></script>
 
 <template>
-  <div class="container">
+  <div class="title-section">
     <h1 class="title">
       <span class="metal raise clip">PONG</span>
     </h1>
@@ -12,8 +12,10 @@
 <style lang="scss" scoped>
 @use "../assets/variables.scss" as v;
 @import url("https://fonts.googleapis.com/css2?family=Caveat&family=Fredoka+One&display=swap");
-.container {
-  text-align: center;
+.title-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   padding: 0;
   margin: 0;
 }
@@ -32,8 +34,8 @@
   text-transform: capitalize;
   font-size: 5rem;
   position: relative;
-  top: -5.5rem;
-  right: -6.5rem;
+  top: 2.5rem;
+  right: 3.5rem;
   font-weight: 600;
   padding: 0;
   margin: 0;

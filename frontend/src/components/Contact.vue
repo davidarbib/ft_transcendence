@@ -27,16 +27,7 @@ function toggleFriendMenu(id: number) {
     <br />
     <br />
     <div
-      class="
-        user-card
-        rounded
-        my-2
-        bg-black bg-opacity-10
-        font-medium
-        hover:bg-opacity-30
-        transition
-        duration-300
-      "
+      class="user-card rounded my-2 bg-black bg-opacity-10 font-medium hover:bg-opacity-30 transition duration-300"
       v-for="user in userFriends"
       :key="user.id"
       @click="toggleFriendMenu(user.id)"
@@ -58,7 +49,11 @@ function toggleFriendMenu(id: number) {
           <div v-if="friendMenu && friendSelected === user.id">
             <ul class="liste">
               <li><router-link to="/chat">chat</router-link></li>
-              <li><router-link to="/profil">profil de {{ user.pseudo }}</router-link></li>
+              <li>
+                <router-link to="/profil"
+                  >profil de {{ user.pseudo }}</router-link
+                >
+              </li>
               <li><router-link to="/qiwjeoi">invite</router-link></li>
               <li><router-link to="/qwpeok">block</router-link></li>
               <li><router-link to="/sekse">spectate</router-link></li>
@@ -82,7 +77,7 @@ function toggleFriendMenu(id: number) {
   }
 
   .user-card {
-    // border: solid 1px red;
+    cursor: pointer;
     display: grid;
     grid-template-columns: 20% 1fr;
     grid-template-rows: 10% 1fr;
@@ -117,7 +112,7 @@ function toggleFriendMenu(id: number) {
   }
 
   .slide-fade-leave-active {
-    transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
+    transition: all 0.5s cubic-bezier(1, 0.5, 0.8, 1);
   }
 
   .slide-fade-enter-from,
