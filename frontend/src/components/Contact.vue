@@ -69,7 +69,7 @@ function toggleFriendMenu(id: number) {
 @use "../assets/variables.scss" as v;
 .contact-section {
   background: rgba($color: #000000, $alpha: 0.1);
-  max-height: 92vh;
+  height: 92vh;
   overflow: scroll;
 
   .liste {
