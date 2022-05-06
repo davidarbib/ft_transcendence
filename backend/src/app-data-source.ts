@@ -1,6 +1,6 @@
 import { DataSource } from "typeorm"
+import { Message } from "./messages/entities/message.entity";
 import { User } from './users/entities/user.entity';
-import { Message } from './messages/entities/message.entity';
 
 export const myDataSource = new DataSource({
     type: "postgres",

@@ -3,7 +3,6 @@ import { Column, Entity, PrimaryGeneratedColumn, ManyToOne } from "typeorm";
 import { User } from "src/users/entities/user.entity";
 import { Channel } from "src/channels/entities/channel.entity";
 
-@Entity()
 export class ChanParticipant {
     
     @ApiProperty()
