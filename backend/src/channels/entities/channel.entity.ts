@@ -1,6 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { Column, Entity, PrimaryGeneratedColumn, ManyToOne } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn, OneToMany } from "typeorm";
 import { ChanParticipant } from "src/chan-participants/entities/chan-participant.entity"
+import { Message } from "src/messages/entities/message.entity"
 
 export enum ChanType
 {
@@ -38,10 +39,10 @@ export class Channel
     password: string;
 
     @ApiProperty()
-    @ManyToOne(() => ChanParticipant, (chanParticipant : ChanParticipant) => chanParticipant.chan)
+    @OneToMany(() => ChanParticipant, (chanParticipant : ChanParticipant) => chanParticipant.chan)
     participants: ChanParticipant[];
 
     @ApiProperty()
-    @ManyToOne(() => Message, (message : Message) => message.chan)
+    @OneToMany(() => Message, (message : Message) => message.chan)
     messages: Message[];
 }

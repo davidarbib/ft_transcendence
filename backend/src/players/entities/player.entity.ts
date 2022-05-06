@@ -5,10 +5,10 @@ import { User } from "src/users/entities/user.entity";
 @Entity()
 export class Player {
 
-    @ManyToOne(() => User, (user : User) => user.id)
+    @ManyToOne(() => User, (user : User) => user.games)
     userRef: User;
 
-    @ManyToOne(() => Match, (match : Match) => match.id)
+    @ManyToOne(() => Match, (match : Match) => match.players)
     matchRef: Match;
 
     @Column({

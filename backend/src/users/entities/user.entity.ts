@@ -1,5 +1,9 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Message } from "src/messages/entities/message.entity";
+import { Player } from "src/players/entities/player.entity";
+import { Contact } from "src/contacts/entities/contact.entity";
+import { ChanParticipant } from "src/chan-participants/entities/chan-participant.entity";
+import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 export enum UserStatus
 {
@@ -65,4 +69,17 @@ export class User
     @ApiProperty()
     @Column({type: "int8"})
     lossCount: number;
+
+    @OneToMany(() => Message, (message : Message) => message.author)
+    messages : Message[]
+
+    @OneToMany(() => Player, (player : Player) => player.userRef)
+    games : Player[]
+
+    @OneToMany(() => ChanParticipant, (chanParticipant : ChanParticipant) => chanParticipant.participant)
+    chanParticipations : ChanParticipant[]
+
+    @ManyToMany(() => Contact, (contact : Contact) => contact.usersRef)
+    @JoinTable()
+    contacts : Contact[]
 }

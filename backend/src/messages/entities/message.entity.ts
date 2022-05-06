@@ -17,12 +17,12 @@ export class Message {
     content: string;
 
     @ApiProperty()
-    @ManyToOne( () => User, (user) => user.id)
+    @ManyToOne(() => User, (user) => user.messages)
     author: User;
 
- /*   @ApiProperty()
-    @ManyToOne( () => Channel, (channel) => channel.id)
-    chan: Channel;*/
+    @ApiProperty()
+    @ManyToOne(() => Channel, (channel) => channel.messages)
+    chan: Channel;
     
     @ApiProperty()
     @Column({
