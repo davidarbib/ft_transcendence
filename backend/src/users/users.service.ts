@@ -8,23 +8,47 @@ import { myDataSource } from 'src/app-data-source';
 @Injectable()
 export class UsersService {
   create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+    const usrDto = new User();
+    const {login, mail, password, status, authToken, avatarRef, winCount, losscount} = createUserDto;
+    usrDto.login = login;
+    usrDto.mail = mail;
+    usrDto.password = password;
+    usrDto.status = status;
+    usrDto.authToken = authToken;
+    usrDto.avatarRef = avatarRef;
+    usrDto.winCount = winCount;
+    usrDto.lossCount = losscount;
+    myDataSource.getRepository(User).save(usrDto);
   }
 
   findAll() {
-    return `This action returns all users`;
+    const userrepo = myDataSource.getRepository(User);
+
+    return userrepo.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  findOne(id:string) {
+    const userrepo = myDataSource.getRepository(User);
+
+    return userrepo.findOneBy({
+      id,
+    });
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
+  update(id:string, updateUserDto: UpdateUserDto) {
+    const userrepo = myDataSource.getRepository(User);
+
+    const usrToUpdate= userrepo.findOneBy({id});
+
     return `This action updates a #${id} user`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(id: string) {
+    const userrepo = myDataSource.getRepository(User);
+
+    const usrToUpdate= await  userrepo.findOneBy({id});
+
+    return await userrepo.delete(usrToUpdate);
   }
 
   async insertUser() : Promise<string>

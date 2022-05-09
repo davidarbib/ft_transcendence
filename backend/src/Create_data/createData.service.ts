@@ -7,6 +7,7 @@ import { UserStatus } from 'src/users/entities/user.entity';
 @Injectable()
 export class createDataService{
 
+// tu dois te renseigner dans les service c a d quand le front nous envoie une requette c a d par exemple lister  ( pour savoir si c swwager : localhost:8090)
 
    async insertdata(): Promise<string>
    {
