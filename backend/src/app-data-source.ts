@@ -4,7 +4,6 @@ import { User } from './users/entities/user.entity';
 import { Player } from './players/entities/player.entity';
 import { Contact } from './contacts/entities/contact.entity';
 import { Match } from './matches/entities/match.entity';
-import { Message } from './messages/entities/message.entity';
 import { Channel } from './channels/entities/channel.entity';
 import { ChanParticipant } from './chan-participants/entities/chan-participant.entity';
 
@@ -14,7 +13,6 @@ export const myDataSource = new DataSource({
     username: "transcended",
     password: "transcended",
     database: "pong_db",
-<<<<<<< HEAD
     entities: [
         User,
         Contact,
@@ -23,9 +21,6 @@ export const myDataSource = new DataSource({
         Message,
         Channel,
         ChanParticipant ],
-=======
-    entities: [ User, Message ],
->>>>>>> entity_mel
     synchronize: true,
     logging: false
 })
