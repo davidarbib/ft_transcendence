@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { LockClosedIcon } from "@heroicons/vue/solid";
 import NavbarItem from "@/components/NavbarItem.vue";
+import Contact from "../components/Contact.vue";
+import Historic from "@/components/Historic.vue";
 </script>
 
 <template>
@@ -8,64 +10,84 @@ import NavbarItem from "@/components/NavbarItem.vue";
     <div class="navbar">
       <NavbarItem />
     </div>
-    <div class="profil-card">
-      <div class="secondary-button">
-        <router-link to="/"> Edit profil image </router-link>
-      </div>
-      <div class="profil-picture">
-        <img src="@/assets/sphere_mini.png" alt="user profil picture" />
-      </div>
-      <div class="secondary-button">
-        <router-link to="/"> Historic </router-link>
-      </div>
+    <div class="historic">
+      <Historic />
+    </div>
+    <div class="profil-card bg-black bg-opacity-10">
+      <header>
+        <div class="secondary-button">
+          <router-link to="/"> Edit profil image </router-link>
+        </div>
+        <div class="profil-picture h-36 w-36">
+          <img src="@/assets/sphere_mini.png" alt="user profil picture" />
+        </div>
+        <div class="secondary-button">
+          <router-link to="/"> + add friend </router-link>
+        </div>
+      </header>
       <div class="stats">
         <ul>
           <li>
-            <p class="games-nb">23</p>
-            <p class="games">Games</p>
+            <p class="stat-nb">23</p>
+            <p class="stats-value">Games</p>
+          </li>
+          <li class="mx-6">
+            <p class="stat-nb">12</p>
+            <p class="stats-value">Win</p>
           </li>
           <li>
-            <p class="wins-nb">12</p>
-            <p class="wins">Win</p>
-          </li>
-          <li>
-            <p class="looses-nb">11</p>
-            <p class="looses">Looses</p>
+            <p class="stat-nb">11</p>
+            <p class="stats-value">Looses</p>
           </li>
         </ul>
       </div>
-      <div class="user-infos">
-        <input
-          id="email-address"
-          name="email"
-          type="email"
-          autocomplete="email"
-          required="true"
-          class="w-full h-1/4 rounded-t-md focus:outline-none border border-gray-300"
-          placeholder="Email address"
-        />
-        <input
-          id="pseudo"
-          name="pseudo"
-          type="text"
-          autocomplete="current-password"
-          required="true"
-          class="w-full h-1/4 focus:outline-none border border-gray-300"
-          placeholder="Pseudo"
-        />
-        <input
-          id="password"
-          name="password"
-          type="password"
-          autocomplete="current-password"
-          required="true"
-          class="w-full h-1/4 focus:outline-none border border-gray-300"
-          placeholder="Password"
-        />
+      <div class="user-infos w-3/5 mx-auto my-4">
+        <div class="input-update">
+          <input
+            id="email-address"
+            name="email"
+            type="email"
+            autocomplete="email"
+            value="roberlavipere@snakemail.com"
+            required="true"
+            class="h-1/3 focus:outline-none border border-gray-300 px-1"
+            placeholder="Email address"
+          />
+          <p><i class="fa-solid fa-pen"></i></p>
+        </div>
+        <div class="input-update">
+          <input
+            id="pseudo"
+            name="pseudo"
+            value="ROBERT LA VIPÈRE"
+            type="text"
+            autocomplete="current-password"
+            required="true"
+            class="h-1/3 focus:outline-none border border-gray-300 px-1"
+            placeholder="Pseudo"
+          />
+          <p><i class="fa-solid fa-pen"></i></p>
+        </div>
+        <div class="input-update">
+          <input
+            id="password"
+            name="password"
+            type="password"
+            autocomplete="current-password"
+            value="monMotDePasse"
+            required="true"
+            class="h-1/3 focus:outline-none border border-gray-300 px-1"
+            placeholder="Password"
+          />
+          <p><i class="fa-solid fa-pen"></i></p>
+        </div>
       </div>
       <div class="update-user-infos primary-button">
         <router-link to="/profil" class="b-submit"> Save changes </router-link>
       </div>
+    </div>
+    <div class="contact-bar">
+      <Contact />
     </div>
   </div>
 </template>
@@ -74,24 +96,83 @@ import NavbarItem from "@/components/NavbarItem.vue";
 @use "../assets/variables.scss" as v;
 
 .profil-section {
-  height: 91vh;
   display: grid;
-  grid-template-columns: 20% 60% 20%;
-  grid-template-rows: 10% 10% 1fr;
+  grid-template-columns: 25% 50% 25%;
+  grid-template-rows: 10% 80% 10%;
+
+  .contact-bar {
+    grid-column-start: 3;
+    margin-left: 1rem;
+  }
 
   .navbar {
     grid-column: 1/4;
     grid-row-start: 1;
   }
 
+  .historic {
+    grid-column-start: 1;
+    margin-right: 1rem;
+  }
+
   .profil-card {
     grid-column-start: 2;
     grid-row: 2/4;
-  }
+    border-radius: 0.375rem;
+    margin-top: 3rem;
 
-  div {
-    background-color: coral;
-    border: 2px solid brown;
+    header {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-around;
+
+      .secondary-button {
+        width: 20%;
+        height: 10%;
+        position: relative;
+        top: 4rem;
+      }
+
+      .profil-picture {
+        position: relative;
+        top: -2rem;
+      }
+    }
+
+    .stats {
+      margin-bottom: 4rem;
+      ul {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        text-align: center;
+
+        .stats-value {
+          color: rgb(161, 161, 161);
+          font-size: 0.7rem;
+        }
+      }
+    }
+    .input-update {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-around;
+      margin-bottom: 2rem;
+
+      input {
+        width: 80%;
+        border-radius: 0.375rem;
+      }
+
+      p {
+        cursor: pointer;
+      }
+    }
+    .update-user-infos {
+      width: 60%;
+      margin: auto;
+      margin-bottom: 1rem;
+    }
   }
 }
 </style>
