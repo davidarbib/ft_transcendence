@@ -9,6 +9,7 @@ import { MessagesModule } from './messages/messages.module';
 import { ChanParticipantsModule } from './chan-participants/chan-participants.module';
 import { PlayersModule } from './players/players.module';
 import { ContactsModule } from './contacts/contacts.module';
+import { createDataModule } from './Create_data/createData.module';
 
 @Module({
   imports:
@@ -20,6 +21,7 @@ import { ContactsModule } from './contacts/contacts.module';
       ChanParticipantsModule,
       PlayersModule,
       ContactsModule,
+      createDataModule,
     ], 
 })
 export class AppModule {
