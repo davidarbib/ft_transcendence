@@ -1,9 +1,8 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Message } from "src/messages/entities/message.entity";
 import { Player } from "src/players/entities/player.entity";
-import { Contact } from "src/contacts/entities/contact.entity";
 import { ChanParticipant } from "src/chan-participants/entities/chan-participant.entity";
-import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 export enum UserStatus
 {
@@ -63,11 +62,17 @@ export class User
     avatarRef: string;
 
     @ApiProperty()
-    @Column({type: "int8"})
+    @Column({
+        type: "int8",
+        default: 0
+    })
     winCount: number;
 
     @ApiProperty()
-    @Column({type: "int8"})
+    @Column({
+        type: "int8",
+        default: 0
+    })
     lossCount: number;
 
     @OneToMany(() => Message, (message : Message) => message.author)
@@ -78,8 +83,4 @@ export class User
 
     @OneToMany(() => ChanParticipant, (chanParticipant : ChanParticipant) => chanParticipant.participant)
     chanParticipations : ChanParticipant[]
-
-    @ManyToMany(() => Contact, (contact : Contact) => contact.usersRef)
-    @JoinTable()
-    contacts : Contact[]
 }
