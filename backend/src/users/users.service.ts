@@ -4,6 +4,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { User, UserStatus } from './entities/user.entity';
 import { DataSource } from 'typeorm';
 import { myDataSource } from 'src/app-data-source';
+import { validate } from 'class-validator';
 
 @Injectable()
 export class UsersService {
@@ -18,12 +19,16 @@ export class UsersService {
     usrDto.avatarRef = avatarRef;
     usrDto.winCount = winCount;
     usrDto.lossCount = losscount;
-    myDataSource.getRepository(User).save(usrDto);
+    validate(usrDto).then(errors => {
+      if (errors.length > 0)
+        console.log('validation failed. errors: ', errors)
+      else
+        myDataSource.getRepository(User).save(usrDto);
+    });
   }
 
   findAll() {
     const userrepo = myDataSource.getRepository(User);
-
     return userrepo.find();
   }
 
@@ -39,6 +44,8 @@ export class UsersService {
     const userrepo = myDataSource.getRepository(User);
 
     const usrToUpdate= userrepo.findOneBy({id});
+    const usrDto = new User();
+    const {login, mail, password} = updateUserDto;
 
     return `This action updates a #${id} user`;
   }
