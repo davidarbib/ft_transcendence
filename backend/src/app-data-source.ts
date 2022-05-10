@@ -1,5 +1,8 @@
 import { DataSource } from "typeorm"
 import { User } from './users/entities/user.entity';
+import { Player } from './players/entities/player.entity';
+import { Contact } from './contacts/entities/contact.entity';
+import { Match } from './matches/entities/match.entity';
 import { Message } from './messages/entities/message.entity';
 import { Channel } from './channels/entities/channel.entity';
 import { ChanParticipant } from './chan-participants/entities/chan-participant.entity';
@@ -12,6 +15,9 @@ export const myDataSource = new DataSource({
     database: "pong_db",
     entities: [
         User,
+        Contact,
+        Player,
+        Match,
         Message,
         Channel,
         ChanParticipant ],

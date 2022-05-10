@@ -6,6 +6,9 @@ import { Channel } from "src/channels/entities/channel.entity";
 @Entity()
 export class ChanParticipant {
     
+    @PrimaryGeneratedColumn("uuid")
+    id: string;
+
     @ApiProperty()
     @ManyToOne(() => User, (user) => user.id)
     participant: User;

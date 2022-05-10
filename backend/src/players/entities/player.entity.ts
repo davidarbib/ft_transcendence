@@ -5,6 +5,9 @@ import { User } from "src/users/entities/user.entity";
 @Entity()
 export class Player {
 
+    @PrimaryGeneratedColumn("uuid")
+    id: string;
+
     @ManyToOne(() => User, (user : User) => user.games)
     userRef: User;
 

@@ -1,5 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn, ManyToOne, ManyToMany, JoinTable } from "typeorm";
-import { User } from "src/users/entities/user.entity";
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 import { ApiProperty } from "@nestjs/swagger";
 
 export enum ContactStatus
@@ -12,23 +11,27 @@ export enum ContactStatus
 @Entity()
 export class Contact {
     
+    @PrimaryGeneratedColumn("uuid")
+    id: string;
+
     @ApiProperty()
     @Column({
-        type : "enum",
+        type: "enum",
+        enum: ContactStatus,
         nullable: false
     })
     status: ContactStatus; 
     
     @ApiProperty()
     @Column({
-        type : "string",
+        type : "varchar",
         nullable: false
     })
     senderId: string
 
     @ApiProperty()
     @Column({
-        type : "string",
+        type : "varchar",
         nullable: false
     })
     receiverId: string

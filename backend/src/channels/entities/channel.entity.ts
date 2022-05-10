@@ -27,7 +27,9 @@ export class Channel
     @ApiProperty()
     @Column({
         type: "enum",
-        nullable: false
+        nullable: false,
+        enum : ChanType,
+        default: ChanType.DM
     })
     type: ChanType;
 
