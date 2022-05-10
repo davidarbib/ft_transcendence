@@ -10,7 +10,6 @@ import MainView from "@/views/MainView.vue";
 import PongView from "@/views/PongView.vue";
 import ProfilView from "@/views/ProfilView.vue";
 import RegisterView from "@/views/RegisterView.vue";
-import StatsView from "@/views/StatsView.vue";
 import TutoView from "@/views/TutoView.vue";
 
 const router = createRouter({
@@ -50,11 +49,6 @@ const router = createRouter({
       path: "/tuto",
       name: "tuto",
       component: TutoView,
-    },
-    {
-      path: "/stats",
-      name: "stats",
-      component: StatsView,
     },
     {
       path: "/mode",
