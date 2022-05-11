@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
+import { myDataSource } from 'src/app-data-source';
 import { CreateChanParticipantDto } from './dto/create-chan-participant.dto';
 import { UpdateChanParticipantDto } from './dto/update-chan-participant.dto';
+import { ChanParticipant } from './entities/chan-participant.entity';
 
 @Injectable()
 export class ChanParticipantsService {
@@ -9,18 +11,23 @@ export class ChanParticipantsService {
   }
 
   findAll() {
-    return `This action returns all chanParticipants`;
+    const chanPartRepo = myDataSource.getRepository(ChanParticipant)
+
+    return chanPartRepo.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} chanParticipant`;
+  findOne(id: string) {
+    const chanPartRepo = myDataSource.getRepository(ChanParticipant)
+    return chanPartRepo.findOneBy({id});
   }
 
-  update(id: number, updateChanParticipantDto: UpdateChanParticipantDto) {
+  update(id: string, updateChanParticipantDto: UpdateChanParticipantDto) {
     return `This action updates a #${id} chanParticipant`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} chanParticipant`;
+  async remove(id: string) {
+   /* const chanPartRepo = myDataSource.getRepository(ChanParticipant)
+    const chanPartDelete = chanPartRepo
+    return await chanPartRepo.delete(chanPartDelete);*/
   }
 }

@@ -1,9 +1,9 @@
-import { UserStatus } from "../entities/user.entity";
+import { UserStatus, User} from "../entities/user.entity";
 import { IsString, IsInt, IsEmail, Length } from 'class-validator';
 export class CreateUserDto {
 
     @IsString()
-    @Length(10)
+    @Length(1,10)
     login: string;
 
     @IsEmail()
@@ -17,9 +17,6 @@ export class CreateUserDto {
     @IsString()
     authToken: string;
 
-    @IsString()
+  //  @IsString()
     avatarRef:string;
-    @IsInt()
-    winCount:number;
-    losscount:number;
 }

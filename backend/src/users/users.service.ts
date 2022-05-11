@@ -3,27 +3,13 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User, UserStatus } from './entities/user.entity';
 import { myDataSource } from 'src/app-data-source';
-import { validate } from 'class-validator';
+import { validate, validateOrReject } from 'class-validator';
+import { BadRequestException } from '@nestjs/common';
 
 @Injectable()
 export class UsersService {
-  create(createUserDto: CreateUserDto) {
-    const usrDto = new User();
-    const {login, mail, password, status, authToken, avatarRef, winCount, losscount} = createUserDto;
-    usrDto.login = login;
-    usrDto.mail = mail;
-    usrDto.password = password;
-    usrDto.status = status;
-    usrDto.authToken = authToken;
-    usrDto.avatarRef = avatarRef;
-    usrDto.winCount = winCount;
-    usrDto.lossCount = losscount;
-    validate(usrDto).then(errors => {
-      if (errors.length > 0)
-        console.log('validation failed. errors: ', errors)
-      else
-        myDataSource.getRepository(User).save(usrDto);
-    });
+ create(createUserDto: CreateUserDto) {
+    return myDataSource.getRepository(User).save(createUserDto);
   }
 
   findAll() {
@@ -34,18 +20,23 @@ export class UsersService {
   findOne(id:string) {
     const userrepo = myDataSource.getRepository(User);
 
-    return userrepo.findOneBy({
-      id,
-    });
+    return userrepo.findOneBy({id});
   }
 
-  update(id:string, updateUserDto: UpdateUserDto) {
+  async update(id:string, updateUserDto: UpdateUserDto) {
     const userrepo = myDataSource.getRepository(User);
 
-    const usrToUpdate= userrepo.findOneBy({id});
-    const usrDto = new User();
+    const usrToUpdate= await userrepo.findOneBy({id});
     const {login, mail, password} = updateUserDto;
-
+    usrToUpdate.login = login;
+   // if (usrToUpdate.login.length > 10)
+    usrToUpdate.mail = mail;
+    usrToUpdate.password = password;
+    const errors = await validate (usrToUpdate);
+    if ( errors.length > 0)
+      throw new BadRequestException('validate failed');
+    myDataSource.getRepository(User).save(usrToUpdate);
+  
     return `This action updates a #${id} user`;
   }
 
