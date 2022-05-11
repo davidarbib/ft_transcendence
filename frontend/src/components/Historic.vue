@@ -36,7 +36,7 @@ import historic from "@/assets/data_hist.json";
   flex-flow: row nowrap;
   justify-content: space-around;
   align-items: center;
-  color: rgb(157, 152, 138);
+  color: rgba(255, 255, 255, 0.706);
 
   .match-result {
     h2 {

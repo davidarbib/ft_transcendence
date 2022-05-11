@@ -4,6 +4,8 @@ export const authJwtStore = defineStore({
   id: "authToken",
   state: () => ({
       token: "",
-      logged: false
+      logged: false,
+      user_id: 0,
+      status: "online"
   }),
 });
