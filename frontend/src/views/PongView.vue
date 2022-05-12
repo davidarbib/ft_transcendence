@@ -1,12 +1,17 @@
+<script setup lang="ts">
+import BlockGame from "@/components/BlockGame.vue";
+</script>
+
 <template>
   <div class="about">
-    <h1>This is pong page</h1>
+    <BlockGame />
   </div>
 </template>
 
-<style>
+<style scoped lang="scss">
+@use "../assets/variables.scss" as v;
 @media (min-width: 1024px) {
-  .about {
+  .about { 
     min-height: 100vh;
     display: flex;
     align-items: center;
