@@ -3,8 +3,6 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User, UserStatus } from './entities/user.entity';
 import { myDataSource } from 'src/app-data-source';
-import { validate, validateOrReject } from 'class-validator';
-import { BadRequestException } from '@nestjs/common';
 
 @Injectable()
 export class UsersService {
@@ -29,12 +27,8 @@ export class UsersService {
     const usrToUpdate= await userrepo.findOneBy({id});
     const {login, mail, password} = updateUserDto;
     usrToUpdate.login = login;
-   // if (usrToUpdate.login.length > 10)
     usrToUpdate.mail = mail;
     usrToUpdate.password = password;
-    const errors = await validate (usrToUpdate);
-    if ( errors.length > 0)
-      throw new BadRequestException('validate failed');
     myDataSource.getRepository(User).save(usrToUpdate);
   
     return `This action updates a #${id} user`;
@@ -45,7 +39,7 @@ export class UsersService {
 
     const usrToUpdate= await  userrepo.findOneBy({id});
 
-    return await userrepo.delete(usrToUpdate);
+    return usrToUpdate.remove();
   }
 
   async insertUser() : Promise<string>

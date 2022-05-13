@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { Column, Entity, PrimaryGeneratedColumn, OneToMany } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn, OneToMany, BaseEntity } from "typeorm";
 import { ChanParticipant } from "src/chan-participants/entities/chan-participant.entity"
 import { Message } from "src/messages/entities/message.entity"
 
@@ -12,7 +12,7 @@ export enum ChanType
 }
 
 @Entity()
-export class Channel
+export class Channel extends BaseEntity
 {
     @PrimaryGeneratedColumn("uuid")
     id: string;

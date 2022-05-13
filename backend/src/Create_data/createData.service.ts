@@ -4,10 +4,13 @@ import { Message } from 'src/messages/entities/message.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Channel, ChanType } from 'src/channels/entities/channel.entity';
 import { UserStatus } from 'src/users/entities/user.entity';
+import { Contact } from 'src/contacts/entities/contact.entity';
+import { ChanParticipant } from 'src/chan-participants/entities/chan-participant.entity';
+import { Match } from 'src/matches/entities/match.entity';
+import { Player } from 'src/players/entities/player.entity';
 @Injectable()
 export class createDataService{
 
-// tu dois te renseigner dans les service c a d quand le front nous envoie une requette c a d par exemple lister  ( pour savoir si c swwager : localhost:8090)
 
    async insertdata(): Promise<string>
    {
@@ -23,23 +26,61 @@ console.log("my msg is created");
 *   USER
 */
 const user : User = new User;
-user.login = 'user_base1';
+user.login = 'user_base';
 user.mail = 'user_base1@randomail.com';
 user.status = UserStatus.OFFLINE;
 user.password='1234';
 user.authToken="1234";
-user.winCount=0;
-user.lossCount=0;
 await myDataSource.getRepository(User).save(user);
+const user1 : User = new User;
+user1.login = 'user_bas1';
+user1.mail = 'user_bas@randomail.com';
+user1.status = UserStatus.ONLINE;
+user1.password='1234';
+user1.authToken="jjjjjj";
+await myDataSource.getRepository(User).save(user1);
+console.log("users are created");
+
 /*
 * channel
 */
     const channel : Channel  = new Channel;
     channel.name = "channel_base0";
     channel.type = ChanType.PRIVATE;
+    await myDataSource.getRepository(Channel).save(channel);
+console.log("chan are created");
+
 /*
-*
+*   CONTACT
+*   il manque le nom de l'ami !!!!! dans l 'entity voir avec daav
 */
-    return "data insert";
+    //const contact : Contact = new Contact;
+/*
+*   CHAN PARTICIPANT
+*/
+    const chanPart : ChanParticipant = new ChanParticipant;
+    chanPart.participant = user;
+   // chanPart.chan = user1;
+    chanPart.admin = false;
+    chanPart.mute = true;
+    chanPart.ban = false;
+    await myDataSource.getRepository(ChanParticipant).save(chanPart);
+/*
+*  MATCH
+*/
+    const match : Match = new Match;
+    match.active = true;
+ //   match.players = players;
+    await myDataSource.getRepository(Match).save(match);
+/*
+* PLAYER
+*/
+    const player : Player = new Player;
+    player.matchRef = match;
+    player.userRef = user;
+    player.score = 0;
+    await myDataSource.getRepository(Player).save(player);
+
+        return "data insert";
    }
 }

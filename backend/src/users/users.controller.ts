@@ -14,12 +14,10 @@ export class UsersController {
  async create(@Body() createUserDto: CreateUserDto)
   {
     const userDto = plainToClass(CreateUserDto, createUserDto);
-    const errors = await validate(userDto);
-    if (errors.length > 0)
-      throw new BadRequestException('validate failed');
-    console.log("creation of a User");
     return this.usersService.create(createUserDto);
   }
+
+  // PARTIAL dans friend et plus  bc ca te permet d'avoir q'un bout d'une classe/entity et du coup de recup les info neccesaire
 
   @Get()
   findAll() {
@@ -38,7 +36,8 @@ export class UsersController {
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.usersService.remove(id);
+    this.usersService.remove(id);
+    return 
   }
 
 }

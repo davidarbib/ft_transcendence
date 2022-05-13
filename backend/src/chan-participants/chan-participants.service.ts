@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { plainToClass } from 'class-transformer';
 import { myDataSource } from 'src/app-data-source';
 import { CreateChanParticipantDto } from './dto/create-chan-participant.dto';
 import { UpdateChanParticipantDto } from './dto/update-chan-participant.dto';
@@ -7,7 +8,7 @@ import { ChanParticipant } from './entities/chan-participant.entity';
 @Injectable()
 export class ChanParticipantsService {
   create(createChanParticipantDto: CreateChanParticipantDto) {
-    return 'This action adds a new chanParticipant';
+    return myDataSource.getRepository(ChanParticipant).save(createChanParticipantDto);
   }
 
   findAll() {
@@ -21,13 +22,22 @@ export class ChanParticipantsService {
     return chanPartRepo.findOneBy({id});
   }
 
-  update(id: string, updateChanParticipantDto: UpdateChanParticipantDto) {
+  async update(id: string, updateChanParticipantDto: UpdateChanParticipantDto) {
+    const chanPartRepo = myDataSource.getRepository(ChanParticipant)
+    const chanToUpdate = await chanPartRepo.findOneBy({id});
+    const {admin,mute, ban, participant, chan} = updateChanParticipantDto;
+    chanToUpdate.admin = admin;
+    chanToUpdate.mute = mute;
+    chanToUpdate.ban = ban;
+    chanToUpdate.participant = participant;
+    chanToUpdate.chan = chan;
+    myDataSource.getRepository(ChanParticipant).save(chanToUpdate);
     return `This action updates a #${id} chanParticipant`;
   }
 
   async remove(id: string) {
-   /* const chanPartRepo = myDataSource.getRepository(ChanParticipant)
-    const chanPartDelete = chanPartRepo
-    return await chanPartRepo.delete(chanPartDelete);*/
+    const chanPartRepo = myDataSource.getRepository(ChanParticipant)
+    const chanPartDelete = await chanPartRepo.findOneBy({id});
+    return chanPartDelete.remove();
   }
 }
