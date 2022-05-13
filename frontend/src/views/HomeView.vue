@@ -25,7 +25,7 @@ import MusicLoop from "../components/MusicLoop.vue";
         type="password"
         autocomplete="current-password"
         required="true"
-        class="w-full h-1/2 rounded-b-md focus:outline-none border border-gray-300"
+        class="w-full h-1/2 rounded-b-sm focus:outline-none border border-gray-300"
         placeholder="Password"
       />
     </div>
