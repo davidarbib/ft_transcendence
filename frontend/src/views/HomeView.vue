@@ -2,6 +2,10 @@
 import LockClosedIcon from "@heroicons/vue/solid";
 import Title from "@/components/Title.vue";
 import MusicLoop from "../components/MusicLoop.vue";
+import { ref } from "vue";
+
+let email = ref("");
+let password = ref("");
 </script>
 
 <template>
@@ -10,6 +14,7 @@ import MusicLoop from "../components/MusicLoop.vue";
     <div class="sound"><MusicLoop /></div>
     <div class="input">
       <input
+        v-model="email"
         id="email-address"
         name="email"
         type="email"
@@ -20,6 +25,7 @@ import MusicLoop from "../components/MusicLoop.vue";
       />
       <br />
       <input
+        v-model="password"
         id="password"
         name="password"
         type="password"
