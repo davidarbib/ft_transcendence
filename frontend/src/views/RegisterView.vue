@@ -2,6 +2,12 @@
 import { LockClosedIcon } from "@heroicons/vue/solid";
 import Title from "@/components/Title.vue";
 import MusicLoop from "../components/MusicLoop.vue";
+import { ref } from "vue";
+
+let email = ref("");
+let pseudo = ref("");
+let password = ref("");
+let comfirm_password = ref("");
 </script>
 
 <template>
@@ -10,6 +16,7 @@ import MusicLoop from "../components/MusicLoop.vue";
     <div class="sound"><MusicLoop /></div>
     <div class="input">
       <input
+        v-model="email"
         id="email-address"
         name="email"
         type="email"
@@ -20,6 +27,7 @@ import MusicLoop from "../components/MusicLoop.vue";
       />
       <br />
       <input
+        v-model="pseudo"
         id="pseudo"
         name="pseudo"
         type="text"
@@ -30,6 +38,7 @@ import MusicLoop from "../components/MusicLoop.vue";
       />
       <br />
       <input
+        v-model="password"
         id="password"
         name="password"
         type="password"
@@ -40,6 +49,7 @@ import MusicLoop from "../components/MusicLoop.vue";
       />
       <br />
       <input
+        v-model="comfirm_password"
         id="comfirm_password"
         name="comfirm_password"
         type="password"
@@ -50,7 +60,7 @@ import MusicLoop from "../components/MusicLoop.vue";
       />
     </div>
     <div class="register primary-button">
-      <router-link to="/main" class="b-submit"> register </router-link>
+      <router-link to="/" class="b-submit"> register </router-link>
     </div>
     <div class="register-with-42 primary-button">
       <router-link to="/main" class="b42-submit">
