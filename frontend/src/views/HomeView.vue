@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import LockClosedIcon from "@heroicons/vue/solid";
-import Title from "@/components/Title.vue";
+import Title from "@/components/TitleMax.vue";
 import MusicLoop from "../components/MusicLoop.vue";
 import { ref } from "vue";
 import axios from "axios";
@@ -23,35 +23,6 @@ const tryLogin = () => {
   <div class="login-section">
     <div class="logo"><Title /></div>
     <div class="sound"><MusicLoop /></div>
-    <div class="input">
-      <input
-        v-model="email"
-        id="email-address"
-        name="email"
-        type="email"
-        autocomplete="email"
-        required="true"
-        class="w-full h-1/2 rounded-t-md focus:outline-none border border-gray-300"
-        placeholder="Email address"
-      />
-      <br />
-      <input
-        v-model="password"
-        id="password"
-        name="password"
-        type="password"
-        autocomplete="current-password"
-        required="true"
-        class="w-full h-1/2 rounded-b-sm focus:outline-none border border-gray-300"
-        placeholder="Password"
-      />
-    </div>
-    <div class="sign-in primary-button">
-      <a href="" class="b-submit" @click.prevent="tryLogin"> Sign in </a>
-    </div>
-    <div class="register primary-button">
-      <router-link to="/register" class="b-submit"> Register </router-link>
-    </div>
     <div class="connect-with-42 primary-button">
       <router-link to="/main" class="b42-submit"> Connect with 42 </router-link>
     </div>
@@ -62,48 +33,28 @@ const tryLogin = () => {
 @use "../assets/variables.scss" as v;
 
 .login-section {
+  background-image: url("@/assets/sphere.png");
+  background-position: center;
+  background-repeat: no-repeat;
   display: grid;
+  height: 100vh;
   grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: 4.8fr 1.5fr repeat(3, 0.5fr) 1fr;
-  gap: 4% 0px;
+  grid-template-rows: 10% 50% 20% 1fr;
   grid-auto-flow: row;
-  grid-template-areas:
-    ". logo sound"
-    ". input ."
-    ". sign-in ."
-    ". register ."
-    ". connect-with-42 ."
-    ". . .";
 
   .logo {
-    grid-area: logo;
-    margin-top: 3rem;
+    grid-area: 2 / 2 / 3 / 3;
   }
 
   .sound {
     text-align: right;
     margin-right: 1rem;
-    grid-area: sound;
-  }
-
-  .input {
-    grid-area: input;
-
-    input {
-      padding-left: 1rem;
-    }
-  }
-
-  .sign-in {
-    grid-area: sign-in;
-  }
-
-  .register {
-    grid-area: register;
+    grid-area: 1 / 3 / 1 / 3;
   }
 
   .connect-with-42 {
-    grid-area: connect-with-42;
+    grid-area: 3 / 2 / 3 / 2;
+    margin-top: 2rem;
   }
 }
 </style>
