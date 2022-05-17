@@ -1,4 +1,5 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { plainToClass } from 'class-transformer';
 import { ChanParticipantsService } from './chan-participants.service';
 import { CreateChanParticipantDto } from './dto/create-chan-participant.dto';
 import { UpdateChanParticipantDto } from './dto/update-chan-participant.dto';
@@ -9,6 +10,7 @@ export class ChanParticipantsController {
 
   @Post()
   create(@Body() createChanParticipantDto: CreateChanParticipantDto) {
+    const createchanPart = plainToClass(CreateChanParticipantDto, createChanParticipantDto)
     return this.chanParticipantsService.create(createChanParticipantDto);
   }
 
@@ -19,16 +21,16 @@ export class ChanParticipantsController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.chanParticipantsService.findOne(+id);
+    return this.chanParticipantsService.findOne(id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateChanParticipantDto: UpdateChanParticipantDto) {
-    return this.chanParticipantsService.update(+id, updateChanParticipantDto);
+    return this.chanParticipantsService.update(id, updateChanParticipantDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.chanParticipantsService.remove(+id);
+    return this.chanParticipantsService.remove(id);
   }
 }

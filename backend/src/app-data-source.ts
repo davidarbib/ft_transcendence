@@ -1,5 +1,4 @@
 import { DataSource } from "typeorm"
-import { Message } from "./messages/entities/message.entity";
 import { User } from './users/entities/user.entity';
 import { Player } from './players/entities/player.entity';
 import { Contact } from './contacts/entities/contact.entity';

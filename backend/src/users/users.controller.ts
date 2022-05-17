@@ -1,16 +1,23 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, BadRequestException } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { User } from './entities/user.entity';
+import {plainToClass} from 'class-transformer';
+import { validate } from 'class-validator';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
-  create(@Body() createUserDto: CreateUserDto) {
+ async create(@Body() createUserDto: CreateUserDto)
+  {
+    const userDto = plainToClass(CreateUserDto, createUserDto);
     return this.usersService.create(createUserDto);
   }
+
+  // PARTIAL dans friend et plus  bc ca te permet d'avoir q'un bout d'une classe/entity et du coup de recup les info neccesaire
 
   @Get()
   findAll() {
@@ -29,12 +36,8 @@ export class UsersController {
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.usersService.remove(id);
+    this.usersService.remove(id);
+    return 
   }
 
-  @Post('new')
-  postUsers() {
-    console.log("add user");
-    this.usersService.insertUser();
-  }
 }

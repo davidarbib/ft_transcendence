@@ -2,7 +2,7 @@ import { ApiProperty } from "@nestjs/swagger";
 import { Message } from "src/messages/entities/message.entity";
 import { Player } from "src/players/entities/player.entity";
 import { ChanParticipant } from "src/chan-participants/entities/chan-participant.entity";
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 export enum UserStatus
 {
@@ -12,8 +12,11 @@ export enum UserStatus
     SPECTATE = 'spectate'
 }
 
+
+// PASSPORT / PASSPORT42 //PASSPORTJWT  // JWT NESTJS
+//pour auth 42 cree un module expres pour ca, apres dans API (dans 42)
 @Entity()
-export class User
+export class User extends BaseEntity
 {
     @PrimaryGeneratedColumn("uuid")
     id: string;
@@ -50,7 +53,7 @@ export class User
     @ApiProperty()
     @Column({
         type: "varchar",
-        nullable: false
+        nullable: true
     })
     authToken: string;
 
