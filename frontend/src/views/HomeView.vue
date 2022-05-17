@@ -4,12 +4,15 @@ import Title from "@/components/Title.vue";
 import MusicLoop from "../components/MusicLoop.vue";
 import { ref } from "vue";
 import axios from "axios";
+import { apiStore } from "@/stores/api";
 
 let email = ref("");
 let password = ref("");
 
+const api = apiStore();
+
 const tryLogin = () => {
-  axios.post("http://localhost:8090/", {
+  axios.post(`${api.url}/login`, {
     email: email.value,
     password: password.value,
   });
@@ -44,7 +47,7 @@ const tryLogin = () => {
       />
     </div>
     <div class="sign-in primary-button">
-      <a href="" class="b-submit" v-on:click.prevent="tryLogin"> Sign in </a>
+      <a href="" class="b-submit" @click.prevent="tryLogin"> Sign in </a>
     </div>
     <div class="register primary-button">
       <router-link to="/register" class="b-submit"> Register </router-link>
