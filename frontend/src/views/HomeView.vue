@@ -3,9 +3,17 @@ import LockClosedIcon from "@heroicons/vue/solid";
 import Title from "@/components/Title.vue";
 import MusicLoop from "../components/MusicLoop.vue";
 import { ref } from "vue";
+import axios from "axios";
 
 let email = ref("");
 let password = ref("");
+
+const tryLogin = () => {
+  axios.post("http://localhost:8090/", {
+    email: email.value,
+    password: password.value,
+  });
+};
 </script>
 
 <template>
@@ -36,7 +44,7 @@ let password = ref("");
       />
     </div>
     <div class="sign-in primary-button">
-      <router-link to="/main" class="b-submit"> Sign in </router-link>
+      <a href="" class="b-submit" v-on:click.prevent="tryLogin"> Sign in </a>
     </div>
     <div class="register primary-button">
       <router-link to="/register" class="b-submit"> Register </router-link>
