@@ -48,7 +48,7 @@ console.log("users are created");
     channel.name = "channel_base0";
     channel.type = ChanType.PRIVATE;
     await myDataSource.getRepository(Channel).save(channel);
-console.log("chan are created");
+    console.log("chan are created");
 
 /*
 *   CONTACT
@@ -60,7 +60,7 @@ console.log("chan are created");
 */
     const chanPart : ChanParticipant = new ChanParticipant;
     chanPart.participant = user;
-   // chanPart.chan = user1;
+   chanPart.chan = channel;
     chanPart.admin = false;
     chanPart.mute = true;
     chanPart.ban = false;
