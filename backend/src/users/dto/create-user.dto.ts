@@ -21,6 +21,7 @@ export class CreateUserDto {
     status: UserStatus;
 
     @IsString()
+    @IsOptional()
     //@isJWT() pour l'authentification
     authToken: string;
 

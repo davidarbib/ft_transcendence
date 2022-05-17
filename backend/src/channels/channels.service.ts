@@ -23,7 +23,7 @@ export class ChannelsService {
   update(id: string, updateChannelDto: UpdateChannelDto) {
     const chanToUpdate = myDataSource.getRepository(Channel).findOneBy({id});
     const {name, password} = updateChannelDto;
-    chanToUpdate.name = 
+   // chanToUpdate.name = 
     return `This action updates a #${id} channel`;
   }
 

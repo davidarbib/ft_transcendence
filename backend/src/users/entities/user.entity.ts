@@ -53,7 +53,7 @@ export class User extends BaseEntity
     @ApiProperty()
     @Column({
         type: "varchar",
-        nullable: false
+        nullable: true
     })
     authToken: string;
 
