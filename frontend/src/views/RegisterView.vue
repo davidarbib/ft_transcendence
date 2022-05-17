@@ -3,11 +3,32 @@ import { LockClosedIcon } from "@heroicons/vue/solid";
 import Title from "@/components/Title.vue";
 import MusicLoop from "../components/MusicLoop.vue";
 import { ref } from "vue";
+import axios from "axios";
+import { apiStore } from "@/stores/api";
+import { useRouter } from "vue-router";
 
+const api = apiStore();
+const router = useRouter();
 let email = ref("");
 let pseudo = ref("");
 let password = ref("");
 let comfirm_password = ref("");
+
+const tryRegister = () => {
+  axios
+    .post(`${api.url}/users`, {
+      mail: email.value,
+      login: pseudo.value,
+      password: password.value,
+    })
+    .then(function (response) {
+      router.push({ name: "home" });
+      console.log(response);
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+};
 </script>
 
 <template>
@@ -60,7 +81,7 @@ let comfirm_password = ref("");
       />
     </div>
     <div class="register primary-button">
-      <router-link to="/" class="b-submit"> register </router-link>
+      <a href="#" class="b-submit" @click.prevent="tryRegister"> Register </a>
     </div>
     <div class="register-with-42 primary-button">
       <router-link to="/main" class="b42-submit">
