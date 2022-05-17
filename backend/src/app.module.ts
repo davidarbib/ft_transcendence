@@ -10,6 +10,7 @@ import { ChanParticipantsModule } from './chan-participants/chan-participants.mo
 import { PlayersModule } from './players/players.module';
 import { ContactsModule } from './contacts/contacts.module';
 import { createDataModule } from './Create_data/createData.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports:
@@ -22,6 +23,7 @@ import { createDataModule } from './Create_data/createData.module';
       PlayersModule,
       ContactsModule,
       createDataModule,
+      AuthModule,
     ], 
 })
 export class AppModule {
