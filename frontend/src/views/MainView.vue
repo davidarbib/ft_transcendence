@@ -2,6 +2,9 @@
 import NavbarItem from "@/components/NavbarItem.vue";
 import Contact from "@/components/Contact.vue";
 import Title from "@/components/Title.vue";
+import { ref } from "vue";
+
+let game_mode = ref("default");
 </script>
 
 <template>
@@ -9,7 +12,13 @@ import Title from "@/components/Title.vue";
     <div class="game">
       <div id="title"><Title /></div>
       <div class="secondary-button" id="b1">Quick game</div>
-      <div class="secondary-button" id="b2">Custom</div>
+      <select v-model="game_mode" id="b2" class="secondary-button">
+        <option value="plage">Plage</option>
+        <option value="vice">Vice</option>
+        <option value="monkey">Monkey</option>
+        <option value="mario">Mario</option>
+        <option value="default">Classic</option>
+      </select>
     </div>
     <div class="navbar"><NavbarItem /></div>
     <div class="contact"><Contact /></div>
@@ -62,6 +71,8 @@ import Title from "@/components/Title.vue";
     justify-content: center;
     width: 50%;
     margin: auto;
+    -webkit-appearance: none;
+    appearance: none;
   }
 }
 
