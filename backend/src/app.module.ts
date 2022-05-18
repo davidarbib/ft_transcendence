@@ -11,6 +11,9 @@ import { PlayersModule } from './players/players.module';
 import { ContactsModule } from './contacts/contacts.module';
 import { createDataModule } from './Create_data/createData.module';
 import { AuthModule } from './auth/auth.module';
+import { ConfigModule } from '@nestjs/config';
+
+let envFilePath = 'src/.env';
 
 @Module({
   imports:
@@ -24,6 +27,7 @@ import { AuthModule } from './auth/auth.module';
       ContactsModule,
       createDataModule,
       AuthModule,
+      ConfigModule.forRoot({ envFilePath }),
     ], 
 })
 export class AppModule {
@@ -32,7 +36,8 @@ export class AppModule {
     myDataSource
     .initialize()
     .then(() => {
-        console.log("Data Source has been initialized!")
+        console.log("Data Source has been initialized!");
+        console.log(process.env.API42_CALLBACK_URL);
     })
     .catch((err) => {
         console.error("Error during Data Source initialization:", err)
