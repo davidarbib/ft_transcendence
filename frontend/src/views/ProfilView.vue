@@ -3,6 +3,10 @@ import { LockClosedIcon } from "@heroicons/vue/solid";
 import NavbarItem from "@/components/NavbarItem.vue";
 import Contact from "../components/Contact.vue";
 import Historic from "@/components/Historic.vue";
+
+const props = defineProps({
+  pseudo: String,
+});
 </script>
 
 <template>
@@ -46,7 +50,7 @@ import Historic from "@/components/Historic.vue";
           <input
             id="pseudo"
             name="pseudo"
-            value="ROBERT LA VIPÈRE"
+            v-model="props.pseudo"
             type="text"
             autocomplete="current-password"
             required="true"

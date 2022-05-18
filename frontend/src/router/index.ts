@@ -41,9 +41,10 @@ const router = createRouter({
       component: PongView,
     },
     {
-      path: "/profil",
+      path: "/profil/:pseudo",
       name: "profil",
       component: ProfilView,
+      props: true
     },
     {
       path: "/tuto",
