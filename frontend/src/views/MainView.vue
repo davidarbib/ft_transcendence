@@ -2,15 +2,13 @@
 import NavbarItem from "@/components/NavbarItem.vue";
 import Contact from "@/components/Contact.vue";
 import Title from "@/components/Title.vue";
-import Popup from "@/components/Popup.vue";
 import { ref } from "vue";
 
 let game_mode = ref("default");
 const popupTriggers = ref(false);
 
-const togglePopup = (): void => {
+const TogglePopup = (): void => {
   popupTriggers.value = !popupTriggers.value;
-  console.log("TA MERE MANGE DES PATES");
 };
 </script>
 
@@ -18,17 +16,17 @@ const togglePopup = (): void => {
   <div class="main-section">
     <div class="game">
       <div id="title"><Title /></div>
-      <div
-        class="secondary-button"
-        id="b1"
-        @click="togglePopup"
-        :togglePopup="() => togglePopup()"
-      >
+      <div class="secondary-button" id="b1" @click="TogglePopup()">
         Quick game
       </div>
-      <Popup v-if="popupTriggers">
-        <h2>In queue</h2>
-      </Popup>
+      <div class="popup" v-if="popupTriggers">
+        <div class="popup-inner">
+          <h1>Searching for a game...</h1>
+          <button class="popup-close secondary-button" @click="TogglePopup()">
+            CANCEL QUEUE
+          </button>
+        </div>
+      </div>
       <select v-model="game_mode" id="b2" class="secondary-button">
         <option value="plage">Plage</option>
         <option value="vice">Vice</option>
@@ -61,7 +59,7 @@ const togglePopup = (): void => {
   background-repeat: no-repeat;
   background-position: center;
   display: grid;
-  grid-template-columns: 1fr 40% 1fr;
+  grid-template-columns: 1fr 40% 30%;
   grid-template-rows: 48% repeat(2, 9.9%) 1fr;
 
   #title {
@@ -99,5 +97,24 @@ const togglePopup = (): void => {
 
 .contact {
   grid-area: contact;
+}
+
+.popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 99;
+  background-color: rgba(0, 0, 0, 0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .popup-inner {
+    background-color: white;
+    margin-right: 20%;
+    padding: 5rem;
+  }
 }
 </style>
