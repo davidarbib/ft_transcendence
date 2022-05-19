@@ -1,17 +1,19 @@
-import { Body, Controller, Get, Post, Res} from '@nestjs/common';
+import { Body, Controller, Get, Post, Res, UseGuards} from '@nestjs/common';
 import { Response } from 'express'
-import { AuthService } from './auth.service';
+import { AuthService } from './services/auth.service';
 import * as passport from 'passport'
 import * as bcrypt from 'bcrypt'
+import { Api42Guard } from './guards/api42.guard';
 
 @Controller('auth')
 export class AuthController {
     constructor(private readonly authService: AuthService) {}
     
     @Get('login')
+    @UseGuards(Api42Guard)
     login()
     {
-        //
+        return ;
     }
 
     @Get('status')
@@ -21,12 +23,11 @@ export class AuthController {
     }
     
     @Get('redirect')
+    @UseGuards(Api42Guard)
     redirect(@Res() response: Response)
     {
-        response.send(200);
+        response.sendStatus(200);
     }
-
-
 
     //@Post('register')
     //async register(

@@ -12,12 +12,15 @@ import { ContactsModule } from './contacts/contacts.module';
 import { createDataModule } from './Create_data/createData.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
+import { PassportModule } from '@nestjs/passport';
 
 let envFilePath = 'src/.env';
 
 @Module({
   imports:
     [
+      ConfigModule.forRoot({ envFilePath }),
+      PassportModule.register({ session: true }),
       UsersModule,
       ChannelsModule,
       MatchesModule,
@@ -27,7 +30,6 @@ let envFilePath = 'src/.env';
       ContactsModule,
       createDataModule,
       AuthModule,
-      ConfigModule.forRoot({ envFilePath }),
     ], 
 })
 export class AppModule {
@@ -37,7 +39,6 @@ export class AppModule {
     .initialize()
     .then(() => {
         console.log("Data Source has been initialized!");
-        console.log(process.env.API42_CALLBACK_URL);
     })
     .catch((err) => {
         console.error("Error during Data Source initialization:", err)
