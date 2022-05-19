@@ -7,20 +7,31 @@ import { computed } from "@vue/reactivity";
 
 let game_mode = ref("default");
 let popupTriggers = ref(false);
-let elapsedTime = ref(0);
+let elapsedTimeS = ref(0);
+let elapsedTimeM = ref(0);
 let timer = ref();
 
 const formattedElapsedTime = computed(() => {
-  if (elapsedTime.value < 10) return "0" + elapsedTime.value;
-  return elapsedTime.value;
+  if (elapsedTimeS.value > 59) {
+    elapsedTimeS.value = 0;
+    elapsedTimeM.value++;
+  }
+  let second = elapsedTimeS.value.toString();
+  let minute = elapsedTimeM.value.toString();
+  if (elapsedTimeS.value < 10) second = "0" + elapsedTimeS.value.toString();
+  else second = elapsedTimeS.value.toString();
+  if (elapsedTimeM.value < 10) minute = "0" + elapsedTimeM.value.toString();
+  else minute = elapsedTimeM.value.toString();
+  return minute + ":" + second;
 });
 
 const TogglePopup = (): void => {
   if (!popupTriggers.value) {
     clearInterval(timer.value);
-    elapsedTime.value = 0;
+    elapsedTimeS.value = 0;
+    elapsedTimeM.value = 0;
     timer.value = setInterval(() => {
-      elapsedTime.value += 1;
+      elapsedTimeS.value += 1;
     }, 1000);
   }
   popupTriggers.value = !popupTriggers.value;
