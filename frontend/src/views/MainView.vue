@@ -3,11 +3,26 @@ import NavbarItem from "@/components/NavbarItem.vue";
 import Contact from "@/components/Contact.vue";
 import Title from "@/components/Title.vue";
 import { ref } from "vue";
+import { computed } from "@vue/reactivity";
 
 let game_mode = ref("default");
-const popupTriggers = ref(false);
+let popupTriggers = ref(false);
+let elapsedTime = ref(0);
+let timer = ref();
+
+const formattedElapsedTime = computed(() => {
+  if (elapsedTime.value < 10) return "0" + elapsedTime.value;
+  return elapsedTime.value;
+});
 
 const TogglePopup = (): void => {
+  if (!popupTriggers.value) {
+    clearInterval(timer.value);
+    elapsedTime.value = 0;
+    timer.value = setInterval(() => {
+      elapsedTime.value += 1;
+    }, 1000);
+  }
   popupTriggers.value = !popupTriggers.value;
 };
 </script>
@@ -20,8 +35,9 @@ const TogglePopup = (): void => {
         Quick game
       </div>
       <div class="popup" v-if="popupTriggers">
-        <div class="popup-inner">
+        <div class="popup-inner bg-black bg-opacity-100">
           <h1>Searching for a game...</h1>
+          <h2 class="text-center">{{ formattedElapsedTime }}</h2>
           <button class="popup-close secondary-button" @click="TogglePopup()">
             CANCEL QUEUE
           </button>
@@ -112,9 +128,20 @@ const TogglePopup = (): void => {
   align-items: center;
 
   .popup-inner {
-    background-color: white;
+    background: linear-gradient(v.$primary, v.$dark-blue) fixed;
     margin-right: 20%;
-    padding: 5rem;
+    padding: 10rem;
+    border-radius: 0.375rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    h1,
+    h2 {
+      margin-bottom: 2rem;
+      font-size: 3rem;
+      color: white;
+    }
   }
 }
 </style>
