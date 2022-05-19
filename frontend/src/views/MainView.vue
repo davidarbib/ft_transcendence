@@ -2,16 +2,33 @@
 import NavbarItem from "@/components/NavbarItem.vue";
 import Contact from "@/components/Contact.vue";
 import Title from "@/components/Title.vue";
+import Popup from "@/components/Popup.vue";
 import { ref } from "vue";
 
 let game_mode = ref("default");
+const popupTriggers = ref(false);
+
+const togglePopup = (): void => {
+  popupTriggers.value = !popupTriggers.value;
+  console.log("TA MERE MANGE DES PATES");
+};
 </script>
 
 <template>
   <div class="main-section">
     <div class="game">
       <div id="title"><Title /></div>
-      <div class="secondary-button" id="b1">Quick game</div>
+      <div
+        class="secondary-button"
+        id="b1"
+        @click="togglePopup"
+        :togglePopup="() => togglePopup()"
+      >
+        Quick game
+      </div>
+      <Popup v-if="popupTriggers">
+        <h2>In queue</h2>
+      </Popup>
       <select v-model="game_mode" id="b2" class="secondary-button">
         <option value="plage">Plage</option>
         <option value="vice">Vice</option>
