@@ -15,23 +15,24 @@ export class UsersService {
     return userrepo.find();
   }
 
+ /* findName(login:string)
+  {
+    const userRepository = myDataSource.getRepository(User);
+    return userRepository.findOne({ where: { login} })
+  }*/
   findOne(id:string) {
-    const userrepo = myDataSource.getRepository(User);
-
-    return userrepo.findOneBy({id});
+    const userRepo = myDataSource.getRepository(User);
+    return userRepo.findOne({ where: {id
+     } });
   }
 
   async update(id:string, updateUserDto: UpdateUserDto) {
     const userrepo = myDataSource.getRepository(User);
 
     const usrToUpdate= await userrepo.findOneBy({id});
-    const {login, mail, password} = updateUserDto;
+    const {login} = updateUserDto;
     usrToUpdate.login = login;
-    usrToUpdate.mail = mail;
-    usrToUpdate.password = password;
     myDataSource.getRepository(User).save(usrToUpdate);
-  
-    return `This action updates a #${id} user`;
   }
 
   async remove(id: string) {
@@ -46,9 +47,7 @@ export class UsersService {
   {
     const user : User = new User;
     user.login = 'jojo';
-    user.mail = 'jojo@randomail.com';
     user.status = UserStatus.INGAME;
-    user.password='jojo';
     user.authToken="1234";
     user.winCount=0;
     user.lossCount=0;

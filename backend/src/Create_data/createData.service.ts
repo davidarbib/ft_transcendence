@@ -14,48 +14,41 @@ export class createDataService{
 
    async insertdata(): Promise<string>
    {
-/*
-*   MSG
-*/
-const msg : Message = new Message;
-msg.content =  'Message de base, afin de remplir la base de donnees';
-msg.time = new Date();
-await myDataSource.getRepository(Message).save(msg);
-console.log("my msg is created");
-/*
-*   USER
-*/
-const user : User = new User;
-user.login = 'user_base';
-user.mail = 'user_base1@randomail.com';
-user.status = UserStatus.OFFLINE;
-user.password='1234';
-user.authToken="1234";
-await myDataSource.getRepository(User).save(user);
-const user1 : User = new User;
-user1.login = 'user_bas1';
-user1.mail = 'user_bas@randomail.com';
-user1.status = UserStatus.ONLINE;
-user1.password='1234';
-user1.authToken="jjjjjj";
-await myDataSource.getRepository(User).save(user1);
-console.log("users are created");
-
-/*
-* channel
-*/
-    const channel : Channel  = new Channel;
-    channel.name = "channel_base0";
-    channel.type = ChanType.PRIVATE;
-    await myDataSource.getRepository(Channel).save(channel);
-    console.log("chan are created");
-
-/*
-*   CONTACT
-*   il manque le nom de l'ami !!!!! dans l 'entity voir avec daav
-*/
-    //const contact : Contact = new Contact;
-/*
+       /*
+       *   USER
+       */
+      const user : User = new User;
+      user.login = 'user_base';
+      user.status = UserStatus.OFFLINE;
+      user.authToken="1234";
+      await myDataSource.getRepository(User).save(user);
+      const user1 : User = new User;
+      user1.login = 'user_bas1';
+      user1.status = UserStatus.ONLINE;
+      user1.authToken="jjjjjj";
+    //  user1.friend.push(user);
+      await myDataSource.getRepository(User).save(user1);
+      console.log("users are created");
+      
+      /*
+      * channel
+      */
+     const channel : Channel  = new Channel;
+     channel.name = "channel_base0";
+     channel.type = ChanType.PRIVATE;
+     await myDataSource.getRepository(Channel).save(channel);
+     console.log("chan are created");
+     /*
+     *   MSG
+     */
+     const msg : Message = new Message;
+     msg.content =  'Message de base, afin de remplir la base de donnees';
+     msg.time = new Date();
+     msg.author = user;
+     msg.chan = channel;
+     await myDataSource.getRepository(Message).save(msg);
+     
+     /*
 *   CHAN PARTICIPANT
 */
     const chanPart : ChanParticipant = new ChanParticipant;
@@ -81,6 +74,11 @@ console.log("users are created");
     player.score = 0;
     await myDataSource.getRepository(Player).save(player);
 
+    const contact : Contact = new Contact;
+
+    contact.userId = user.id;
+    contact.followedId = user1.id;
+    await myDataSource.getRepository(Contact).save(contact);
         return "data insert";
    }
 }
