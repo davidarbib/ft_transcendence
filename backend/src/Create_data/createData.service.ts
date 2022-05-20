@@ -63,6 +63,8 @@ console.log("users are created");
 */
     //const contact : Contact = new Contact;
 /*
+     
+     /*
 *   CHAN PARTICIPANT
 */
     const chanPart : ChanParticipant = new ChanParticipant;
@@ -88,6 +90,11 @@ console.log("users are created");
     player.score = 0;
     await myDataSource.getRepository(Player).save(player);
 
+    const contact : Contact = new Contact;
+
+    contact.userId = user.id;
+    contact.followedId = user1.id;
+    await myDataSource.getRepository(Contact).save(contact);
         return "data insert";
    }
 }

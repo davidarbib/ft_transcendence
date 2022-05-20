@@ -13,7 +13,6 @@
 
 <script setup lang="ts">
 import { faDrawPolygon } from "@fortawesome/free-solid-svg-icons";
-import io from "socket.io";
 import { ref, onMounted } from "vue";
 
 const canvaRef = ref<HTMLCanvasElement | null>(null);

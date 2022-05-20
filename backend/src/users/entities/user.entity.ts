@@ -27,6 +27,7 @@ export class User extends BaseEntity
         unique: true
     })
     login: string;
+<<<<<<< HEAD
 
     @ApiProperty()
     @Column({
@@ -35,6 +36,8 @@ export class User extends BaseEntity
     })
     username: string;
 
+=======
+>>>>>>> entity_mel
     @ApiProperty()
     @Column({
         type : "enum",
@@ -70,8 +73,15 @@ export class User extends BaseEntity
         default: 0
     })
     lossCount: number;
+    
+/*    @ApiProperty()
+    @Column({
+      //  type: "varchar",
+        nullable:true
+    })
+    friend:User[];*/
 
-    @OneToMany(() => Message, (message : Message) => message.author)
+    @OneToMany(() => Message, message => message.author)
     messages : Message[]
 
     @OneToMany(() => Player, (player : Player) => player.userRef)

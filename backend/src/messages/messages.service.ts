@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { myDataSource } from 'src/app-data-source';
+import { Channel } from 'src/channels/entities/channel.entity';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { UpdateMessageDto } from './dto/update-message.dto';
 import { Message } from './entities/message.entity';
@@ -7,23 +8,33 @@ import { Message } from './entities/message.entity';
 @Injectable()
 export class MessagesService {
   create(createMessageDto: CreateMessageDto) {
-    return 'This action adds a new message';
+    return myDataSource.getRepository(Message).save(createMessageDto);
   }
 
   findAll() {
-    return `This action returns all messages`;
+    return myDataSource.getRepository(Message).find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} message`;
+  findOne(id: string) {
+    return myDataSource.getRepository(Message).findOneBy({id});
   }
 
-  update(id: number, updateMessageDto: UpdateMessageDto) {
-    return `This action updates a #${id} message`;
+  async update(id:string, updateMessageDto: UpdateMessageDto) {
+    const msgRepo = myDataSource.getRepository(Message);
+    const msgToUpdate = await msgRepo.findOneBy({id});
+    const {content, author, chan} = updateMessageDto;
+    msgToUpdate.content = content;
+    msgToUpdate.author = author;
+    msgToUpdate.chan = chan;
+    myDataSource.getRepository(Channel).save(msgToUpdate);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} message`;
+  async remove(id:string) {
+
+    const messRepo = myDataSource.getRepository(Channel);
+    const msgToRemove = await messRepo.findOneBy({id});
+
+    return msgToRemove.remove();
   }
 
   async insertMsg() : Promise<string>
