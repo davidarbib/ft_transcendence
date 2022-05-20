@@ -13,8 +13,9 @@ import channels from "@/assets/msg_test.json";
       v-for="channel in channels"
       :key="channel.id"
     >
-      <div class="user-pseudo py-2">
+      <div class="pub-chan-info py-2">
         <p>{{ channel.name }}</p>
+        <p class="secondary-button interact">Join</p>
       </div>
     </div>
   </div>
@@ -32,9 +33,17 @@ import channels from "@/assets/msg_test.json";
     font-size: 2rem;
     color: white;
   }
-  .user-pseudo {
+  .pub-chan-info {
     color: v.$primary;
     padding-left: 0.5rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .interact {
+    margin-right: 1rem;
   }
 
   .user-card {
