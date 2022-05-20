@@ -117,8 +117,7 @@ const TogglePopup = (): void => {
     appearance: none;
   }
 
-  @media screen and (min-width: 1160px)
-  {
+  @media screen and (min-height: 1160px) {
     #title {
       margin-top: 30rem;
     }
