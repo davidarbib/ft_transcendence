@@ -3,7 +3,7 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
-import {plainToClass} from 'class-transformer';
+import { plainToClass } from 'class-transformer';
 import { validate } from 'class-validator';
 
 @Controller('users')
@@ -39,5 +39,4 @@ export class UsersController {
     this.usersService.remove(id);
     return 
   }
-
 }

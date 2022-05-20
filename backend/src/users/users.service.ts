@@ -25,10 +25,11 @@ export class UsersService {
     const userrepo = myDataSource.getRepository(User);
 
     const usrToUpdate= await userrepo.findOneBy({id});
-    const {login, mail, password} = updateUserDto;
+    //const {login, mail, password} = updateUserDto;
+    const {login} = updateUserDto;
     usrToUpdate.login = login;
-    usrToUpdate.mail = mail;
-    usrToUpdate.password = password;
+    //usrToUpdate.mail = mail;
+    //usrToUpdate.password = password;
     myDataSource.getRepository(User).save(usrToUpdate);
   
     return `This action updates a #${id} user`;
@@ -46,9 +47,8 @@ export class UsersService {
   {
     const user : User = new User;
     user.login = 'jojo';
-    user.mail = 'jojo@randomail.com';
+    user.username = 'jojo';
     user.status = UserStatus.INGAME;
-    user.password='jojo';
     user.authToken="1234";
     user.winCount=0;
     user.lossCount=0;

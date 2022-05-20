@@ -14,6 +14,7 @@ RUN apt update -y && apt upgrade -y \
 && npm install --silent \
 && chown -R frontDev .
 
+
 COPY . .
 
 EXPOSE 8000

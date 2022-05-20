@@ -27,18 +27,25 @@ console.log("my msg is created");
 */
 const user : User = new User;
 user.login = 'user_base';
-user.mail = 'user_base1@randomail.com';
+user.username = 'user_base';
 user.status = UserStatus.OFFLINE;
-user.password='1234';
 user.authToken="1234";
 await myDataSource.getRepository(User).save(user);
+
 const user1 : User = new User;
 user1.login = 'user_bas1';
-user1.mail = 'user_bas@randomail.com';
+user1.username = 'user_bas1';
 user1.status = UserStatus.ONLINE;
-user1.password='1234';
 user1.authToken="jjjjjj";
 await myDataSource.getRepository(User).save(user1);
+
+const faker : User = new User;
+faker.login = 'faker';
+faker.username = 'faker';
+faker.status = UserStatus.OFFLINE;
+faker.authToken="uhafe";
+await myDataSource.getRepository(User).save(faker);
+
 console.log("users are created");
 
 /*

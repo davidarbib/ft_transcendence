@@ -1,7 +1,7 @@
 import { UserStatus, User} from "../entities/user.entity";
 import { IsString, IsInt, IsEmail, Length, IsOptional, isJWT } from 'class-validator';
 import { IsLoginlNotExisting, isLoginNotExistingConstraint } from "../validator/is-login-already-exist.validator";
-import { IsEmailNotExisting } from "../validator/is-email-already-exist.validator";
+//import { IsEmailNotExisting } from "../validator/is-email-already-exist.validator";
 export class CreateUserDto {
 
     @IsString()
@@ -9,14 +9,14 @@ export class CreateUserDto {
     @IsLoginlNotExisting()
     login: string;
 
-    @IsEmail()
-    @IsEmailNotExisting()
-    mail:string;
+    //@IsEmail()
+    //@IsEmailNotExisting()
+    //mail:string;
 
-    @IsString()
-    @Length(1, 16)
-    // probleme via 42 bc pas de mdp !!! a voir !!
-    password:string;
+    //@IsString()
+    //@Length(1, 16)
+    //// probleme via 42 bc pas de mdp !!! a voir !!
+    //password:string;
 
     status: UserStatus;
 
