@@ -4,9 +4,16 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { User, UserStatus } from './entities/user.entity';
 import { myDataSource } from 'src/app-data-source';
 import { validate } from 'class-validator';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class UsersService {
+
+  constructor(private userRepo : Repository<User>)
+  {
+    userRepo = myDataSource.getRepository(User);
+  }
+
   create(createUserDto: CreateUserDto) {
     const usrDto = new User();
     const {login, mail, password, status, authToken, avatarRef, winCount, losscount} = createUserDto;

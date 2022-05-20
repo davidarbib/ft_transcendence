@@ -1,14 +1,14 @@
 import { Body, Controller, Get, Post, Res, UseGuards} from '@nestjs/common';
 import { Response } from 'express'
-import { AuthService } from './services/auth.service';
 import * as passport from 'passport'
 import * as bcrypt from 'bcrypt'
 import { Api42Guard } from './guards/api42.guard';
 
 @Controller('auth')
 export class AuthController {
-    constructor(private readonly authService: AuthService) {}
+    constructor() {}
     
+
     @Get('login')
     @UseGuards(Api42Guard)
     login()
@@ -26,6 +26,7 @@ export class AuthController {
     @UseGuards(Api42Guard)
     redirect(@Res() response: Response)
     {
+        console.log("redirection")
         response.sendStatus(200);
     }
 

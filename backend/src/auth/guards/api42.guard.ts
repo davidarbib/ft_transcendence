@@ -8,8 +8,6 @@ export class Api42Guard extends AuthGuard('42')
     {
         const activate = (await super.canActivate(context)) as boolean;
         const request = context.switchToHttp().getRequest();
-        console.log(activate);
-        console.log(request);
         await super.logIn(request);
         return activate;
     }
