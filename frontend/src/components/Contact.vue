@@ -51,7 +51,7 @@ function toggleFriendMenu(id: number) {
               <li><router-link to="/chat">chat</router-link></li>
               <li>
                 <router-link :to="'/profil/' + user.pseudo"
-                  >profil de {{ user.pseudo }}</router-link
+                  >profil</router-link
                 >
               </li>
               <li><router-link to="/qiwjeoi">invite</router-link></li>

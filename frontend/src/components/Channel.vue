@@ -3,6 +3,13 @@ import channels from "@/assets/msg_test.json";
 import { ref } from "vue";
 
 const searched = ref("");
+const channelOptions = ref(false);
+const channelSelected = ref(-1);
+
+function toggleChannelMenu(id: number) {
+  channelSelected.value = id;
+  channelOptions.value = !channelOptions.value;
+}
 </script>
 
 <template>
@@ -16,8 +23,16 @@ const searched = ref("");
       :key="channel.id"
     >
       <div class="user-pseudo py-2">
-        <p>{{ channel.name }}</p>
+        <p>{{ channel.name }}</p><p class="icon" @click="toggleChannelMenu(channel.id)"><i class="fa-solid fa-gear"></i></p>
       </div>
+      <Transition name="slide-fade">
+        <div v-if="channelOptions && channelSelected === channel.id">
+          <ul class="list">
+            <li><router-link to="/chat">leave</router-link></li>
+            <li><router-link to="/qiwjeoi">rename</router-link></li>
+          </ul>
+        </div>
+      </Transition>
     </div>
   </div>
 </template>
@@ -41,8 +56,38 @@ const searched = ref("");
     .user-pseudo {
       color: v.$primary;
       padding-left: 0.5rem;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+
+      .icon {
+        margin-right: 1rem;
+      }
+    }
+
+    .list {
+      padding-bottom: 1rem;
+      a {
+        color: white;
+        padding-left: 1rem;
+      }
+    }
+  
+    .slide-fade-enter-active {
+      transition: all 0.3s ease-out;
+    }
+
+    .slide-fade-leave-active {
+      transition: all 0.5s cubic-bezier(1, 0.5, 0.8, 1);
+    }
+
+    .slide-fade-enter-from,
+    .slide-fade-leave-to {
+      transform: translateX(20px);
+      opacity: 0;
     }
   }
+
   .searchbar {
     position: fixed;
     z-index: 3;
