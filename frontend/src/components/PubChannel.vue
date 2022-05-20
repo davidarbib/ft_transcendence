@@ -32,5 +32,20 @@ import channels from "@/assets/msg_test.json";
     font-size: 2rem;
     color: white;
   }
+  .user-pseudo {
+    color: v.$primary;
+    padding-left: 0.5rem;
+  }
+
+  .user-card {
+    cursor: pointer;
+    display: grid;
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+    -khtml-user-select: none; /* Konqueror HTML */
+    -moz-user-select: none; /* Old versions of Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; /* Non-prefixed version, currently */
+  }
 }
 </style>

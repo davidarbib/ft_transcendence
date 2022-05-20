@@ -68,6 +68,7 @@ import messages from "@/assets/msg_body_test.json";
 
     .message {
       margin-top: 1rem;
+      width: 90%;
     }
   }
 
@@ -78,6 +79,9 @@ import messages from "@/assets/msg_body_test.json";
     margin-left: 0.5rem;
     font-size: 1.5rem;
     grid-area: 3 / 2 / 4 / 2;
+    input {
+      width: 90%;
+    }
     p {
       cursor: pointer;
       color: v.$dark-blue;
