@@ -10,6 +10,7 @@ let email = ref("");
 let password = ref("");
 
 const api = apiStore();
+console.log("GITHUB TEST");
 
 const tryLogin = () => {
   axios.post(`${api.url}/login`, {
