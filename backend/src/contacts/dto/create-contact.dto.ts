@@ -1,9 +1,12 @@
 import { IsBoolean, IsString } from "class-validator";
 export class CreateContactDto {
 
-    @IsString()
+ //   @IsString()
     userLogin:string;
 
-    @IsString()
+  //  @IsString()
     followedlogin:string;
+
+  //  @IsBoolean()
+    blocked:boolean;
 }

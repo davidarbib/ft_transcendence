@@ -26,7 +26,6 @@ export class createDataService{
       user1.login = 'user_bas1';
       user1.status = UserStatus.ONLINE;
       user1.authToken="jjjjjj";
-    //  user1.friend.push(user);
       await myDataSource.getRepository(User).save(user1);
       console.log("users are created");
       

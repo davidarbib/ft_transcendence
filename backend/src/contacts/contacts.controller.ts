@@ -43,18 +43,18 @@ export class ContactsController {
       return this.contactsService.block_bool(login, id);
 }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateContactDto: UpdateContactDto) {
-    return this.contactsService.update(id, updateContactDto);
+  @Patch(':id/:loginfollo/block')
+  update(@Param('login') login: string, @Param('loginfollowed')  loginfollow:string ,@Param('block') block:boolean) {
+    return this.contactsService.update(login, loginfollow,block);
   }
 
-  @Delete(':login')
-  removeByLogin(@Body() createContactDto : CreateContactDto) {
-    User.findOne({where : {login:createContactDto.followedlogin}}).then(user => {
+  @Delete(':login/:followid')
+  removeByLogin(@Param('loginUser') login:string, @Param('loginfollowed') loginfollowed:string) {
+    User.findOne({where : {login:loginfollowed}}).then(user => {
       if (!user)
         return;
     })
-    return this.contactsService.removeByLogin(createContactDto);
+    return this.contactsService.removeByLogin(login, loginfollowed);
     }
 
   @Delete('/byId/:id')
