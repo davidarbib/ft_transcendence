@@ -116,6 +116,25 @@ const TogglePopup = (): void => {
     -webkit-appearance: none;
     appearance: none;
   }
+
+  @media screen and (min-width: 1160px)
+  {
+    #title {
+      margin-top: 30rem;
+    }
+
+    #b1 {
+      width: 40%;
+      position: relative;
+      top: -1rem;
+    }
+
+    #b2 {
+      width: 40%;
+      position: relative;
+      top: -4rem;
+    }
+  }
 }
 
 .navbar {
