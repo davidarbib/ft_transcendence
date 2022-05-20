@@ -30,16 +30,8 @@ export class UsersService {
     const userrepo = myDataSource.getRepository(User);
 
     const usrToUpdate= await userrepo.findOneBy({id});
-<<<<<<< HEAD
-    //const {login, mail, password} = updateUserDto;
     const {login} = updateUserDto;
     usrToUpdate.login = login;
-    //usrToUpdate.mail = mail;
-    //usrToUpdate.password = password;
-=======
-    const {login} = updateUserDto;
-    usrToUpdate.login = login;
->>>>>>> entity_mel
     myDataSource.getRepository(User).save(usrToUpdate);
   }
 
@@ -55,10 +47,7 @@ export class UsersService {
   {
     const user : User = new User;
     user.login = 'jojo';
-<<<<<<< HEAD
     user.username = 'jojo';
-=======
->>>>>>> entity_mel
     user.status = UserStatus.INGAME;
     user.authToken="1234";
     user.winCount=0;

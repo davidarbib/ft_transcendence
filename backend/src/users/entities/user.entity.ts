@@ -27,7 +27,6 @@ export class User extends BaseEntity
         unique: true
     })
     login: string;
-<<<<<<< HEAD
 
     @ApiProperty()
     @Column({
@@ -36,8 +35,6 @@ export class User extends BaseEntity
     })
     username: string;
 
-=======
->>>>>>> entity_mel
     @ApiProperty()
     @Column({
         type : "enum",
