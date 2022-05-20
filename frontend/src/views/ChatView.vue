@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import NavbarItem from "@/components/NavbarItem.vue";
 import Channel from "@/components/Channel.vue";
+import PubChannel from "@/components/PubChannel.vue";
 import messages from "@/assets/msg_body_test.json";
 </script>
 
@@ -33,6 +34,9 @@ import messages from "@/assets/msg_body_test.json";
       />
       <p class="px-3"><i class="fa-solid fa-paper-plane"></i></p>
     </div>
+    <div class="channel-pub">
+      <PubChannel />
+    </div>
   </div>
 </template>
 
@@ -41,21 +45,25 @@ import messages from "@/assets/msg_body_test.json";
 .chat-section {
   height: 100vh;
   display: grid;
-  grid-template-columns: 20% 80%;
+  grid-template-columns: 20% 60% 20%;
   grid-template-rows: 10% 80% 10%;
   grid-column-gap: 0px;
   grid-row-gap: 0px;
 
   .navbar-item {
-    grid-area: 1 / 1 / 2 / 3;
+    grid-area: 1 / 1 / 2 / 4;
   }
 
   .channel-list {
     grid-area: 2 / 1 / 4 / 2;
   }
 
+  .channel-pub {
+    grid-area: 2 / 3 / 4 / 4;
+  }
+
   .messages {
-    grid-area: 2 / 2 / 3 / 3;
+    grid-area: 2 / 2 / 3 / 2;
     overflow: scroll;
 
     .message {
@@ -69,7 +77,7 @@ import messages from "@/assets/msg_body_test.json";
     align-items: center;
     margin-left: 0.5rem;
     font-size: 1.5rem;
-    grid-area: 3 / 2 / 4 / 3;
+    grid-area: 3 / 2 / 4 / 2;
     p {
       cursor: pointer;
       color: v.$dark-blue;

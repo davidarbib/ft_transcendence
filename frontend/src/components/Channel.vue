@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import channels from "@/assets/msg_test.json";
-import { ref, computed } from "vue";
+import { ref } from "vue";
 
 const searched = ref("");
 </script>
