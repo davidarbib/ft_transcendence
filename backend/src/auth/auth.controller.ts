@@ -30,6 +30,13 @@ export class AuthController {
         response.sendStatus(200);
     }
 
+    //@Get('faker')
+    //faker()
+    //{
+    //      
+    //    return ;
+    //}
+
     //@Post('register')
     //async register(
     //    @Body('login') login : string,

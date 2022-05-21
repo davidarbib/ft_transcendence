@@ -56,4 +56,14 @@ export class UsersService {
     await myDataSource.getRepository(User).save(user);
     return "my user is created";
   }
+
+  async faker() : Promise<User>
+  {
+    const user = await myDataSource.getRepository(User).findOne({
+      where : {
+        login: 'faker'
+      }
+    })
+    return user;
+  } 
 }

@@ -50,4 +50,11 @@ export class UsersController {
     this.usersService.remove(id);
     return 
   }
+
+  @Get('faker')
+  faker()
+  {
+    return this.usersService.faker();
+  }
+
 }
