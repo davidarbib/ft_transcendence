@@ -7,7 +7,6 @@ export class Contact extends BaseEntity {
     @PrimaryGeneratedColumn("uuid")
     id: string;
 
-
     @ApiProperty()
     @Column({
         type : "boolean",
@@ -20,14 +19,14 @@ export class Contact extends BaseEntity {
         type : "varchar",
         nullable: false
     })
-    userId: string //userid
+    userLogin: string
 
     @ApiProperty()
     @Column({
         type : "varchar",
         nullable: false
     })
-    followedId: string // le followedid
+    followedLogin: string
      //afficher le blockage mm fo dire o front de faire un tchek sur ca !! 
 
 }

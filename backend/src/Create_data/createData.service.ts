@@ -8,6 +8,7 @@ import { Contact } from 'src/contacts/entities/contact.entity';
 import { ChanParticipant } from 'src/chan-participants/entities/chan-participant.entity';
 import { Match } from 'src/matches/entities/match.entity';
 import { Player } from 'src/players/entities/player.entity';
+
 @Injectable()
 export class createDataService{
 
@@ -44,6 +45,8 @@ faker.login = 'faker';
 faker.username = 'faker';
 faker.status = UserStatus.OFFLINE;
 faker.authToken="uhafe";
+faker.winCount=4;
+faker.lossCount=8;
 await myDataSource.getRepository(User).save(faker);
 
 console.log("users are created");
@@ -58,22 +61,24 @@ console.log("users are created");
     console.log("chan are created");
 
 /*
-*   CONTACT
-*   il manque le nom de l'ami !!!!! dans l 'entity voir avec daav
-*/
-    //const contact : Contact = new Contact;
-/*
-     
-     /*
 *   CHAN PARTICIPANT
 */
     const chanPart : ChanParticipant = new ChanParticipant;
     chanPart.participant = user;
-   chanPart.chan = channel;
+    chanPart.chan = channel;
     chanPart.admin = false;
     chanPart.mute = true;
     chanPart.ban = false;
     await myDataSource.getRepository(ChanParticipant).save(chanPart);
+
+    const chanPart1 : ChanParticipant = new ChanParticipant;
+    chanPart1.participant = faker;
+    chanPart1.chan = channel;
+    chanPart1.admin = false;
+    chanPart1.mute = false;
+    chanPart1.ban = false;
+    await myDataSource.getRepository(ChanParticipant).save(chanPart1);
+
 /*
 *  MATCH
 */
@@ -92,8 +97,14 @@ console.log("users are created");
 
     const contact : Contact = new Contact;
 
-    contact.userId = user.id;
-    contact.followedId = user1.id;
+    contact.userLogin = faker.login;
+    contact.followedLogin = user1.login;
+    await myDataSource.getRepository(Contact).save(contact);
+
+    const contact2 : Contact = new Contact;
+
+    contact.userLogin = faker.login;
+    contact.followedLogin = user.login;
     await myDataSource.getRepository(Contact).save(contact);
         return "data insert";
    }
