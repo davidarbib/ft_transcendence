@@ -4,11 +4,13 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import * as session from 'express-session'
 import * as passport from 'passport'
 
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap()
 {
   const app = await NestFactory.create(AppModule);
   const PORT = process.env.PORT;
+  app.useGlobalPipes(new ValidationPipe()) 
 
   const config = new DocumentBuilder()
     .setTitle('API example')
@@ -16,6 +18,8 @@ async function bootstrap()
     .setVersion('1.0')
     .addTag('api')
     .build();
+
+  //COOKIE PARSER POUR JWT se renseigner !!!! bc important!!!
   const doc = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('/', app, doc);
 
@@ -31,6 +35,11 @@ async function bootstrap()
   );
   app.use(passport.initialize());
   app.use(passport.session());
+
+  app.enableCors({
+    credentials:true,
+    origin:true
+  }) // pour connecter le back et le front !!!
 
   await app.listen(PORT, () => console.log(`Running on Port : ${PORT}`));
 }

@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import LockClosedIcon from "@heroicons/vue/solid";
+import { LockClosedIcon } from "@heroicons/vue/solid";
 import Title from "@/components/Title.vue";
 import MusicLoop from "../components/MusicLoop.vue";
 </script>
 
 <template>
-  <div class="login-section">
+  <div class="register-section">
     <div class="logo"><Title /></div>
     <div class="sound"><MusicLoop /></div>
     <div class="input">
@@ -15,8 +15,18 @@ import MusicLoop from "../components/MusicLoop.vue";
         type="email"
         autocomplete="email"
         required="true"
-        class="w-full h-1/2 rounded-t-md focus:outline-none border border-gray-300"
+        class="w-full h-1/4 rounded-t-md focus:outline-none border border-gray-300"
         placeholder="Email address"
+      />
+      <br />
+      <input
+        id="pseudo"
+        name="pseudo"
+        type="text"
+        autocomplete="current-password"
+        required="true"
+        class="w-full h-1/4 focus:outline-none border border-gray-300"
+        placeholder="Pseudo"
       />
       <br />
       <input
@@ -25,40 +35,47 @@ import MusicLoop from "../components/MusicLoop.vue";
         type="password"
         autocomplete="current-password"
         required="true"
-        class="w-full h-1/2 rounded-b-md focus:outline-none border border-gray-300"
+        class="w-full h-1/4 focus:outline-none border border-gray-300"
         placeholder="Password"
       />
-    </div>
-    <div class="sign-in primary-button">
-      <router-link to="/main" class="b-submit"> Sign in </router-link>
+      <br />
+      <input
+        id="comfirm_password"
+        name="comfirm_password"
+        type="password"
+        autocomplete="current-password"
+        required="true"
+        class="w-full h-1/4 rounded-b-md focus:outline-none border border-gray-300"
+        placeholder="Comfirm password"
+      />
     </div>
     <div class="register primary-button">
-      <router-link to="/register" class="b-submit"> Register </router-link>
+      <router-link to="/main" class="b-submit"> register </router-link>
     </div>
-    <div class="connect-with-42 primary-button">
-      <router-link to="/main" class="b42-submit"> Connect with 42 </router-link>
+    <div class="register-with-42 primary-button">
+      <router-link to="/main" class="b42-submit">
+        register with 42
+      </router-link>
     </div>
   </div>
 </template>
 
 <style lang="scss">
-@use "../assets/variables.scss" as v;
-
-.login-section {
+.register-section {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: 4.8fr 1.5fr repeat(3, 0.5fr) 1fr;
-  gap: 4% 0px;
+  grid-template-rows: 4.8fr 3fr repeat(2, 0.5fr) 1fr 1fr;
+  gap: 2% 0px;
   grid-auto-flow: row;
   grid-template-areas:
     ". logo sound"
     ". input ."
-    ". sign-in ."
     ". register ."
-    ". connect-with-42 ."
+    ". register-with-42 ."
     ". . .";
 
   .logo {
+    // border: 2px solid red;
     grid-area: logo;
     margin-top: 3rem;
   }
@@ -85,8 +102,8 @@ import MusicLoop from "../components/MusicLoop.vue";
     grid-area: register;
   }
 
-  .connect-with-42 {
-    grid-area: connect-with-42;
+  .register-with-42 {
+    grid-area: register-with-42;
   }
 }
 </style>

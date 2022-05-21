@@ -3,34 +3,12 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User, UserStatus } from './entities/user.entity';
 import { myDataSource } from 'src/app-data-source';
-import { validate } from 'class-validator';
 import { Repository } from 'typeorm';
 
 @Injectable()
 export class UsersService {
-
-  constructor(private userRepo : Repository<User>)
-  {
-    userRepo = myDataSource.getRepository(User);
-  }
-
-  create(createUserDto: CreateUserDto) {
-    const usrDto = new User();
-    const {login, mail, password, status, authToken, avatarRef, winCount, losscount} = createUserDto;
-    usrDto.login = login;
-    usrDto.mail = mail;
-    usrDto.password = password;
-    usrDto.status = status;
-    usrDto.authToken = authToken;
-    usrDto.avatarRef = avatarRef;
-    usrDto.winCount = winCount;
-    usrDto.lossCount = losscount;
-    validate(usrDto).then(errors => {
-      if (errors.length > 0)
-        console.log('validation failed. errors: ', errors)
-      else
-        myDataSource.getRepository(User).save(usrDto);
-    });
+ create(createUserDto: CreateUserDto) {
+    return myDataSource.getRepository(User).save(createUserDto);
   }
 
   findAll() {
@@ -38,22 +16,24 @@ export class UsersService {
     return userrepo.find();
   }
 
+ /* findName(login:string)
+  {
+    const userRepository = myDataSource.getRepository(User);
+    return userRepository.findOne({ where: { login} })
+  }*/
   findOne(id:string) {
-    const userrepo = myDataSource.getRepository(User);
-
-    return userrepo.findOneBy({
-      id,
-    });
+    const userRepo = myDataSource.getRepository(User);
+    return userRepo.findOne({ where: {id
+     } });
   }
 
-  update(id:string, updateUserDto: UpdateUserDto) {
+  async update(id:string, updateUserDto: UpdateUserDto) {
     const userrepo = myDataSource.getRepository(User);
 
-    const usrToUpdate= userrepo.findOneBy({id});
-    const usrDto = new User();
-    const {login, mail, password} = updateUserDto;
-
-    return `This action updates a #${id} user`;
+    const usrToUpdate= await userrepo.findOneBy({id});
+    const {login} = updateUserDto;
+    usrToUpdate.login = login;
+    myDataSource.getRepository(User).save(usrToUpdate);
   }
 
   async remove(id: string) {
@@ -61,16 +41,15 @@ export class UsersService {
 
     const usrToUpdate= await  userrepo.findOneBy({id});
 
-    return await userrepo.delete(usrToUpdate);
+    return usrToUpdate.remove();
   }
 
   async insertUser() : Promise<string>
   {
     const user : User = new User;
     user.login = 'jojo';
-    user.mail = 'jojo@randomail.com';
+    user.username = 'jojo';
     user.status = UserStatus.INGAME;
-    user.password='jojo';
     user.authToken="1234";
     user.winCount=0;
     user.lossCount=0;

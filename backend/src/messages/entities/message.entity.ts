@@ -17,7 +17,7 @@ export class Message {
     content: string;
 
     @ApiProperty()
-    @ManyToOne(() => User, (user) => user.messages)
+    @ManyToOne(type => User, (user) => user.messages)
     author: User;
 
     @ApiProperty()
