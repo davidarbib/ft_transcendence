@@ -4,9 +4,14 @@ import channels from "@/assets/msg_test.json";
 
 <template>
   <div class="pub-chan-section">
-    <button class="pub-chan-menu secondary-button text-left">
-      + Create channel
-    </button>
+    <div class="pub-chan-menu">
+      <button class="secondary-button text-left">
+        Create channel
+      </button>
+          <button class="pub-chan-menu secondary-button text-left">
+        Join channel
+      </button>
+    </div>
     <h1>Public channels :</h1>
     <div
       class="user-card rounded my-2 bg-black bg-opacity-10 font-medium hover:bg-opacity-30 transition duration-300"
@@ -28,6 +33,15 @@ import channels from "@/assets/msg_test.json";
   overflow: scroll;
   margin-right: 1rem;
   color: v.$primary;
+
+  .pub-chan-menu {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    button {
+      margin-right: 1rem;
+    }
+  }
   h1 {
     margin-top: 1rem;
     font-size: 2rem;
