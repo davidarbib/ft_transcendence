@@ -10,10 +10,17 @@ import { ChanParticipantsModule } from './chan-participants/chan-participants.mo
 import { PlayersModule } from './players/players.module';
 import { ContactsModule } from './contacts/contacts.module';
 import { createDataModule } from './Create_data/createData.module';
+import { AuthModule } from './auth/auth.module';
+import { ConfigModule } from '@nestjs/config';
+import { PassportModule } from '@nestjs/passport';
+
+let envFilePath = 'src/.env';
 
 @Module({
   imports:
     [
+      ConfigModule.forRoot({ envFilePath }),
+      PassportModule.register({ session: true }),
       UsersModule,
       ChannelsModule,
       MatchesModule,
@@ -22,6 +29,7 @@ import { createDataModule } from './Create_data/createData.module';
       PlayersModule,
       ContactsModule,
       createDataModule,
+      AuthModule,
     ], 
 })
 export class AppModule {
@@ -30,7 +38,7 @@ export class AppModule {
     myDataSource
     .initialize()
     .then(() => {
-        console.log("Data Source has been initialized!")
+        console.log("Data Source has been initialized!");
     })
     .catch((err) => {
         console.error("Error during Data Source initialization:", err)

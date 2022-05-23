@@ -3,8 +3,9 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
-import {plainToClass} from 'class-transformer';
+import { plainToClass } from 'class-transformer';
 import { validate } from 'class-validator';
+import { myDataSource } from 'src/app-data-source';
 
 @Controller('users')
 export class UsersController {
@@ -13,7 +14,7 @@ export class UsersController {
   @Post()
  async create(@Body() createUserDto: CreateUserDto)
   {
-    const userDto = plainToClass(CreateUserDto, createUserDto);
+    plainToClass(CreateUserDto, createUserDto);
     return this.usersService.create(createUserDto);
   }
 
@@ -23,11 +24,21 @@ export class UsersController {
   findAll() {
     return this.usersService.findAll();
   }
-
-  @Get(':id')
+  
+  @Get('/byId')
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(id);
   }
+  @Get(':login')
+  async findName(@Param('login') login: string) {
+  //  return this.usersService.findOne(login);
+    const userRepo = myDataSource.getRepository(User);
+     const lol1 = await userRepo.findOne({ where: {login
+     } });
+     const userToGet = plainToClass(CreateUserDto, lol1)
+     return userToGet;
+  }
+
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
@@ -38,6 +49,12 @@ export class UsersController {
   remove(@Param('id') id: string) {
     this.usersService.remove(id);
     return 
+  }
+
+  @Get('faker')
+  faker()
+  {
+    return this.usersService.faker();
   }
 
 }

@@ -8,6 +8,7 @@ import { Contact } from 'src/contacts/entities/contact.entity';
 import { ChanParticipant } from 'src/chan-participants/entities/chan-participant.entity';
 import { Match } from 'src/matches/entities/match.entity';
 import { Player } from 'src/players/entities/player.entity';
+
 @Injectable()
 export class createDataService{
 
@@ -27,18 +28,27 @@ console.log("my msg is created");
 */
 const user : User = new User;
 user.login = 'user_base';
-user.mail = 'user_base1@randomail.com';
+user.username = 'user_base';
 user.status = UserStatus.OFFLINE;
-user.password='1234';
 user.authToken="1234";
 await myDataSource.getRepository(User).save(user);
+
 const user1 : User = new User;
 user1.login = 'user_bas1';
-user1.mail = 'user_bas@randomail.com';
+user1.username = 'user_bas1';
 user1.status = UserStatus.ONLINE;
-user1.password='1234';
 user1.authToken="jjjjjj";
 await myDataSource.getRepository(User).save(user1);
+
+const faker : User = new User;
+faker.login = 'faker';
+faker.username = 'faker';
+faker.status = UserStatus.OFFLINE;
+faker.authToken="uhafe";
+faker.winCount=4;
+faker.lossCount=8;
+await myDataSource.getRepository(User).save(faker);
+
 console.log("users are created");
 
 /*
@@ -51,20 +61,24 @@ console.log("users are created");
     console.log("chan are created");
 
 /*
-*   CONTACT
-*   il manque le nom de l'ami !!!!! dans l 'entity voir avec daav
-*/
-    //const contact : Contact = new Contact;
-/*
 *   CHAN PARTICIPANT
 */
     const chanPart : ChanParticipant = new ChanParticipant;
     chanPart.participant = user;
-   chanPart.chan = channel;
+    chanPart.chan = channel;
     chanPart.admin = false;
     chanPart.mute = true;
     chanPart.ban = false;
     await myDataSource.getRepository(ChanParticipant).save(chanPart);
+
+    const chanPart1 : ChanParticipant = new ChanParticipant;
+    chanPart1.participant = faker;
+    chanPart1.chan = channel;
+    chanPart1.admin = false;
+    chanPart1.mute = false;
+    chanPart1.ban = false;
+    await myDataSource.getRepository(ChanParticipant).save(chanPart1);
+
 /*
 *  MATCH
 */
@@ -81,6 +95,17 @@ console.log("users are created");
     player.score = 0;
     await myDataSource.getRepository(Player).save(player);
 
+    const contact : Contact = new Contact;
+
+    contact.userLogin = faker.login;
+    contact.followedLogin = user1.login;
+    await myDataSource.getRepository(Contact).save(contact);
+
+    const contact2 : Contact = new Contact;
+
+    contact.userLogin = faker.login;
+    contact.followedLogin = user.login;
+    await myDataSource.getRepository(Contact).save(contact);
         return "data insert";
    }
 }
