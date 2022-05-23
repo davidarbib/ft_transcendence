@@ -3,7 +3,7 @@ import channels from "@/assets/msg_test.json";
 </script>
 
 <template>
-  <div class="pub-chan-section">
+  <div class="pub-chan-section px-2">
     <div class="pub-chan-menu">
       <button class="secondary-button text-left">
         Create channel
@@ -31,7 +31,7 @@ import channels from "@/assets/msg_test.json";
 .pub-chan-section {
   height: 92vh;
   overflow: scroll;
-  margin-right: 1rem;
+  // margin-right: 1rem;
   color: v.$primary;
 
   .pub-chan-menu {
