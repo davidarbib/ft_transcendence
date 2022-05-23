@@ -9,8 +9,6 @@ import HomeView from "@/views/HomeView.vue";
 import MainView from "@/views/MainView.vue";
 import PongView from "@/views/PongView.vue";
 import ProfilView from "@/views/ProfilView.vue";
-import RegisterView from "@/views/RegisterView.vue";
-import TutoView from "@/views/TutoView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -19,11 +17,6 @@ const router = createRouter({
       path: "/",
       name: "home",
       component: HomeView,
-    },
-    {
-      path: "/register",
-      name: "register",
-      component: RegisterView,
     },
     {
       path: "/main",
@@ -41,14 +34,10 @@ const router = createRouter({
       component: PongView,
     },
     {
-      path: "/profil",
+      path: "/profil/:pseudo",
       name: "profil",
       component: ProfilView,
-    },
-    {
-      path: "/tuto",
-      name: "tuto",
-      component: TutoView,
+      props: true
     },
     {
       path: "/mode",
