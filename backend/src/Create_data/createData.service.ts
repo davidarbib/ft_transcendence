@@ -101,11 +101,11 @@ console.log("users are created");
     contact.followedLogin = user1.login;
     await myDataSource.getRepository(Contact).save(contact);
 
-    const contact2 : Contact = new Contact;
+  /*  const contact2 : Contact = new Contact;
 
     contact.userLogin = faker.login;
     contact.followedLogin = user.login;
-    await myDataSource.getRepository(Contact).save(contact);
+    await myDataSource.getRepository(Contact).save(contact);*/
         return "data insert";
    }
 }

@@ -5,8 +5,14 @@ export class CreateUserDto {
 
     @IsString()
     @Length(1,9)
-   // @IsLoginlNotExisting()
+    @IsLoginlNotExisting()
     login: string;
+
+    
+    @IsString()
+    @Length(1,9)
+    @IsLoginlNotExisting()
+    username: string;
 
     status: UserStatus;
 
@@ -15,7 +21,7 @@ export class CreateUserDto {
     //@isJWT() pour l'authentification
     authToken: string;
 
-  //  @IsString()
-  @IsOptional()
+    @IsString()
+    @IsOptional()
     avatarRef:string;
 }

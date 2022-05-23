@@ -11,7 +11,8 @@ export class ContactsService {
     const newContact = new Contact;
     newContact.userLogin = contact.userLogin;
     newContact.followedLogin = contact.followedlogin; 
-    myDataSource.getRepository(Contact).save(newContact);
+    newContact.block = contact.block;
+    return myDataSource.getRepository(Contact).save(newContact);
   }
 
   findAll() {
@@ -23,10 +24,11 @@ export class ContactsService {
     return myDataSource.getRepository(Contact).findOneBy({id});
   }
 
-  async update(login:string, loginfollowed:string, block:boolean) {
+  async update(login:string, loginfollowed:string, blocked: UpdateContactDto) {
 
     const test =await  Contact.findOne({where : {userLogin: login, followedLogin: loginfollowed}})
-    test.block = block;
+    const {block} = blocked;
+    test.block= block;
     return  myDataSource.getRepository(Contact).save(test);
   }
   
@@ -44,7 +46,7 @@ export class ContactsService {
     const test = await Contact.find({where : {userLogin: login}});
     for( let elem of test)
     {
-      let lole =  await myDataSource.getRepository(User).findOne({where :{id: elem.followedLogin}});
+      const lole =  await myDataSource.getRepository(User).findOne({where :{login: elem.followedLogin}});
       lol.push(lole);
     }
     return lol;  

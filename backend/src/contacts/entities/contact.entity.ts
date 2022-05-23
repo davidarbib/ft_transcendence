@@ -9,8 +9,8 @@ export class Contact extends BaseEntity {
 
     @ApiProperty()
     @Column({
-        type : "boolean",
-        default: false,
+        type : "bool",
+        default: false
     })
     block: boolean; 
 

@@ -33,7 +33,7 @@ export class ContactsController {
    {
       return this.contactsService.all_friend(login);
   }
-  @Get(':login/:id')
+  @Get('/block/:login/:id')
   block_bool(@Param('login') login:string,  @Param('id') id:string)
    {
     User.findOne({where : {login:id}}).then(user => {
@@ -44,8 +44,8 @@ export class ContactsController {
 }
 
   @Patch(':id/:loginfollo/block')
-  update(@Param('login') login: string, @Param('loginfollowed')  loginfollow:string ,@Param('block') block:boolean) {
-    return this.contactsService.update(login, loginfollow,block);
+  update(@Param('login') login: string, @Param('loginfollowed')  loginfollow:string , @Body() updatecontact :UpdateContactDto) {
+    return this.contactsService.update(login, loginfollow,updatecontact);
   }
 
   @Delete(':login/:followid')

@@ -27,12 +27,12 @@ export class UsersService {
      } });
   }
 
-  async update(id:string, updateUserDto: UpdateUserDto) {
+  async update(login:string, updateUserDto: UpdateUserDto) {
     const userrepo = myDataSource.getRepository(User);
 
-    const usrToUpdate= await userrepo.findOneBy({id});
-    const {login} = updateUserDto;
-    usrToUpdate.login = login;
+    const usrToUpdate= await userrepo.findOneBy({login});
+    const {username} = updateUserDto;
+    usrToUpdate.username = username;
     myDataSource.getRepository(User).save(usrToUpdate);
   }
 

@@ -31,7 +31,8 @@ export class User extends BaseEntity
     @ApiProperty()
     @Column({
         type: "varchar",
-        nullable: false
+        nullable: false,
+        unique: true
     })
     username: string;
 
