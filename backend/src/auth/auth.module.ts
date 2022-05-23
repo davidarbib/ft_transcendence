@@ -7,12 +7,14 @@ import { User } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
 import { Api42Strategy } from './strategies/api42.strategy';
 import { Repository } from 'typeorm';
+import { SessionSerializer } from './utils/Serializer';
 
 @Module({
   imports: [PassportModule, UsersModule],
   controllers: [AuthController],
   providers: [
     Api42Strategy,
+    SessionSerializer,
     {
       provide: 'AUTH_SERVICE',
       useClass: AuthService,

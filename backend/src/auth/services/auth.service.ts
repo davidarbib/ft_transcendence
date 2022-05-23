@@ -9,59 +9,19 @@ import { UserDetails } from 'src/utils/types';
 @Injectable()
 export class AuthService implements AuthenticationProvider
 {
-  //userRepo = myDataSource.getRepository(User);
     constructor(private userRepo : Repository<User>)
     {
       this.userRepo = myDataSource.getRepository(User);
     }
-    
-    //async onModuleInit(): Promise<void>
-    //async onApplicationBootstrap(): Promise<void>
-    async toto()
-    {
-      let user: UserDetails = 
-      {
-        login: 'faker',
-        username: 'faker',
-      } 
-
-      const userTmp = await this.userRepo.find({
-        where: {
-          login: user.login,
-        },
-      });
-      if (userTmp)
-        return ;
-      const newUser = this.userRepo.create(user);
-      this.userRepo.save(newUser);
-
-      console.log('faker created');
-    }
 
     async validateUser(details: UserDetails)
     {
-      //--------------------------
-      //let userFake: UserDetails = 
-      //{
-      //  login: 'faker',
-      //  username: 'faker',
-      //} 
-
-      ////const userTmp = await this.userRepo.findBy(userFake);
-      //const userTmp = await this.userRepo.findBy({login : userFake.login});
-      //if (userTmp)
-      //  return ;
-      //const newUserFake = this.userRepo.create(userFake);
-      //this.userRepo.save(newUserFake);
-
-      //console.log('faker created');
-      //--------------------------
-
       const { login } = details;
       const user = this.userRepo.findBy({login: login});
       if (user)
         return user;
-      const newUser = await this.createUser(details);
+      //const newUser = await this.createUser(details);
+      return this.createUser(details);
     }
       
     createUser(details: UserDetails)
@@ -71,8 +31,12 @@ export class AuthService implements AuthenticationProvider
       return this.userRepo.save(user);
     }
 
-    findUser()
+    findUser(login42: string): Promise<User> | undefined
     {
-      throw new Error('Method non implemented');
+      return this.userRepo.findOne(
+      { 
+        where:
+        { login: login42, }
+      })
     }
 }
