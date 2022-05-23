@@ -56,5 +56,21 @@ const tryLogin = () => {
     grid-area: 3 / 2 / 3 / 2;
     margin-top: 2rem;
   }
+
+  @media screen and (min-height: 1160px) {
+
+    .logo {
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+    }
+      
+    .connect-with-42 {
+      position: relative;
+      top: -8.5rem;
+      width: 40%;
+      margin: auto;
+      }
+  }
 }
 </style>
