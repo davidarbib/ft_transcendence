@@ -53,6 +53,13 @@ export class User extends BaseEntity
 
     @ApiProperty()
     @Column({
+        type: "boolean",
+        default: false
+    })
+    doubleFA: boolean;
+    
+    @ApiProperty()
+    @Column({
         type : "varchar",
         nullable : true
     })

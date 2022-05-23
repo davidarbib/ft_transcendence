@@ -33,7 +33,22 @@ export class UsersService {
     const usrToUpdate= await userrepo.findOneBy({login});
     const {username} = updateUserDto;
     usrToUpdate.username = username;
-    myDataSource.getRepository(User).save(usrToUpdate);
+   return  myDataSource.getRepository(User).save(usrToUpdate);
+  }
+  async dfa_bool(login:string)
+  {
+    const dfa = await myDataSource.getRepository(User).findOneBy({login});
+    if (dfa.doubleFA == false)
+      return false;
+    return true;
+  }
+
+  async dfa_update(login:string, updatedto : UpdateUserDto)
+  {
+    const dfa = await myDataSource.getRepository(User).findOneBy({login});
+    const {doubleFA} = updatedto;
+    dfa.doubleFA = doubleFA;
+    return  myDataSource.getRepository(User).save(dfa);
   }
 
   async remove(id: string) {

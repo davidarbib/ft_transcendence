@@ -6,6 +6,11 @@ import { User } from './entities/user.entity';
 import { plainToClass } from 'class-transformer';
 import { validate } from 'class-validator';
 import { myDataSource } from 'src/app-data-source';
+import { Express } from 'express'
+import { FileInterceptor } from '@nestjs/platform-express';
+import { UseInterceptors } from '@nestjs/common';
+import { UploadedFile } from '@nestjs/common';
+import { diskStorage } from 'multer';
 
 @Controller('users')
 export class UsersController {
@@ -18,7 +23,15 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
-  // PARTIAL dans friend et plus  bc ca te permet d'avoir q'un bout d'une classe/entity et du coup de recup les info neccesaire
+
+  @Post('upload')
+@UseInterceptors(FileInterceptor('file', {
+  dest: 'uploads/'
+}))
+uploadFile(@UploadedFile() file) {
+  console.log(file);
+}
+  
 
   @Get()
   findAll() {
@@ -28,6 +41,10 @@ export class UsersController {
   @Get('/byId')
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(id);
+  }
+  @Get('/2FA/:login')
+  dfa_bool(@Param('login') login: string) {
+    return this.usersService.dfa_bool(login);
   }
   @Get(':login')
   async findName(@Param('login') login: string) {
@@ -40,11 +57,14 @@ export class UsersController {
   }
 
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(id, updateUserDto);
+  @Patch(':login')
+  update(@Param('login') login: string, @Body() updateUserDto: UpdateUserDto) {
+    return this.usersService.update(login, updateUserDto);
   }
-
+  @Patch('/2FA/:login')
+  dfa_update(@Param('login') login: string, @Body() updateUserDto: UpdateUserDto) {
+    return this.usersService.dfa_update(login, updateUserDto);
+  }
   @Delete(':id')
   remove(@Param('id') id: string) {
     this.usersService.remove(id);
