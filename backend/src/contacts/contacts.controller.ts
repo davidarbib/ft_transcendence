@@ -28,12 +28,12 @@ export class ContactsController {
   findOne(@Param('id') id: string) {
     return this.contactsService.findOne(id);
   }*/
-  @Get('/friend/:login')
+  @Get(':login/friend')
   all_friend(@Param('login') login:string)
    {
       return this.contactsService.all_friend(login);
   }
-  @Get('/block/:login/:id')
+  @Get(':login/:id/block')
   block_bool(@Param('login') login:string,  @Param('id') id:string)
    {
     User.findOne({where : {login:id}}).then(user => {
