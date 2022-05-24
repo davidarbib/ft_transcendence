@@ -65,6 +65,9 @@ body {
 }
 
 .b42-submit {
+  text-align: center;
+  color: #fff;
+  text-transform: capitalize;
   display: block;
   padding: 0.5rem 1rem;
   background-color: black;
@@ -72,5 +75,6 @@ body {
   transition: 0.3s;
   &:hover {
     background-color: rgb(72, 72, 72);
+    cursor: pointer;
   }
 }
