@@ -1,12 +1,16 @@
-import { Body, Controller, Get, Post, Res, UseGuards} from '@nestjs/common';
+import { Body, Controller, Get, Post, Res, Req, UseGuards} from '@nestjs/common';
 import { Response } from 'express'
-import * as passport from 'passport'
-import * as bcrypt from 'bcrypt'
+import { Request } from 'express'
+import { User } from 'src/users/entities/user.entity';
 import { Api42Guard } from './guards/api42.guard';
+import { LocalGuard } from './guards/local.guard';
+import { JwtGuard } from './guards/jwt.guard';
+import { AuthService } from './services/auth.service';
+import { JwtStrategy } from './strategies/jwt.strategy';
 
 @Controller('auth')
 export class AuthController {
-    constructor() {}
+    constructor(private readonly authService: AuthService) {}
     
 
     @Get('login')
@@ -14,6 +18,20 @@ export class AuthController {
     login()
     {
         return ;
+    }
+
+    @Post('localLogin')
+    @UseGuards(LocalGuard)
+    localLogin(@Req() request: Request): any
+    {
+        return this.authService.login(request.user);
+    }
+
+    @Get('protected')
+    @UseGuards(JwtGuard)
+    getHello(@Req() request: Request): any // TODO: request a Bearer token, validate token
+    {
+        return request.user;
     }
 
     @Get('status')

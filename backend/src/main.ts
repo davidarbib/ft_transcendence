@@ -23,18 +23,20 @@ async function bootstrap()
   const doc = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('/', app, doc);
 
-  app.use(
-    session({
-      cookie: {
-        maxAge: 86400000, //1 day
-      },
-      secret: process.env.COOKIE_SECRET,
-      resave: false,
-      saveUninitialized: false,
-    }),
-  );
-  app.use(passport.initialize());
-  app.use(passport.session());
+  //----session
+  //app.use(
+  //  session({
+  //    cookie: {
+  //      maxAge: 86400000, //1 day
+  //    },
+  //    secret: process.env.COOKIE_SECRET,
+  //    resave: false,
+  //    saveUninitialized: false,
+  //  }),
+  //);
+  //app.use(passport.initialize());
+  //app.use(passport.session());
+  //----session
 
   app.enableCors({
     credentials:true,

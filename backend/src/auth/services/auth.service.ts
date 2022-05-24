@@ -5,13 +5,27 @@ import { UsersService } from 'src/users/users.service';
 import { User } from 'src/users/entities/user.entity'
 import { AuthenticationProvider } from './auth';
 import { UserDetails } from 'src/utils/types';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService implements AuthenticationProvider
 {
-    constructor(private userRepo : Repository<User>)
+    constructor (
+      private userRepo : Repository<User>,
+      private jwtService : JwtService,
+    )
     {
       this.userRepo = myDataSource.getRepository(User);
+    }
+
+    async login(user: any)
+    {
+      const payload = { login: user.login, sub: user.id};
+      console.log(user.login, user.id);
+
+      return {
+        access_token: this.jwtService.sign(payload),
+      };
     }
 
     async validateUser(details: UserDetails)

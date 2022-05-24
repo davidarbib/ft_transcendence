@@ -20,7 +20,6 @@ let envFilePath = 'src/.env';
   imports:
     [
       ConfigModule.forRoot({ envFilePath }),
-      PassportModule.register({ session: true }),
       UsersModule,
       ChannelsModule,
       MatchesModule,
