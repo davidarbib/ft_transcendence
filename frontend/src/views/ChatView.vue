@@ -65,6 +65,9 @@ import messages from "@/assets/msg_body_test.json";
   .messages {
     grid-area: 2 / 2 / 3 / 2;
     overflow: scroll;
+    border: none;
+    overflow-y: hidden;
+    overflow-x: hidden;
 
     .message {
       margin-top: 1rem;

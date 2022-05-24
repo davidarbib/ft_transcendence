@@ -23,7 +23,7 @@ const tryLogin = () => {
   <div class="login-section">
     <div class="logo"><Title /></div>
     <div class="sound"><MusicLoop /></div>
-    <div class="connect-with-42 primary-button">
+    <div class="connect-with-42">
       <router-link to="/main" class="b42-submit"> Connect with 42 </router-link>
     </div>
   </div>
@@ -55,6 +55,21 @@ const tryLogin = () => {
   .connect-with-42 {
     grid-area: 3 / 2 / 3 / 2;
     margin-top: 2rem;
+  }
+
+  @media screen and (min-height: 1160px) {
+    .logo {
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+    }
+
+    .connect-with-42 {
+      position: relative;
+      top: -8.5rem;
+      width: 40%;
+      margin: auto;
+    }
   }
 }
 </style>
