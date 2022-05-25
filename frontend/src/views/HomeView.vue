@@ -10,12 +10,17 @@ let email = ref("");
 let password = ref("");
 
 const api = apiStore();
+// const current_user = authStore();
 
 const tryLogin = () => {
-  axios.post(`${api.url}/login`, {
-    email: email.value,
-    password: password.value,
-  });
+  axios
+    .get(`${api.url}/users/faker`)
+    .then((response) => {
+      console.log(response.data);
+    })
+    .catch((error) => {
+      console.log(error.data);
+    });
 };
 </script>
 
@@ -23,8 +28,8 @@ const tryLogin = () => {
   <div class="login-section">
     <div class="logo"><Title /></div>
     <div class="sound"><MusicLoop /></div>
-    <div class="connect-with-42">
-      <router-link to="/main" class="b42-submit"> Connect with 42 </router-link>
+    <div class="connect-with-42" @click="tryLogin">
+      <a to="#" class="b42-submit"> Connect with 42 </a>
     </div>
   </div>
 </template>
