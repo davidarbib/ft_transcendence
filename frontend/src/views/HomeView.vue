@@ -6,9 +6,11 @@ import { ref } from "vue";
 import axios from "axios";
 import { apiStore } from "@/stores/api";
 import { useUserStore } from "@/stores/auth";
+import { useRouter } from "vue-router";
 
 let email = ref("");
 let password = ref("");
+const router = useRouter();
 
 const api = apiStore();
 const userStore = useUserStore();
@@ -25,11 +27,10 @@ const tryLogin = () => {
       userStore.setUsername(response.data.username);
       userStore.setLossCount(response.data.lossCount);
       userStore.setWinCount(response.data.winCount);
-      userStore.setLogged(true);
       // userStore.print_user();
+      router.push("main");
     })
     .catch((error) => {
-      userStore.setLogged(false);
       console.log(error.data);
     });
 };
