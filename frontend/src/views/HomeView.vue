@@ -5,18 +5,27 @@ import MusicLoop from "../components/MusicLoop.vue";
 import { ref } from "vue";
 import axios from "axios";
 import { apiStore } from "@/stores/api";
+import { useUserStore } from "@/stores/auth";
 
 let email = ref("");
 let password = ref("");
 
 const api = apiStore();
-// const current_user = authStore();
+const userStore = useUserStore();
 
 const tryLogin = () => {
   axios
     .get(`${api.url}/users/faker`)
     .then((response) => {
-      console.log(response.data);
+      userStore.setLogin(response.data.login);
+      userStore.setAuthToken(response.data.authToken);
+      userStore.setAvatarRef(response.data.avatarRef);
+      userStore.setId(response.data.id);
+      userStore.setStatus(response.data.status);
+      userStore.setUsername(response.data.username);
+      userStore.setLossCount(response.data.lossCount);
+      userStore.setWinCount(response.data.winCount);
+      userStore.print_user();
     })
     .catch((error) => {
       console.log(error.data);
