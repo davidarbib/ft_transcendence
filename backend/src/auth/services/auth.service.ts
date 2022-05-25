@@ -6,6 +6,7 @@ import { User } from 'src/users/entities/user.entity'
 import { AuthenticationProvider } from './auth';
 import { UserDetails } from 'src/utils/types';
 import { JwtService } from '@nestjs/jwt';
+import { JwtPayload } from 'src/auth/strategies/jwt.strategy';
 
 @Injectable()
 export class AuthService implements AuthenticationProvider
@@ -20,20 +21,22 @@ export class AuthService implements AuthenticationProvider
 
     async login(user: any)
     {
-      const payload = { login: user.login, sub: user.id};
+      const payload: JwtPayload = { login: user.login, sub: user.id};
       console.log(user.login, user.id);
 
       return {
-        access_token: this.jwtService.sign(payload),
+        accessToken: this.jwtService.sign(payload),
       };
     }
 
     async validateUser(details: UserDetails)
     {
       const { login } = details;
-      const user = this.userRepo.findBy({login: login});
-      if (user)
-        return user;
+      console.log('login: ');
+      console.log(login);
+      const user = await this.findUser(login);
+      if (user) return user;
+      console.log('should create user');
       //const newUser = await this.createUser(details);
       return this.createUser(details);
     }
@@ -45,12 +48,12 @@ export class AuthService implements AuthenticationProvider
       return this.userRepo.save(user);
     }
 
-    findUser(login42: string): Promise<User> | undefined
+    findUser(login: string): Promise<User> | undefined
     {
       return this.userRepo.findOne(
       { 
         where:
-        { login: login42, }
+        { login: login, }
       })
     }
 }

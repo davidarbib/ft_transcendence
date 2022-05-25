@@ -7,6 +7,7 @@ import { LocalGuard } from './guards/local.guard';
 import { JwtGuard } from './guards/jwt.guard';
 import { AuthService } from './services/auth.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { DiscordGuard } from './guards/discord.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -19,12 +20,39 @@ export class AuthController {
     {
         return ;
     }
+    
+    @Get('redirect')
+    @UseGuards(Api42Guard)
+    redirect(@Res() response: Response)
+    {
+        console.log("redirection")
+        response.sendStatus(200);
+    }
 
     @Post('localLogin')
     @UseGuards(LocalGuard)
     localLogin(@Req() request: Request): any
     {
         return this.authService.login(request.user);
+    }
+
+    @Get('discordLogin')
+    @UseGuards(DiscordGuard)
+    discordLogin()
+    {
+        return ;
+    }
+
+    @Get('discordRedirect')
+    @UseGuards(DiscordGuard)
+    async discordRedirect(@Req() req: Request, @Res({ passthrough: true }) response: Response)
+    {
+        console.log('in redirect');
+        console.log(req.user);
+        const { accessToken } = await this.authService.login(req.user);
+        console.log('logged');
+        response.cookie('jwt', accessToken);
+        return req.user;
     }
 
     @Get('protected')
@@ -38,14 +66,6 @@ export class AuthController {
     status()
     {
 
-    }
-    
-    @Get('redirect')
-    @UseGuards(Api42Guard)
-    redirect(@Res() response: Response)
-    {
-        console.log("redirection")
-        response.sendStatus(200);
     }
 
     //@Get('faker')
