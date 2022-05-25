@@ -10,7 +10,8 @@ export const useUserStore = defineStore({
     status: "",
     username: "",
     lossCount: Number,
-    winCount: Number
+    winCount: Number,
+    logged: false
   }),
   actions: ({
     setLogin(userLogin: string): void {
@@ -36,6 +37,9 @@ export const useUserStore = defineStore({
     },
     setWinCount(userWinCount: NumberConstructor): void {
       this.winCount = userWinCount;
+    },
+    setLogged(userLogged: boolean): void {
+      this.logged = userLogged;
     },
     print_user(): void {
       console.log(`login: ${this.login}`);

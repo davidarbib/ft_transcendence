@@ -25,9 +25,11 @@ const tryLogin = () => {
       userStore.setUsername(response.data.username);
       userStore.setLossCount(response.data.lossCount);
       userStore.setWinCount(response.data.winCount);
-      userStore.print_user();
+      userStore.setLogged(true);
+      // userStore.print_user();
     })
     .catch((error) => {
+      userStore.setLogged(false);
       console.log(error.data);
     });
 };
