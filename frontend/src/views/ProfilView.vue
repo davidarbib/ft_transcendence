@@ -3,9 +3,20 @@ import { LockClosedIcon } from "@heroicons/vue/solid";
 import NavbarItem from "@/components/NavbarItem.vue";
 import Contact from "../components/Contact.vue";
 import Historic from "@/components/Historic.vue";
+import axios from "axios";
+import { useUserStore } from "@/stores/auth";
+import { apiStore } from "@/stores/api";
+import { onMounted } from "vue";
+
+const api = apiStore();
+const userStore = useUserStore();
 
 const props = defineProps({
   pseudo: String,
+});
+
+onMounted(() => {
+  axios.get(`${api.url}/users/${props.pseudo}`);
 });
 </script>
 
