@@ -50,9 +50,17 @@ export class AuthController {
         console.log('in redirect');
         console.log(req.user);
         const { accessToken } = await this.authService.login(req.user);
-        console.log('logged');
-        response.cookie('jwt', accessToken);
-        return req.user;
+        response.cookie(
+            'jwt',
+            accessToken,
+            {
+                //httpOnly: true,
+
+                expires: new Date(Date.now() + 60000),
+                sameSite: "lax",
+            });
+        //return req.user;
+        return accessToken;
     }
 
     @Get('protected')
@@ -67,27 +75,4 @@ export class AuthController {
     {
 
     }
-
-    //@Get('faker')
-    //faker()
-    //{
-    //      
-    //    return ;
-    //}
-
-    //@Post('register')
-    //async register(
-    //    @Body('login') login : string,
-    //    @Body('password') password : string,
-    //    @Body('mail') mail : string
-    //)
-    //{
-    //    const hashPassword = await bcrypt.hash(password, 10);
-    //    
-    //    return this.authService.create({
-    //        login,
-    //        password,
-    //        mail
-    //    });
-    //}
 }

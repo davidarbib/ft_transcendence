@@ -1,4 +1,4 @@
-import { Inject, Injectable, UnauthorizedException } from "@nestjs/common";
+import { Request, Inject, Injectable, UnauthorizedException } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { AuthenticationProvider } from "../services/auth";
 import { Strategy, ExtractJwt } from 'passport-jwt';
@@ -14,7 +14,16 @@ export class JwtStrategy extends PassportStrategy(Strategy)
     )
     {
         super({
-            jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+            //jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(), //uncomment to access protected routes with non-browser app,
+                                                                        //dont forget to provide bearer token in request
+            jwtFromRequest: (req) => {
+                let token = null;
+               // console.log(`jwt: ${req.cookies['jwt']}`);
+                if (req && req.cookies) {
+                    token = req.cookies['jwt'];
+                }
+                return token;
+            },
             ignoreExpiration: false,
             //secretOrKey: process.env.JWT_SECRET,
             secretOrKey: 'SECRET' //TODO
