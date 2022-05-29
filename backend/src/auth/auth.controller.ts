@@ -23,10 +23,21 @@ export class AuthController {
     
     @Get('redirect')
     @UseGuards(Api42Guard)
-    redirect(@Res() response: Response)
+    async redirect(@Req() req: Request, @Res({ passthrough: true }) response: Response)
     {
         console.log("redirection")
-        response.sendStatus(200);
+        const { accessToken } = await this.authService.login(req.user);
+        response.cookie(
+            'jwt',
+            accessToken,
+            {
+                httpOnly: false, //toggle to true on prod
+                expires: new Date(Date.now() + 60000),
+                sameSite: "lax",
+            });
+        //return req.user;
+        //return accessToken; //uncomment to obtain bearer token for curl/postman tests
+        return "Logged with 42";
     }
 
     @Post('localLogin')
@@ -47,20 +58,18 @@ export class AuthController {
     @UseGuards(DiscordGuard)
     async discordRedirect(@Req() req: Request, @Res({ passthrough: true }) response: Response)
     {
-        console.log('in redirect');
-        console.log(req.user);
         const { accessToken } = await this.authService.login(req.user);
         response.cookie(
             'jwt',
             accessToken,
             {
-                //httpOnly: true,
-
+                httpOnly: false, //toggle to true on prod
                 expires: new Date(Date.now() + 60000),
                 sameSite: "lax",
             });
         //return req.user;
-        return accessToken;
+        //return accessToken; //uncomment to obtain bearer token for curl/postman tests
+        return "Logged with Discord";
     }
 
     @Get('protected')
