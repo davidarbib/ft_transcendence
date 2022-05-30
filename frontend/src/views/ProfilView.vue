@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { LockClosedIcon } from "@heroicons/vue/solid";
 import NavbarItem from "@/components/NavbarItem.vue";
 import Contact from "../components/Contact.vue";
 import Historic from "@/components/Historic.vue";
@@ -7,16 +6,28 @@ import axios from "axios";
 import { useUserStore } from "@/stores/auth";
 import { apiStore } from "@/stores/api";
 import { onMounted } from "vue";
+import type User from "@/stores/auth";
+import { useRouter } from "vue-router";
 
 const api = apiStore();
 const userStore = useUserStore();
+const router = useRouter();
+let user: User | null = null;
 
 const props = defineProps({
   pseudo: String,
 });
 
 onMounted(() => {
-  axios.get(`${api.url}/users/${props.pseudo}`);
+  axios
+    .get(`${api.url}/users/${props.pseudo}`)
+    .then((response) => {
+      user = response.data;
+    })
+    .catch((error) => {
+      router.push("main");
+    });
+  if (user === null) router.push("main");
 });
 </script>
 

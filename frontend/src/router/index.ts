@@ -46,6 +46,7 @@ const router = createRouter({
     },
     {
       path: "/:catchAll(.*)",
+      name: "error",
       component: ErrorView
     }
   ]
