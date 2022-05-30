@@ -23,11 +23,12 @@ onMounted(() => {
     .get(`${api.url}/users/${props.pseudo}`)
     .then((response) => {
       user = response.data;
+      console.log(user);
+      if (response.data === "") router.push({ path: "/profil_not_found" });
     })
     .catch((error) => {
-      router.push("main");
+      router.push({ path: "/chat" });
     });
-  if (user === null) router.push("main");
 });
 </script>
 
