@@ -5,7 +5,7 @@ import Historic from "@/components/Historic.vue";
 import axios from "axios";
 import { useUserStore } from "@/stores/auth";
 import { apiStore } from "@/stores/api";
-import { onMounted, onBeforeMount } from "vue";
+import { onMounted } from "vue";
 import type User from "@/stores/auth";
 import { useRouter } from "vue-router";
 import { ref } from "vue";
@@ -39,8 +39,6 @@ onMounted(() => {
       router.push({ path: "/profil_not_found" });
     });
 });
-
-console.log(user);
 </script>
 
 <template>
