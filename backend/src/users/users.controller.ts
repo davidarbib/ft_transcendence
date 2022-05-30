@@ -4,26 +4,14 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { plainToClass } from 'class-transformer';
-import { validate } from 'class-validator';
 import { myDataSource } from 'src/app-data-source';
-import { Express } from 'express'
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UseInterceptors } from '@nestjs/common';
 import { UploadedFile } from '@nestjs/common';
 import { ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
-import { diskStorage } from 'multer';
-import {v4 as uuidv4} from 'uuid'
 import { Observable, of } from 'rxjs';
-import path = require('path')
-export const storage = {
-  storage: diskStorage({
-    destination: './uploads/profile-image',
-    filename: (req, file, cb) => {
-      const filename: string = path.parse(file.originalname).name + uuidv4()
-      const ext :string = path.parse(file.originalname).ext;
-      cb(null,`${filename}${ext}`);
-    }
-})}
+import { Imagestorage } from './images-ref/image.storage';
+
 @Controller('users')
 @ApiTags('users')
 export class UsersController {
@@ -37,7 +25,7 @@ export class UsersController {
   }
 
   @Post('upload')
-  @UseInterceptors(FileInterceptor('file', storage))
+  @UseInterceptors(FileInterceptor('file', Imagestorage))
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
@@ -50,13 +38,17 @@ export class UsersController {
       },
     },
   })
-uploadFile(@UploadedFile() file, @Request()  req) : Observable<Object> {
+uploadFile(@UploadedFile() file : Express.Multer.File, @Request()  req) : Observable<Object> {
+  const filename = file?.filename; 
   //const user: User = req.user.user
   //user.avatarRef = file.path;
-  return of({ImagePath: file.path});
+ // if (!filename) 
+    console.log(filename);
+  
+  return of({error: 'File must be a png'});
 }
 
-  @Get()
+@Get()
   findAll() {
     return this.usersService.findAll();
   }
