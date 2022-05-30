@@ -195,5 +195,8 @@ onMounted(() => {
       margin-bottom: 1rem;
     }
   }
+  .hidden {
+    opacity: 0;
+  }
 }
 </style>
