@@ -5,14 +5,24 @@ import Historic from "@/components/Historic.vue";
 import axios from "axios";
 import { useUserStore } from "@/stores/auth";
 import { apiStore } from "@/stores/api";
-import { onMounted } from "vue";
+import { onMounted, onBeforeMount } from "vue";
 import type User from "@/stores/auth";
 import { useRouter } from "vue-router";
+import { ref } from "vue";
 
 const api = apiStore();
 const userStore = useUserStore();
 const router = useRouter();
-let user: User | null = null;
+let user = ref({
+  id: "-1",
+  login: "",
+  username: "",
+  status: "offline",
+  authToken: "",
+  avatarRef: null,
+  winCount: "",
+  lossCount: "",
+});
 
 const props = defineProps({
   pseudo: String,
@@ -22,14 +32,15 @@ onMounted(() => {
   axios
     .get(`${api.url}/users/${props.pseudo}`)
     .then((response) => {
-      user = response.data;
-      console.log(user);
+      user.value = response.data;
       if (response.data === "") router.push({ path: "/profil_not_found" });
     })
     .catch((error) => {
-      router.push({ path: "/chat" });
+      router.push({ path: "/profil_not_found" });
     });
 });
+
+console.log(user);
 </script>
 
 <template>
@@ -55,15 +66,17 @@ onMounted(() => {
       <div class="stats">
         <ul>
           <li>
-            <p class="stat-nb">23</p>
+            <p class="stat-nb">
+              {{ parseInt(user.winCount) + parseInt(user.lossCount) }}
+            </p>
             <p class="stats-value">Games</p>
           </li>
           <li class="mx-6">
-            <p class="stat-nb">12</p>
+            <p class="stat-nb">{{ user.winCount }}</p>
             <p class="stats-value">Win</p>
           </li>
           <li>
-            <p class="stat-nb">11</p>
+            <p class="stat-nb">{{ user.lossCount }}</p>
             <p class="stats-value">Looses</p>
           </li>
         </ul>
@@ -73,12 +86,11 @@ onMounted(() => {
           <input
             id="pseudo"
             name="pseudo"
-            v-model="props.pseudo"
+            v-model="user.username"
             type="text"
             autocomplete="current-password"
             required="true"
             class="h-1/3 focus:outline-none border border-gray-300 px-1"
-            placeholder="Pseudo"
           />
           <p><i class="fa-solid fa-pen"></i></p>
         </div>
