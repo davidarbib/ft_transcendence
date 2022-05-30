@@ -11,6 +11,9 @@ import { UploadedFile } from '@nestjs/common';
 import { ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { Observable, of } from 'rxjs';
 import { Imagestorage } from './images-ref/image.storage';
+type ValidMimeTYpe = 'image/png' |'image/jpg' | 'image/jpeg ';
+
+const validMimeTYpe  : ValidMimeTYpe[] = [ 'image/png' , 'image/jpg' , 'image/jpeg ',];
 
 @Controller('users')
 @ApiTags('users')
@@ -38,14 +41,12 @@ export class UsersController {
       },
     },
   })
-uploadFile(@UploadedFile() file : Express.Multer.File, @Request()  req) : Observable<Object> {
-  const filename = file?.filename; 
+uploadFile(@UploadedFile() file , @Request()  req) : any {
+  const allowMimeType: ValidMimeTYpe[] = validMimeTYpe;
+  const fileext = allowMimeType.includes(file.mimetype);
+  if (!fileext) return of({error: 'File must be a png'});
   //const user: User = req.user.user
   //user.avatarRef = file.path;
- // if (!filename) 
-    console.log(filename);
-  
-  return of({error: 'File must be a png'});
 }
 
 @Get()
