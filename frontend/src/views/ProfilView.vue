@@ -13,6 +13,7 @@ import { ref } from "vue";
 const api = apiStore();
 const userStore = useUserStore();
 const router = useRouter();
+const isCurrentUserProfile = ref(false);
 let user = ref({
   id: "-1",
   login: "",
@@ -34,6 +35,8 @@ onMounted(() => {
     .then((response) => {
       user.value = response.data;
       if (response.data === "") router.push({ path: "/profil_not_found" });
+      if (user.value === userStore.$state.user)
+        isCurrentUserProfile.value = true;
     })
     .catch((error) => {
       router.push({ path: "/profil_not_found" });
@@ -54,8 +57,11 @@ onMounted(() => {
         <div class="secondary-button">
           <router-link to="/"> Edit profil image </router-link>
         </div>
-        <div class="profil-picture h-36 w-36">
+        <div v-if="user.avatarRef === null" class="profil-picture h-36 w-36">
           <img src="@/assets/sphere_mini.png" alt="user profil picture" />
+        </div>
+        <div v-else class="profil-picture h-36 w-36">
+          <img :src="user.avatarRef" alt="user profil picture" />
         </div>
         <div class="secondary-button">
           <router-link to="/"> + add friend </router-link>
