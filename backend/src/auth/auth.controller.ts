@@ -13,7 +13,6 @@ import { DiscordGuard } from './guards/discord.guard';
 export class AuthController {
     constructor(private readonly authService: AuthService) {}
     
-
     @Get('login')
     @UseGuards(Api42Guard)
     login()
@@ -28,13 +27,14 @@ export class AuthController {
         console.log("redirection")
         const { accessToken } = await this.authService.login(req.user);
         response.cookie(
-            'jwt',
+            process.env.JWT_COOKIE_KEY,
             accessToken,
             {
                 httpOnly: false, //toggle to true on prod
-                expires: new Date(Date.now() + 60000),
+                expires: new Date(Date.now() + process.env.JWT_EXPIRATION_MS),
                 sameSite: "lax",
-            });
+            }
+        );
         //return req.user;
         //return accessToken; //uncomment to obtain bearer token for curl/postman tests
         return "Logged with 42";
@@ -59,14 +59,16 @@ export class AuthController {
     async discordRedirect(@Req() req: Request, @Res({ passthrough: true }) response: Response)
     {
         const { accessToken } = await this.authService.login(req.user);
+        const jwtMs = parseInt(process.env.JWT_EXPIRATION_MS);
         response.cookie(
-            'jwt',
+            process.env.JWT_COOKIE_KEY,
             accessToken,
             {
                 httpOnly: false, //toggle to true on prod
-                expires: new Date(Date.now() + 60000),
+                expires: new Date(Date.now() + jwtMs),
                 sameSite: "lax",
-            });
+            }
+        );
         //return req.user;
         //return accessToken; //uncomment to obtain bearer token for curl/postman tests
         return "Logged with Discord";
@@ -74,14 +76,21 @@ export class AuthController {
 
     @Get('protected')
     @UseGuards(JwtGuard)
-    getHello(@Req() request: Request): any // TODO: request a Bearer token, validate token
+    getHello(@Req() request: Request): any
     {
         return request.user;
+    }
+
+    @Get('logout')
+    @UseGuards(JwtGuard)
+    logout(@Req() request: Request): any
+    {
+        //update user status
+        return "Logout successful";
     }
 
     @Get('status')
     status()
     {
-
     }
 }

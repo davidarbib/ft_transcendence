@@ -7,3 +7,12 @@ export type UserDetails =
 }
 
 export type Done = (err: Error, user: User) => void;
+
+declare global {
+  namespace Express {
+    interface User {
+      id: string,
+      login: string
+    }
+  }
+}

@@ -14,12 +14,15 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
 
-let envFilePath = 'src/.env';
+let envPath = 'src/.env';
 
 @Module({
   imports:
     [
-      ConfigModule.forRoot({ envFilePath }),
+      ConfigModule.forRoot({
+         envFilePath: envPath,
+         isGlobal: true,
+      }),
       UsersModule,
       ChannelsModule,
       MatchesModule,

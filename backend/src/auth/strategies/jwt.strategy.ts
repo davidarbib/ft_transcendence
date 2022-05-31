@@ -18,20 +18,19 @@ export class JwtStrategy extends PassportStrategy(Strategy)
                                                                         //dont forget to provide bearer token in request
             jwtFromRequest: (req) => {
                 let token = null;
-               // console.log(`jwt: ${req.cookies['jwt']}`);
                 if (req && req.cookies) {
-                    token = req.cookies['jwt'];
+                    token = req.cookies[process.env.JWT_COOKIE_KEY];
                 }
                 return token;
             },
             ignoreExpiration: false,
-            //secretOrKey: process.env.JWT_SECRET,
-            secretOrKey: 'SECRET' //TODO
+            secretOrKey: process.env.JWT_SECRET,
         });
     }
 
     async validate(payload: JwtPayload)
     {
+        console.log('validation');
         //const user = await this.usersService.getById(payload.sub)
         return {
             id: payload.sub,

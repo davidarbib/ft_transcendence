@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { myDataSource } from 'src/app-data-source'
 import { Repository } from 'typeorm';
 import { UsersService } from 'src/users/users.service';
-import { User } from 'src/users/entities/user.entity'
+import { User, UserStatus } from 'src/users/entities/user.entity'
 import { AuthenticationProvider } from './auth';
 import { UserDetails } from 'src/utils/types';
 import { JwtService } from '@nestjs/jwt';
@@ -13,6 +13,7 @@ export class AuthService implements AuthenticationProvider
 {
     constructor (
       private userRepo : Repository<User>,
+      private userService : UsersService,
       private jwtService : JwtService,
     )
     {
@@ -22,8 +23,8 @@ export class AuthService implements AuthenticationProvider
     async login(user: any)
     {
       const payload: JwtPayload = { login: user.login, sub: user.id};
-      console.log(user.login, user.id);
-
+      //console.log(user.login, user.id); //TODO
+      await this.userService.switchStatus(user.id, UserStatus.ONLINE);
       return {
         accessToken: this.jwtService.sign(payload),
       };

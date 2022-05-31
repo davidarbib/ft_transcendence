@@ -12,17 +12,24 @@ import { SessionSerializer } from './utils/Serializer';
 import { LocalStrategy } from './strategies/local.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './strategies/jwt.strategy';
-
+import { ConfigService } from '@nestjs/config';
+import { JwtGuard } from './guards/jwt.guard';
 
 @Module({
   imports: [
     PassportModule,
     UsersModule,
-    JwtModule.register({
-      //secret: process.env.JWT_SECRET,
-      secret: 'SECRET', //TODO
-      signOptions: { expiresIn: '60s'}
-    })
+    JwtModule.registerAsync({
+      useFactory: (config: ConfigService) => {
+        return {
+          secret: config.get<string>('JWT_SECRET'),
+          signOptions: {
+            expiresIn: config.get<string>('JWT_EXPIRATION_STR'),
+          },
+        };
+      },
+      inject: [ConfigService],
+    }),
   ],
   controllers: [AuthController],
   providers: [
@@ -38,6 +45,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
     Repository,
     AuthService
   ],
-  //exports: [AuthService]
+  //exports: []
 })
+
 export class AuthModule {}
