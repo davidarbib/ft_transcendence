@@ -55,7 +55,7 @@ onMounted(() => {
     <div class="profil-card bg-black bg-opacity-10">
       <header>
         <div class="secondary-button">
-          <router-link to="/chat"> send message </router-link>
+          <router-link to="/"> send message </router-link>
         </div>
         <div v-if="user.avatarRef === null" class="profil-picture h-36 w-36">
           <img src="@/assets/sphere_mini.png" alt="user profil picture" />
@@ -87,9 +87,16 @@ onMounted(() => {
       </div>
       <div class="user-infos w-3/5 mx-auto my-4">
         <div class="input-update">
-          <h1>
-            {{ user.username }}
-          </h1>
+          <input
+            id="pseudo"
+            name="pseudo"
+            v-model="user.username"
+            type="text"
+            autocomplete="current-password"
+            required="true"
+            class="h-1/3 focus:outline-none border border-gray-300 px-1"
+          />
+          <p><i class="fa-solid fa-pen"></i></p>
         </div>
       </div>
     </div>
@@ -172,8 +179,15 @@ onMounted(() => {
       flex-direction: row;
       justify-content: space-around;
       margin-bottom: 2rem;
-      font-size: 3rem;
-      text-transform: capitalize;
+
+      input {
+        width: 80%;
+        border-radius: 0.375rem;
+      }
+
+      p {
+        cursor: pointer;
+      }
     }
     .update-user-infos {
       width: 60%;
