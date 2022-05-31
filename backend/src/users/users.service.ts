@@ -22,6 +22,7 @@ export class UsersService {
     return userRepository.findOne({ where: { login} })
   }*/
   findOne(id:string) {
+    console.log(`id : ${id}`);
     const userRepo = myDataSource.getRepository(User);
     return userRepo.findOne({ where: {id
      } });
@@ -55,6 +56,14 @@ export class UsersService {
     user.lossCount=0;
     await myDataSource.getRepository(User).save(user);
     return "my user is created";
+  }
+
+  async switchStatus(id: string, status: UserStatus)
+  {
+    const userrepo = myDataSource.getRepository(User);
+    const usrToUpdate= await userrepo.findOneBy({id});
+    usrToUpdate.status = status;
+    userrepo.save(usrToUpdate);
   }
 
   async faker() : Promise<User>

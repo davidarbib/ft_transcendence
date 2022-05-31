@@ -2,7 +2,7 @@ import { CanActivate, ExecutionContext, Injectable} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport'
 
 @Injectable()
-export class Api42Guard extends AuthGuard('42')
+export class DiscordGuard extends AuthGuard('discord')
 {
     async canActivate(context: ExecutionContext) : Promise<any>
     {
