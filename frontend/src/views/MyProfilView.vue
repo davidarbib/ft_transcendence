@@ -28,20 +28,6 @@ let user = ref({
 const props = defineProps({
   pseudo: String,
 });
-
-onMounted(() => {
-  axios
-    .get(`${api.url}/users/${props.pseudo}`)
-    .then((response) => {
-      user.value = response.data;
-      if (response.data === "") router.push({ path: "/profil_not_found" });
-      if (user.value === userStore.$state.user)
-        isCurrentUserProfile.value = true;
-    })
-    .catch((error) => {
-      router.push({ path: "/profil_not_found" });
-    });
-});
 </script>
 
 <template>
@@ -55,7 +41,7 @@ onMounted(() => {
     <div class="profil-card bg-black bg-opacity-10">
       <header>
         <div class="secondary-button">
-          <router-link to="/"> send message </router-link>
+          <router-link to="/"> Update profile picture </router-link>
         </div>
         <div v-if="user.avatarRef === null" class="profil-picture h-36 w-36">
           <img src="@/assets/sphere_mini.png" alt="user profil picture" />
@@ -64,7 +50,7 @@ onMounted(() => {
           <img :src="user.avatarRef" alt="user profil picture" />
         </div>
         <div class="secondary-button">
-          <router-link to="/"> + add friend </router-link>
+          <router-link to="/"> Edit username </router-link>
         </div>
       </header>
       <div class="stats">
@@ -96,7 +82,6 @@ onMounted(() => {
             required="true"
             class="h-1/3 focus:outline-none border border-gray-300 px-1"
           />
-          <p><i class="fa-solid fa-pen"></i></p>
         </div>
       </div>
     </div>

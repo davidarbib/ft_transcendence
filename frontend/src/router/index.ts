@@ -9,6 +9,7 @@ import HomeView from "@/views/HomeView.vue";
 import MainView from "@/views/MainView.vue";
 import PongView from "@/views/PongView.vue";
 import ProfilView from "@/views/ProfilView.vue";
+import MyProfilView from "@/views/MyProfilView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -32,6 +33,11 @@ const router = createRouter({
       path: "/pong",
       name: "pong",
       component: PongView,
+    },
+    {
+      path: "/myprofile",
+      name: "myprofile",
+      component: MyProfilView,
     },
     {
       path: "/profil/:pseudo",
