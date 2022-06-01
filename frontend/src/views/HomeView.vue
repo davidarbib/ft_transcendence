@@ -32,6 +32,15 @@ const tryLogin = () => {
   <div class="login-section">
     <div class="logo"><Title /></div>
     <div class="sound"><MusicLoop /></div>
+    <div class="connect-with-discord">
+      <a
+        href="http://localhost:8090/auth/discordLogin"
+        class="primary-button"
+        target="popup"
+      >
+        Connect with Discord
+      </a>
+    </div>
     <div class="connect-with-42" @click="tryLogin">
       <a to="#" class="b42-submit"> Connect with 42 </a>
     </div>
@@ -48,7 +57,7 @@ const tryLogin = () => {
   display: grid;
   height: 100vh;
   grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: 10% 50% 20% 1fr;
+  grid-template-rows: 10% 40% 20% 20% 1fr;
   grid-auto-flow: row;
 
   .logo {
@@ -61,9 +70,14 @@ const tryLogin = () => {
     grid-area: 1 / 3 / 1 / 3;
   }
 
-  .connect-with-42 {
+  .connect-with-discord {
     grid-area: 3 / 2 / 3 / 2;
-    margin-top: 2rem;
+    margin-top: 0.5rem;
+  }
+
+  .connect-with-42 {
+    grid-area: 4 / 2 / 4 / 2;
+    margin-top: -2.5rem;
   }
 
   @media screen and (min-height: 1160px) {
