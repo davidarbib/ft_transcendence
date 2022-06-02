@@ -24,7 +24,7 @@ export class AuthService implements AuthenticationProvider
     {
       const payload: JwtPayload = { login: user.login, sub: user.id};
       //console.log(user.login, user.id); //TODO
-      await this.userService.switchStatus(user.id, UserStatus.ONLINE);
+      user = await this.userService.switchStatus(user.id, UserStatus.ONLINE);
       return {
         accessToken: this.jwtService.sign(payload),
       };
