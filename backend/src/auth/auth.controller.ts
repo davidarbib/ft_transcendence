@@ -35,9 +35,9 @@ export class AuthController {
                 sameSite: "lax",
             }
         );
-        //return req.user;
+        return req.user;
         //return accessToken; //uncomment to obtain bearer token for curl/postman tests
-        return "Logged with 42";
+        //return "Logged with 42";
     }
 
     @Post('localLogin')
@@ -69,9 +69,9 @@ export class AuthController {
                 sameSite: "lax",
             }
         );
-        //return req.user;
+        return req.user;
         //return accessToken; //uncomment to obtain bearer token for curl/postman tests
-        return "Logged with Discord";
+        //return "Logged with Discord";
     }
 
     @Get('protected')

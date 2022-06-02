@@ -63,7 +63,7 @@ export class UsersService {
     const userrepo = myDataSource.getRepository(User);
     const usrToUpdate= await userrepo.findOneBy({id});
     usrToUpdate.status = status;
-    userrepo.save(usrToUpdate);
+    return userrepo.save(usrToUpdate);
   }
 
   async faker() : Promise<User>
