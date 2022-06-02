@@ -37,7 +37,7 @@ export class AuthController {
         );
         //return req.user;
         //return accessToken; //uncomment to obtain bearer token for curl/postman tests
-        return response.redirect('http://localhost:8000/main');
+        return response.redirect('http://localhost:8000');
         //return "Logged with 42";
     }
 
@@ -72,7 +72,7 @@ export class AuthController {
         );
         //return req.user;
         //return accessToken; //uncomment to obtain bearer token for curl/postman tests
-        return response.redirect('http://localhost:8000/main');
+        return response.redirect('http://localhost:8000');
         //return "Logged with Discord";
     }
 
