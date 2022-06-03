@@ -10,29 +10,28 @@ export class ChanParticipantsService {
   create(createChanParticipantDto: CreateChanParticipantDto) {
     return myDataSource.getRepository(ChanParticipant).save(createChanParticipantDto);
   }
-
+/*
   findAll() {
     const chanPartRepo = myDataSource.getRepository(ChanParticipant)
 
     return chanPartRepo.find();
   }
-
-  findOne(id: string) {
+*/
+/*
+  async findOne(name: string) {
     const chanPartRepo = myDataSource.getRepository(ChanParticipant)
-    return chanPartRepo.findOneBy({id});
+    return chanPartRepo.findOneBy({name});
   }
-
-  async update(id: string, updateChanParticipantDto: UpdateChanParticipantDto) {
-    const chanPartRepo = myDataSource.getRepository(ChanParticipant)
-    const chanToUpdate = await chanPartRepo.findOneBy({id});
-    const {admin,mute, ban, participant, chan} = updateChanParticipantDto;
-    chanToUpdate.admin = admin;
-    chanToUpdate.mute = mute;
-    chanToUpdate.ban = ban;
-    chanToUpdate.participant = participant;
-    chanToUpdate.chan = chan;
-    myDataSource.getRepository(ChanParticipant).save(chanToUpdate);
-    return `This action updates a #${id} chanParticipant`;
+*/
+  async update(id: string, updateChanParticipantDto: UpdateChanParticipantDto, chanPart : ChanParticipant) {
+    
+    let date =   new Date;  
+    const {privilege, ban, mute} = updateChanParticipantDto;
+    chanPart.privilege = privilege;
+     chanPart.ban = ban;
+     chanPart.mute = mute;
+     chanPart.end_timestamp = new Date(date.setTime(3));
+   return await myDataSource.getRepository(ChanParticipant).save(chanPart);
   }
 
   async remove(id: string) {

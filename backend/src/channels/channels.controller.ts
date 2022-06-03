@@ -1,36 +1,49 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Request, Res } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
 import { ChannelsService } from './channels.service';
 import { CreateChannelDto } from './dto/create-channel.dto';
 import { UpdateChannelDto } from './dto/update-channel.dto';
+import { ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { User } from 'src/users/entities/user.entity';
+import { ChanParticipant } from 'src/chan-participants/entities/chan-participant.entity';
+import { myDataSource } from 'src/app-data-source';
+import { Channel } from './entities/channel.entity';
 
 @Controller('channels')
+@ApiTags('channels')
+
 export class ChannelsController {
   constructor(private readonly channelsService: ChannelsService) {}
 
   @Post()
-  create(@Body() createChannelDto: CreateChannelDto) {
+  create(@Body() createChannelDto: CreateChannelDto, @Request() req)
+  {
     const CreateChannel = plainToClass(CreateChannelDto, createChannelDto);
-    return this.channelsService.create(createChannelDto);
+    const usr: User = req.usr.usr;
+    return this.channelsService.create(CreateChannel, usr);
   }
-
   @Get()
   findAll() {
     return this.channelsService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.channelsService.findOne(id);
+  @Get(':name')
+  findOne(@Param('name') name: string) {
+    return this.channelsService.findOne(name);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateChannelDto: UpdateChannelDto) {
-    return this.channelsService.update(id, updateChannelDto);
-  }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.channelsService.remove(id);
+  
+  @Patch('/update/:name')
+ async  update(@Param('name') name: string, @Body() updateChannelDto: UpdateChannelDto, @Request() req) {
+    const usr: User = req.usr.usr;
+    const chan = await myDataSource.getRepository(Channel).findOneBy({name});
+    return this.channelsService.update(name, updateChannelDto, usr, chan);
   }
+/*
+  @Delete(':name')
+  remove(@Param('name') name: string) {
+    return this.channelsService.remove(name);
+    );
+  }*/
 }
