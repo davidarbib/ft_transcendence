@@ -2,7 +2,7 @@
 import LockClosedIcon from "@heroicons/vue/solid";
 import Title from "@/components/TitleMax.vue";
 import MusicLoop from "../components/MusicLoop.vue";
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import axios from "axios";
 import { apiStore } from "@/stores/api";
 import { useUserStore } from "@/stores/auth";
@@ -14,17 +14,6 @@ const router = useRouter();
 
 const api = apiStore();
 const userStore = useUserStore();
-
-const tryLogin = () => {
-  axios
-    .get(`${api.url}/users/faker`)
-    .then((response) => {
-      userStore.setUser(response.data);
-    })
-    .catch((error) => {
-      console.log(error.data);
-    });
-};
 </script>
 
 <template>
@@ -32,16 +21,12 @@ const tryLogin = () => {
     <div class="logo"><Title /></div>
     <div class="sound"><MusicLoop /></div>
     <div class="connect-with-discord" @click="tryLogin">
-      <a
-        href="http://localhost:8090/auth/discordLogin"
-        class="primary-button"
-        target="popup"
-      >
+      <a href="http://localhost:8090/auth/discordLogin" class="primary-button">
         Connect with Discord
       </a>
     </div>
     <div class="connect-with-42" @click="tryLogin">
-      <a to="#" class="b42-submiT"> Connect with 42 </a>
+      <a to="#" class="b42-submit"> Connect with 42 </a>
     </div>
   </div>
 </template>

@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
-
-// ajouter le path .vue de la page a ajouter
+import { isLoggedIn } from "@/utils/auth";
 
 import ChatView from "@/views/ChatView.vue";
 import ErrorView from "@/views/ErrorView.vue";
@@ -14,10 +13,13 @@ import MyProfilView from "@/views/MyProfilView.vue";
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-    { // Ajouter toutes les pages de routes.
+    {
       path: "/",
       name: "home",
       component: HomeView,
+      meta: {
+        allowAnonymous: true
+      }
     },
     {
       path: "/main",
@@ -53,9 +55,26 @@ const router = createRouter({
     {
       path: "/:catchAll(.*)",
       name: "error",
-      component: ErrorView
+      component: ErrorView,
+      meta: {
+        allowAnonymous: true
+      }
     }
   ]
+})
+
+router.beforeEach((to, from, next) => {
+  if (to.name == 'home' && isLoggedIn()) {
+    next({ path: '/main' })
+  }
+  else if (!to.meta.allowAnonymous && !isLoggedIn()) {
+    next({
+      path: '/',
+    })
+  }
+  else {
+    next()
+  }  
 })
 
 export default router;

@@ -2,7 +2,6 @@ import { defineStore } from "pinia";
 
 export default interface User {
   login: String,
-  authToken: String,
   avatarRef: String,
   id: String,
   status: String,
@@ -14,7 +13,8 @@ export default interface User {
 export const useUserStore = defineStore({
   id: 'user',
   state: () => ({
-    user: {}
+    user: {},
+    pongJWT: String
   }),
   actions: ({
     setUser(user: User): void {
