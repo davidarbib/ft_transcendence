@@ -35,8 +35,9 @@ export class AuthController {
                 sameSite: "lax",
             }
         );
-        return req.user;
+        //return req.user;
         //return accessToken; //uncomment to obtain bearer token for curl/postman tests
+        return response.redirect('http://localhost:8000');
         //return "Logged with 42";
     }
 
@@ -69,12 +70,13 @@ export class AuthController {
                 sameSite: "lax",
             }
         );
-        return req.user;
+        //return req.user;
         //return accessToken; //uncomment to obtain bearer token for curl/postman tests
+        return response.redirect('http://localhost:8000');
         //return "Logged with Discord";
     }
 
-    @Get('protected')
+    @Get('current')
     @UseGuards(JwtGuard)
     getHello(@Req() request: Request): any
     {
