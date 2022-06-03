@@ -20,7 +20,6 @@ const tryLogin = () => {
     .get(`${api.url}/users/faker`)
     .then((response) => {
       userStore.setUser(response.data);
-      router.push("main");
     })
     .catch((error) => {
       console.log(error.data);
@@ -32,7 +31,7 @@ const tryLogin = () => {
   <div class="login-section">
     <div class="logo"><Title /></div>
     <div class="sound"><MusicLoop /></div>
-    <div class="connect-with-discord">
+    <div class="connect-with-discord" @click="tryLogin">
       <a
         href="http://localhost:8090/auth/discordLogin"
         class="primary-button"
@@ -42,7 +41,7 @@ const tryLogin = () => {
       </a>
     </div>
     <div class="connect-with-42" @click="tryLogin">
-      <a to="#" class="b42-submit"> Connect with 42 </a>
+      <a to="#" class="b42-submiT"> Connect with 42 </a>
     </div>
   </div>
 </template>
