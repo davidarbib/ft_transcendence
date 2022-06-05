@@ -67,15 +67,26 @@ const userStore = useUserStore();
   @media screen and (min-height: 1160px) {
     .logo {
       display: flex;
+      position: relative;
+      top: 6rem;
       justify-content: center;
       align-items: flex-end;
     }
 
+    .connect-with-discord,
     .connect-with-42 {
-      position: relative;
-      top: -8.5rem;
       width: 40%;
       margin: auto;
+    }
+
+    .connect-with-discord {
+      position: relative;
+      top: -6rem;
+    }
+
+    .connect-with-42 {
+      position: relative;
+      top: -16rem;
     }
   }
 }

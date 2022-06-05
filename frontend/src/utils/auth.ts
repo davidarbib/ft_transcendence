@@ -1,34 +1,26 @@
 import jwt_decode from 'jwt-decode'
 import axios from 'axios'
 
-const REST_ENDPOINT = 'http://localhost:8090/'
-const AUTH_TOKEN_KEY = 'pongJWT'
+const AUTH_TOKEN_KEY = 'pongJwt'
 
 export function logoutUser() {
-    clearAuthToken()
+    clearAuthToken();
 }
 
 export function setAuthToken(token: string) {
-    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
-    localStorage.setItem(AUTH_TOKEN_KEY, token)
+    localStorage.setItem(AUTH_TOKEN_KEY, token);
 }
 
-export function getAuthToken() {
-    return localStorage.getItem(AUTH_TOKEN_KEY)    
+export function getAuthToken(): string | null {
+    return localStorage.getItem(AUTH_TOKEN_KEY);
 }
 
-export function clearAuthToken() {
-    axios.defaults.headers.common['Authorization'] = ''
-    localStorage.removeItem(AUTH_TOKEN_KEY)
+export function clearAuthToken(): void {
+    localStorage.removeItem(AUTH_TOKEN_KEY);
 }
 
-export function isLoggedIn() {
-    let authToken = getAuthToken()
-    return !!authToken
+export function isLoggedIn(): Boolean {
+    let authToken = getAuthToken();
+    console.log(`MY JEW TOKEN IS : ${authToken}`)
+    return !!authToken;
 }
-
-// export function getUserInfo() {
-//     if (isLoggedIn()) {
-//         return jwt_decode(getAuthToken())
-//     }
-// }
