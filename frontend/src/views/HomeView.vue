@@ -75,7 +75,7 @@ const userStore = useUserStore();
 
     .connect-with-discord,
     .connect-with-42 {
-      width: 40%;
+      width: 50%;
       margin: auto;
     }
 
