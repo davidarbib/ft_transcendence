@@ -6,6 +6,13 @@ export type UserDetails =
     username: string,
 }
 
+export type TwoFactorSecret = 
+{
+  secret: string,
+  uri: string, 
+  qr: string, 
+}
+
 export type Done = (err: Error, user: User) => void;
 
 declare global {

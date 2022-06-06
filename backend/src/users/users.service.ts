@@ -7,13 +7,18 @@ import { Repository } from 'typeorm';
 
 @Injectable()
 export class UsersService {
- create(createUserDto: CreateUserDto) {
+
+  constructor (private userRepo: Repository<User>)
+  {
+    this.userRepo = myDataSource.getRepository(User);
+  }
+
+  create(createUserDto: CreateUserDto) {
     return myDataSource.getRepository(User).save(createUserDto);
   }
 
   findAll() {
-    const userrepo = myDataSource.getRepository(User);
-    return userrepo.find();
+    return this.userRepo.find();
   }
 
  /* findName(login:string)
@@ -23,25 +28,19 @@ export class UsersService {
   }*/
   findOne(id:string) {
     console.log(`id : ${id}`);
-    const userRepo = myDataSource.getRepository(User);
-    return userRepo.findOne({ where: {id
+    return this.userRepo.findOne({ where: {id
      } });
   }
 
   async update(id:string, updateUserDto: UpdateUserDto) {
-    const userrepo = myDataSource.getRepository(User);
-
-    const usrToUpdate= await userrepo.findOneBy({id});
+    const usrToUpdate= await this.userRepo.findOneBy({id});
     const {login} = updateUserDto;
     usrToUpdate.login = login;
     myDataSource.getRepository(User).save(usrToUpdate);
   }
 
   async remove(id: string) {
-    const userrepo = myDataSource.getRepository(User);
-
-    const usrToUpdate= await  userrepo.findOneBy({id});
-
+    const usrToUpdate= await  this.userRepo.findOneBy({id});
     return usrToUpdate.remove();
   }
 
@@ -54,16 +53,15 @@ export class UsersService {
     user.authToken="1234";
     user.winCount=0;
     user.lossCount=0;
-    await myDataSource.getRepository(User).save(user);
+    await this.userRepo.save(user);
     return "my user is created";
   }
 
   async switchStatus(id: string, status: UserStatus)
   {
-    const userrepo = myDataSource.getRepository(User);
-    const usrToUpdate= await userrepo.findOneBy({id});
+    const usrToUpdate= await this.userRepo.findOneBy({id});
     usrToUpdate.status = status;
-    return userrepo.save(usrToUpdate);
+    return this.userRepo.save(usrToUpdate);
   }
 
   async faker() : Promise<User>
@@ -75,4 +73,9 @@ export class UsersService {
     })
     return user;
   } 
+
+  async setTwoFactorSecret(userId: string, secret: string)
+  {
+    this.userRepo.update(userId, {twoFactorSecret: secret});
+  }
 }

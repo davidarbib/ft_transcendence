@@ -70,6 +70,20 @@ export class User extends BaseEntity
         default: 0
     })
     lossCount: number;
+
+    @ApiProperty()
+    @Column({
+        type: "bool",
+        default: false 
+    })
+    twoFactorEnabled: boolean;
+
+    @ApiProperty()
+    @Column({
+        type: "varchar",
+        nullable: true
+    })
+    twoFactorSecret: string;
     
 /*    @ApiProperty()
     @Column({

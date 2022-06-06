@@ -14,6 +14,8 @@ import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { ConfigService } from '@nestjs/config';
 import { JwtGuard } from './guards/jwt.guard';
+import { TwoFactorAuthController } from './twoFactorAuth.controller';
+import { TwoFactorAuthService } from './services/twoFactorAuth.service';
 
 @Module({
   imports: [
@@ -31,7 +33,10 @@ import { JwtGuard } from './guards/jwt.guard';
       inject: [ConfigService],
     }),
   ],
-  controllers: [AuthController],
+  controllers: [
+    AuthController,
+    TwoFactorAuthController
+  ],
   providers: [
     Api42Strategy,
     DiscordStrategy,
@@ -43,7 +48,8 @@ import { JwtGuard } from './guards/jwt.guard';
       useClass: AuthService,
     },
     Repository,
-    AuthService
+    AuthService,
+    TwoFactorAuthService,
   ],
   //exports: []
 })
