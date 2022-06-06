@@ -8,19 +8,27 @@ export function logoutUser() {
 }
 
 export function setAuthToken(token: string) {
-    localStorage.setItem(AUTH_TOKEN_KEY, token);
+    document.cookie = `${AUTH_TOKEN_KEY}=${token}`;
 }
 
 export function getAuthToken(): string | null {
-    return localStorage.getItem(AUTH_TOKEN_KEY);
+    var cookieArr = document.cookie.split(";");
+    
+    for(var i = 0; i < cookieArr.length; i++) {
+        var cookiePair = cookieArr[i].split("=");
+        
+        if(AUTH_TOKEN_KEY == cookiePair[0].trim()) {
+            return decodeURIComponent(cookiePair[1]);
+        }
+    }
+    return null;
 }
 
 export function clearAuthToken(): void {
-    localStorage.removeItem(AUTH_TOKEN_KEY);
+    document.cookie = `${AUTH_TOKEN_KEY}=`;
 }
 
 export function isLoggedIn(): Boolean {
     let authToken = getAuthToken();
-    console.log(`MY JEW TOKEN IS : ${authToken}`)
     return !!authToken;
 }

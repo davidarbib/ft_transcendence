@@ -2,18 +2,6 @@
 import LockClosedIcon from "@heroicons/vue/solid";
 import Title from "@/components/TitleMax.vue";
 import MusicLoop from "../components/MusicLoop.vue";
-import { ref, onMounted } from "vue";
-import axios from "axios";
-import { apiStore } from "@/stores/api";
-import { useUserStore } from "@/stores/auth";
-import { useRouter } from "vue-router";
-
-let email = ref("");
-let password = ref("");
-const router = useRouter();
-
-const api = apiStore();
-const userStore = useUserStore();
 </script>
 
 <template>
@@ -26,7 +14,9 @@ const userStore = useUserStore();
       </a>
     </div>
     <div class="connect-with-42" @click="tryLogin">
-      <a to="#" class="b42-submit"> Connect with 42 </a>
+      <a href="http://localhost:8090/auth/login" class="b42-submit">
+        Connect with 42
+      </a>
     </div>
   </div>
 </template>
