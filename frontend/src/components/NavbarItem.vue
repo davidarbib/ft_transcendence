@@ -26,7 +26,7 @@ const visibleToggle = () => {
             >Chat</router-link
           >
           <router-link
-            to="/profil/faker"
+            to="/myprofile"
             class="py-4 px-2 text-gray-300 font-semibold hover:text-[#e63380] transition duration-700"
             >Profil</router-link
           >
