@@ -13,20 +13,19 @@ import { ref } from "vue";
 const api = apiStore();
 const userStore = useUserStore();
 const router = useRouter();
-const isCurrentUserProfile = ref(false);
-let user = ref({
-  id: "-1",
-  login: "",
-  username: "",
-  status: "offline",
-  authToken: "",
-  avatarRef: null,
-  winCount: "",
-  lossCount: "",
-});
 
-const props = defineProps({
-  pseudo: String,
+onMounted(() => {
+  if (userStore.user.id === "default") {
+    axios.defaults.withCredentials = true;
+    axios
+      .get(`${api.url}/auth/current`)
+      .then((response) => {
+        userStore.user = response.data;
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
 });
 </script>
 
@@ -43,11 +42,8 @@ const props = defineProps({
         <div class="secondary-button">
           <router-link to="/"> Update profile picture </router-link>
         </div>
-        <div v-if="user.avatarRef === null" class="profil-picture h-36 w-36">
+        <div class="profil-picture h-36 w-36">
           <img src="@/assets/sphere_mini.png" alt="user profil picture" />
-        </div>
-        <div v-else class="profil-picture h-36 w-36">
-          <img :src="user.avatarRef" alt="user profil picture" />
         </div>
         <div class="secondary-button">
           <router-link to="/"> Edit username </router-link>
@@ -56,17 +52,15 @@ const props = defineProps({
       <div class="stats">
         <ul>
           <li>
-            <p class="stat-nb">
-              {{ parseInt(user.winCount) + parseInt(user.lossCount) }}
-            </p>
+            <p class="stat-nb">0</p>
             <p class="stats-value">Games</p>
           </li>
           <li class="mx-6">
-            <p class="stat-nb">{{ user.winCount }}</p>
+            <p class="stat-nb">{{ userStore.user.winCount }}</p>
             <p class="stats-value">Win</p>
           </li>
           <li>
-            <p class="stat-nb">{{ user.lossCount }}</p>
+            <p class="stat-nb">{{ userStore.user.lossCount }}</p>
             <p class="stats-value">Looses</p>
           </li>
         </ul>
@@ -76,7 +70,7 @@ const props = defineProps({
           <input
             id="pseudo"
             name="pseudo"
-            v-model="user.username"
+            v-model="userStore.user.username"
             type="text"
             autocomplete="current-password"
             required="true"

@@ -1,24 +1,9 @@
 import { defineStore } from "pinia";
 
-export default interface User {
-  id: String,
-  login: String,
-  username: String,
-  status: String,
-  authToken: String,
-  avatarRef: String,
-  lossCount: String,
-  winCount: String
-}
-
 export const useUserStore = defineStore({
   id: 'user',
   state: () => ({
-    user: {},
-  }),
-  actions: ({
-    setUser(user: User): void {
-      this.user = user;
-    }
+    user: {id: "default", login: "", username: "", status: "online", authToken: null, avatarRef: null, lossCount: 10, winCount: 10},
+    test: 42
   })
 })

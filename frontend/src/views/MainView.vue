@@ -47,7 +47,7 @@ onMounted(() => {
   axios
     .get(`${api.url}/auth/current`)
     .then((response) => {
-      userStore.setUser(response.data);
+      userStore.user = response.data;
       console.log(userStore.user);
     })
     .catch((error) => {
