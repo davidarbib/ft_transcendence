@@ -1,11 +1,9 @@
 import { defineStore } from "pinia";
 
-export const authJwtStore = defineStore({
-  id: "authToken",
+export const useUserStore = defineStore({
+  id: 'user',
   state: () => ({
-      token: "",
-      logged: false,
-      user_id: 0,
-      status: "online"
-  }),
-});
+    user: {id: "default", login: "", username: "", status: "online", authToken: null, avatarRef: null, lossCount: 10, winCount: 10},
+    test: 42
+  })
+})

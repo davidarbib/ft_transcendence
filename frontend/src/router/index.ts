@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
-
-// ajouter le path .vue de la page a ajouter
+import { isLoggedIn } from "@/utils/auth";
 
 import ChatView from "@/views/ChatView.vue";
 import ErrorView from "@/views/ErrorView.vue";
@@ -9,14 +8,18 @@ import HomeView from "@/views/HomeView.vue";
 import MainView from "@/views/MainView.vue";
 import PongView from "@/views/PongView.vue";
 import ProfilView from "@/views/ProfilView.vue";
+import MyProfilView from "@/views/MyProfilView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-    { // Ajouter toutes les pages de routes.
+    {
       path: "/",
       name: "home",
       component: HomeView,
+      meta: {
+        allowAnonymous: true
+      }
     },
     {
       path: "/main",
@@ -34,6 +37,11 @@ const router = createRouter({
       component: PongView,
     },
     {
+      path: "/myprofile",
+      name: "myprofile",
+      component: MyProfilView,
+    },
+    {
       path: "/profil/:pseudo",
       name: "profil",
       component: ProfilView,
@@ -46,9 +54,27 @@ const router = createRouter({
     },
     {
       path: "/:catchAll(.*)",
-      component: ErrorView
+      name: "error",
+      component: ErrorView,
+      meta: {
+        allowAnonymous: true
+      }
     }
   ]
+})
+
+router.beforeEach((to, from, next) => {
+  if (to.name == 'home' && isLoggedIn()) {
+    next({ path: '/main' })
+  }
+  else if (!to.meta.allowAnonymous && !isLoggedIn()) {
+    next({
+      path: '/',
+    })
+  }
+  else {
+    next()
+  }
 })
 
 export default router;

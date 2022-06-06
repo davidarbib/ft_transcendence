@@ -13,34 +13,19 @@ import { ref } from "vue";
 const api = apiStore();
 const userStore = useUserStore();
 const router = useRouter();
-const isCurrentUserProfile = ref(false);
-let user = ref({
-  id: "-1",
-  login: "",
-  username: "",
-  status: "offline",
-  authToken: "",
-  avatarRef: null,
-  winCount: "",
-  lossCount: "",
-});
-
-const props = defineProps({
-  pseudo: String,
-});
 
 onMounted(() => {
-  axios
-    .get(`${api.url}/users/${props.pseudo}`)
-    .then((response) => {
-      user.value = response.data;
-      if (response.data === "") router.push({ path: "/profil_not_found" });
-      if (user.value === userStore.$state.user)
-        isCurrentUserProfile.value = true;
-    })
-    .catch((error) => {
-      router.push({ path: "/profil_not_found" });
-    });
+  if (userStore.user.id === "default") {
+    axios.defaults.withCredentials = true;
+    axios
+      .get(`${api.url}/auth/current`)
+      .then((response) => {
+        userStore.user = response.data;
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
 });
 </script>
 
@@ -55,41 +40,42 @@ onMounted(() => {
     <div class="profil-card bg-black bg-opacity-10">
       <header>
         <div class="secondary-button">
-          <router-link to="/chat"> send message </router-link>
+          <router-link to="/"> Update profile picture </router-link>
         </div>
-        <div v-if="user.avatarRef === null" class="profil-picture h-36 w-36">
+        <div class="profil-picture h-36 w-36">
           <img src="@/assets/sphere_mini.png" alt="user profil picture" />
         </div>
-        <div v-else class="profil-picture h-36 w-36">
-          <img :src="user.avatarRef" alt="user profil picture" />
-        </div>
         <div class="secondary-button">
-          <router-link to="/"> + add friend </router-link>
+          <router-link to="/"> Edit username </router-link>
         </div>
       </header>
       <div class="stats">
         <ul>
           <li>
-            <p class="stat-nb">
-              {{ parseInt(user.winCount) + parseInt(user.lossCount) }}
-            </p>
+            <p class="stat-nb">0</p>
             <p class="stats-value">Games</p>
           </li>
           <li class="mx-6">
-            <p class="stat-nb">{{ user.winCount }}</p>
+            <p class="stat-nb">{{ userStore.user.winCount }}</p>
             <p class="stats-value">Win</p>
           </li>
           <li>
-            <p class="stat-nb">{{ user.lossCount }}</p>
+            <p class="stat-nb">{{ userStore.user.lossCount }}</p>
             <p class="stats-value">Looses</p>
           </li>
         </ul>
       </div>
       <div class="user-infos w-3/5 mx-auto my-4">
         <div class="input-update">
-          <h1>
-            {{ user.username }}
-          </h1>
+          <input
+            id="pseudo"
+            name="pseudo"
+            v-model="userStore.user.username"
+            type="text"
+            autocomplete="current-password"
+            required="true"
+            class="h-1/3 focus:outline-none border border-gray-300 px-1"
+          />
         </div>
       </div>
     </div>
@@ -172,8 +158,15 @@ onMounted(() => {
       flex-direction: row;
       justify-content: space-around;
       margin-bottom: 2rem;
-      font-size: 3rem;
-      text-transform: capitalize;
+
+      input {
+        width: 80%;
+        border-radius: 0.375rem;
+      }
+
+      p {
+        cursor: pointer;
+      }
     }
     .update-user-infos {
       width: 60%;
