@@ -45,7 +45,7 @@ uploadFile(@UploadedFile() file , @Request()  req) : any {
   const allowMimeType: ValidMimeTYpe[] = validMimeTYpe;
   const fileext = allowMimeType.includes(file.mimetype);
   if (!fileext) return of({error: 'File must be a png'});
-  //const user: User = req.user.user
+  //const user: User = req.user;
   //user.avatarRef = file.path;
 }
 
@@ -53,7 +53,7 @@ uploadFile(@UploadedFile() file , @Request()  req) : any {
   findAll() {
     return this.usersService.findAll();
   }
-  @Get('profile-image/:login')
+  @Get(':login/profil-image')
   async findProfileImage(@Param('login') login:string, @Res() res) {
     const usr = await myDataSource.getRepository(User).findOneBy({login})
     return usr.avatarRef;
