@@ -35,6 +35,7 @@ export class ChannelsService {
     .leftJoinAndSelect("user.id", "test", "channel.id = :id", {id : channel.id,})
     .where("user.login = :login", {login : usr.login})
     .getOne()
+    // const test = user.chanParticipants[channel.id]
     if (chanPart.privilege != ChanPartStatus.OWNER)
     throw new HttpException ({
       status: HttpStatus.FORBIDDEN,
