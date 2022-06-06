@@ -2,14 +2,19 @@
 import NavbarItem from "@/components/NavbarItem.vue";
 import Contact from "@/components/Contact.vue";
 import Title from "@/components/Title.vue";
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { computed } from "@vue/reactivity";
+import { apiStore } from "@/stores/api";
+import { useUserStore } from "@/stores/auth";
+import axios from "axios";
 
 let game_mode = ref("default");
 let popupTriggers = ref(false);
 let elapsedTimeS = ref(0);
 let elapsedTimeM = ref(0);
 let timer = ref();
+const api = apiStore();
+const userStore = useUserStore();
 
 const formattedElapsedTime = computed(() => {
   if (elapsedTimeS.value > 59) {
@@ -36,6 +41,22 @@ const TogglePopup = (): void => {
   }
   popupTriggers.value = !popupTriggers.value;
 };
+
+onMounted(() => {
+  axios
+    .get(`${api.url}/auth/current`, {
+      headers: {
+        withCredentials: true,
+      },
+    })
+    .then((response) => {
+      userStore.setUser(response.data);
+      console.log(userStore.user);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+});
 </script>
 
 <template>
