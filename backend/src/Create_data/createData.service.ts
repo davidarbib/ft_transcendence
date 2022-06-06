@@ -15,6 +15,11 @@ export class createDataService{
 
    async insertdata(): Promise<string>
    {
+
+const contact1 : Contact = new Contact;
+contact1.userLogin = "Whaou";
+contact1.followedLogin = "Faker"
+
 /*
 *   MSG
 */
