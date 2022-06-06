@@ -2,66 +2,44 @@ import { Injectable } from '@nestjs/common';
 import { myDataSource } from 'src/app-data-source'
 import { Repository } from 'typeorm';
 import { UsersService } from 'src/users/users.service';
-import { User } from 'src/users/entities/user.entity'
+import { User, UserStatus } from 'src/users/entities/user.entity'
 import { AuthenticationProvider } from './auth';
 import { UserDetails } from 'src/utils/types';
+import { JwtService } from '@nestjs/jwt';
+import { JwtPayload } from 'src/auth/strategies/jwt.strategy';
 
 @Injectable()
 export class AuthService implements AuthenticationProvider
 {
-  //userRepo = myDataSource.getRepository(User);
-    constructor(private userRepo : Repository<User>)
+    constructor (
+      private userRepo : Repository<User>,
+      private userService : UsersService,
+      private jwtService : JwtService,
+    )
     {
       this.userRepo = myDataSource.getRepository(User);
     }
-    
-    //async onModuleInit(): Promise<void>
-    //async onApplicationBootstrap(): Promise<void>
-    async toto()
+
+    async login(user: any)
     {
-      let user: UserDetails = 
-      {
-        login: 'faker',
-        username: 'faker',
-      } 
-
-      const userTmp = await this.userRepo.find({
-        where: {
-          login: user.login,
-        },
-      });
-      if (userTmp)
-        return ;
-      const newUser = this.userRepo.create(user);
-      this.userRepo.save(newUser);
-
-      console.log('faker created');
+      const payload: JwtPayload = { login: user.login, sub: user.id};
+      //console.log(user.login, user.id); //TODO
+      user = await this.userService.switchStatus(user.id, UserStatus.ONLINE);
+      return {
+        accessToken: this.jwtService.sign(payload),
+      };
     }
 
     async validateUser(details: UserDetails)
     {
-      //--------------------------
-      //let userFake: UserDetails = 
-      //{
-      //  login: 'faker',
-      //  username: 'faker',
-      //} 
-
-      ////const userTmp = await this.userRepo.findBy(userFake);
-      //const userTmp = await this.userRepo.findBy({login : userFake.login});
-      //if (userTmp)
-      //  return ;
-      //const newUserFake = this.userRepo.create(userFake);
-      //this.userRepo.save(newUserFake);
-
-      //console.log('faker created');
-      //--------------------------
-
       const { login } = details;
-      const user = this.userRepo.findBy({login: login});
-      if (user)
-        return user;
-      const newUser = await this.createUser(details);
+      console.log('login: ');
+      console.log(login);
+      const user = await this.findUser(login);
+      if (user) return user;
+      console.log('should create user');
+      //const newUser = await this.createUser(details);
+      return this.createUser(details);
     }
       
     createUser(details: UserDetails)
@@ -71,8 +49,12 @@ export class AuthService implements AuthenticationProvider
       return this.userRepo.save(user);
     }
 
-    findUser()
+    findUser(login: string): Promise<User> | undefined
     {
-      throw new Error('Method non implemented');
+      return this.userRepo.findOne(
+      { 
+        where:
+        { login: login, }
+      })
     }
 }

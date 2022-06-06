@@ -1,4 +1,7 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, BadRequestException, Request, Res } from '@nestjs/common';
+import { Controller, Get, Post,
+        Body, Patch, Param, Delete,
+        BadRequestException, UseGuards,Request, Res} from '@nestjs/common';
+//import { Request } from 'express';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -14,6 +17,7 @@ import { Imagestorage } from './images-ref/image.storage';
 type ValidMimeTYpe = 'image/png' |'image/jpg' | 'image/jpeg ';
 
 const validMimeTYpe  : ValidMimeTYpe[] = [ 'image/png' , 'image/jpg' , 'image/jpeg ',];
+import { JwtGuard } from 'src/auth/guards/jwt.guard';
 
 @Controller('users')
 @ApiTags('users')
@@ -28,6 +32,7 @@ export class UsersController {
   }
 
   @Post('upload')
+  @UseGuards(JwtGuard)
   @UseInterceptors(FileInterceptor('file', Imagestorage))
   @ApiConsumes('multipart/form-data')
   @ApiBody({
@@ -45,8 +50,9 @@ uploadFile(@UploadedFile() file , @Request()  req) : any {
   const allowMimeType: ValidMimeTYpe[] = validMimeTYpe;
   const fileext = allowMimeType.includes(file.mimetype);
   if (!fileext) return of({error: 'File must be a png'});
-  //const user: User = req.user;
-  //user.avatarRef = file.path;
+  const user: User = req.user;
+  user.avatarRef = file.path;
+  console.log(user.avatarRef);
 }
 
 @Get()
@@ -86,6 +92,11 @@ uploadFile(@UploadedFile() file , @Request()  req) : any {
   dfa_update(@Param('login') login: string, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.dfa_update(login, updateUserDto);
   }
+  /*
+    @Patch(':id')
+  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+    return this.usersService.update(id, updateUserDto);
+  }*/
   @Delete(':id')
   remove(@Param('id') id: string) {
     this.usersService.remove(id);
@@ -95,7 +106,18 @@ uploadFile(@UploadedFile() file , @Request()  req) : any {
   @Get('faker')
   faker()
   {
+    //console.log('hola');
     return this.usersService.faker();
   }
 
+  //@Get('current')
+  //@UseGuards(JwtGuard)
+  //current(@Req() req: Request)
+  //{
+  //  return 'cc';
+  //  //console.log('cc');
+  //  //return "hfdkjfhkdjfh";
+  //  //return req.user;
+  //  return this.usersService.findOne(req.user.id);
+  //}
 }

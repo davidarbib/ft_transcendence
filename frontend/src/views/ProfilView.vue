@@ -3,6 +3,10 @@ import { LockClosedIcon } from "@heroicons/vue/solid";
 import NavbarItem from "@/components/NavbarItem.vue";
 import Contact from "../components/Contact.vue";
 import Historic from "@/components/Historic.vue";
+
+const props = defineProps({
+  pseudo: String,
+});
 </script>
 
 <template>
@@ -44,22 +48,9 @@ import Historic from "@/components/Historic.vue";
       <div class="user-infos w-3/5 mx-auto my-4">
         <div class="input-update">
           <input
-            id="email-address"
-            name="email"
-            type="email"
-            autocomplete="email"
-            value="roberlavipere@snakemail.com"
-            required="true"
-            class="h-1/3 focus:outline-none border border-gray-300 px-1"
-            placeholder="Email address"
-          />
-          <p><i class="fa-solid fa-pen"></i></p>
-        </div>
-        <div class="input-update">
-          <input
             id="pseudo"
             name="pseudo"
-            value="ROBERT LA VIPÈRE"
+            v-model="props.pseudo"
             type="text"
             autocomplete="current-password"
             required="true"
@@ -68,22 +59,6 @@ import Historic from "@/components/Historic.vue";
           />
           <p><i class="fa-solid fa-pen"></i></p>
         </div>
-        <div class="input-update">
-          <input
-            id="password"
-            name="password"
-            type="password"
-            autocomplete="current-password"
-            value="monMotDePasse"
-            required="true"
-            class="h-1/3 focus:outline-none border border-gray-300 px-1"
-            placeholder="Password"
-          />
-          <p><i class="fa-solid fa-pen"></i></p>
-        </div>
-      </div>
-      <div class="update-user-infos primary-button">
-        <router-link to="/profil" class="b-submit"> Save changes </router-link>
       </div>
     </div>
     <div class="contact-bar">
@@ -120,6 +95,10 @@ import Historic from "@/components/Historic.vue";
     grid-row: 2/4;
     border-radius: 0.375rem;
     margin-top: 3rem;
+    display: flex;
+    flex-direction: column;
+    align-items: space-around;
+    // justify-content: baseline;
 
     header {
       display: flex;
@@ -128,9 +107,12 @@ import Historic from "@/components/Historic.vue";
 
       .secondary-button {
         width: 20%;
-        height: 10%;
+        height: 40%;
         position: relative;
         top: 4rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
       }
 
       .profil-picture {
