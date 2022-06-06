@@ -43,12 +43,9 @@ const TogglePopup = (): void => {
 };
 
 onMounted(() => {
+  axios.defaults.withCredentials = true;
   axios
-    .get(`${api.url}/auth/current`, {
-      headers: {
-        withCredentials: true,
-      },
-    })
+    .get(`${api.url}/auth/current`)
     .then((response) => {
       userStore.setUser(response.data);
       console.log(userStore.user);
