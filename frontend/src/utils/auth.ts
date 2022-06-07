@@ -1,6 +1,3 @@
-import jwt_decode from 'jwt-decode'
-import axios from 'axios'
-
 const AUTH_TOKEN_KEY = 'pongJwt'
 
 export function logoutUser() {
