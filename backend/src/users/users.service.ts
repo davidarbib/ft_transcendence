@@ -78,4 +78,9 @@ export class UsersService {
   {
     this.userRepo.update(userId, {twoFactorSecret: secret});
   }
+  
+  async turnOnTwoFactor(userId: string)
+  {
+    this.userRepo.update(userId, {twoFactorEnabled: true});
+  }
 }

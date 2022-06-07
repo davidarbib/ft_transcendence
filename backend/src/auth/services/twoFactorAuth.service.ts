@@ -23,6 +23,17 @@ export class TwoFactorAuthService
         return secret;
     }
 
+    public async isTwoFactorAuthValid(token: string, user: User) : Promise<boolean>
+    {
+        const result = node2fa.verifyToken(user.twoFactorSecret, token);
+        if (!result)
+            return false;
+        const { delta } = result;
+        if (delta !== 0)
+            return false;
+        return true;
+    }
+
     public async pipeQrCodeStream(stream: Response, url: string)
     {
         return toFileStream(stream, url);
