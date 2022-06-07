@@ -1,16 +1,13 @@
 <script setup lang="ts">
+import ChatModal from '@/components/ChatModal.vue';
 import channels from "@/assets/msg_test.json";
 </script>
 
 <template>
   <div class="pub-chan-section">
     <div class="pub-chan-menu">
-      <button class="secondary-button text-left">
-        Create channel
-      </button>
-          <button class="pub-chan-menu secondary-button text-left">
-        Join channel
-      </button>
+      <ChatModal> <p>Create Channel</p></ChatModal>
+      <ChatModal> <p>Join Channel</p></ChatModal>
     </div>
     <h1>Public channels :</h1>
     <div

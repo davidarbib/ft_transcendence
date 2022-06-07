@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { logoutUser } from "@/utils/auth";
 
 const visible = ref(true);
-
 const visibleToggle = () => {
   visible.value = !visible.value;
 };
@@ -26,7 +26,7 @@ const visibleToggle = () => {
             >Chat</router-link
           >
           <router-link
-            to="/profil/teemo"
+            to="/myprofile"
             class="py-4 px-2 text-gray-300 font-semibold hover:text-[#e63380] transition duration-700"
             >Profil</router-link
           >
@@ -34,10 +34,11 @@ const visibleToggle = () => {
       </div>
       <!-- Secondary Navbar items -->
       <div class="hidden md:flex items-center space-x-3">
-        <router-link
-          to="/"
+        <a
+          href="#"
+          @click="logoutUser"
           class="py-2 px-2 font-medium text-gray-300 rounded hover:bg-red-700 transition duration-700"
-          >Disconnect</router-link
+          >Disconnect</a
         >
       </div>
       <!-- Mobile menu button -->
