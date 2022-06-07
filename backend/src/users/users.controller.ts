@@ -20,10 +20,14 @@ const validMimeTYpe  : ValidMimeTYpe[] = [ 'image/png' , 'image/jpg' , 'image/jp
 import { JwtGuard } from 'src/auth/guards/jwt.guard';
 
 @Controller('users')
+@UseGuards(JwtGuard)
 @ApiTags('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  /*
+  * POST 
+  */
   @Post()
  async create(@Body() createUserDto: CreateUserDto)
   {
@@ -32,7 +36,7 @@ export class UsersController {
   }
 
   @Post('upload')
-  @UseGuards(JwtGuard)
+ // @UseGuards(JwtGuard)
   @UseInterceptors(FileInterceptor('file', Imagestorage))
   @ApiConsumes('multipart/form-data')
   @ApiBody({
@@ -53,50 +57,47 @@ uploadFile(@UploadedFile() file , @Request()  req) : any {
   const user: User = req.user;
   user.avatarRef = file.path;
   console.log(user.avatarRef);
+  return myDataSource.getRepository(User).save(user);
 }
-
+/*
+* GET 
+*
+*/
 @Get()
   findAll() {
     return this.usersService.findAll();
   }
+  @Get(':login')
+  async findName(@Param('login') login: string) {
+    return this.usersService.findOne(login);
+  }
+
   @Get(':login/profil-image')
-  async findProfileImage(@Param('login') login:string, @Res() res) {
+  async findProfileImage(@Param('login') login:string) {
     const usr = await myDataSource.getRepository(User).findOneBy({login})
     return usr.avatarRef;
   }
-  
-  @Get('/byId')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(id);
-  }
+
   @Get(':login/2FA')
-  dfa_bool(@Param('login') login: string) {
-    return this.usersService.dfa_bool(login);
+  dfa_bool(@Request() req) {
+    const usr : User = req.user;
+      return usr.doubleFA;
   }
-  @Get(':login')
-  async findName(@Param('login') login: string) {
-  //  return this.usersService.findOne(login);
-    const userRepo = myDataSource.getRepository(User);
-     const lol1 = await userRepo.findOne({ where: {login
-     } });
-     const userToGet = plainToClass(CreateUserDto, lol1)
-     return userToGet;
+/*
+*  PATCH
+*
+*/
+  @Patch('update')
+  update(@Request() req, @Body() updateUserDto: UpdateUserDto) {
+    const usr :User = req.user;
+    return this.usersService.update(usr, updateUserDto);
+  }
+  @Patch('2FA')
+  dfa_update(@Request() req, @Body() updateUserDto: UpdateUserDto) {
+    const usr : User = req.user;
+    return this.usersService.dfa_update(usr, updateUserDto);
   }
 
-
-  @Patch(':login')
-  update(@Param('login') login: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(login, updateUserDto);
-  }
-  @Patch(':login/2FA')
-  dfa_update(@Param('login') login: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.dfa_update(login, updateUserDto);
-  }
-  /*
-    @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(id, updateUserDto);
-  }*/
   @Delete(':id')
   remove(@Param('id') id: string) {
     this.usersService.remove(id);

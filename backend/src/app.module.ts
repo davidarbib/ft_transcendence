@@ -33,7 +33,6 @@ let envPath = 'src/.env';
       ContactsModule,
       createDataModule,
       AuthModule,
-      MessagerModule,
       ChatModule,
     ], 
 })

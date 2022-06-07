@@ -28,28 +28,16 @@ export class UsersService {
      } });
   }
 
-  async update(login:string, updateUserDto: UpdateUserDto) {
-    const userrepo = myDataSource.getRepository(User);
-
-    const usrToUpdate= await userrepo.findOneBy({login});
+  async update(usr: User, updateUserDto: UpdateUserDto) {
     const {username} = updateUserDto;
-    usrToUpdate.username = username;
-   return  myDataSource.getRepository(User).save(usrToUpdate);
+    usr.username = username;
+   return  myDataSource.getRepository(User).save(usr);
   }
-  async dfa_bool(login:string)
+  async dfa_update(usr:User, updatedto : UpdateUserDto)
   {
-    const dfa = await myDataSource.getRepository(User).findOneBy({login});
-    if (dfa.doubleFA == false)
-      return false;
-    return true;
-  }
-
-  async dfa_update(login:string, updatedto : UpdateUserDto)
-  {
-    const dfa = await myDataSource.getRepository(User).findOneBy({login});
     const {doubleFA} = updatedto;
-    dfa.doubleFA = doubleFA;
-    return  myDataSource.getRepository(User).save(dfa);
+    usr.doubleFA = doubleFA;
+    return  myDataSource.getRepository(User).save(usr);
   }
 
   async remove(id: string) {
