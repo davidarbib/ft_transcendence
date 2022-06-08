@@ -65,7 +65,7 @@ onMounted(() => {
       </div>
       <div class="popup" v-if="popupTriggers">
         <div class="popup-inner bg-black bg-opacity-100">
-          <h1>Searching for a game...</h1>
+          <h1>In queue...</h1>
           <h2 class="text-center">{{ formattedElapsedTime }}</h2>
           <button class="popup-close secondary-button" @click="TogglePopup()">
             CANCEL QUEUE
