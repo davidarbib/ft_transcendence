@@ -27,6 +27,5 @@ export class Contact extends BaseEntity {
         nullable: false
     })
     followedLogin: string
-     //afficher le blockage mm fo dire o front de faire un tchek sur ca !! 
 
 }

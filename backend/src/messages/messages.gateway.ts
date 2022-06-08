@@ -5,6 +5,7 @@ import {UseGuards,Request} from '@nestjs/common';
 import { User } from 'src/users/entities/user.entity';
 import { Server, Socket } from 'socket.io';
 import { MessagesService } from './messages.service';
+import { Messages } from './entities/message.entity';
 
 @WebSocketGateway({
   cors:{
@@ -18,11 +19,11 @@ export class MessagesGateway
   server: Server;
   constructor(private readonly messageService: MessagesService) {}
 
-  @SubscribeMessage('createChat')
+  @SubscribeMessage('createMessage')
   async create(@Request() req,@MessageBody('name') name:string, @MessageBody() createMessageDto: CreateMessageDto) {
     const usr:User = req.user;
     const chat = await  this.messageService.create(usr, name, createMessageDto);
-    this.server.emit('message', chat);
+    this.server.emit('message', Messages);
     return chat;
   }
   @SubscribeMessage('findAllChat')

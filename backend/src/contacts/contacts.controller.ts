@@ -33,14 +33,14 @@ export class ContactsController {
    {
       return this.contactsService.all_friend(login);
   }
-  @Get(':login/:id/block')
-  block_bool(@Param('login') login:string,  @Param('id') id:string)
+  @Get(':login/:followedlogin/block')
+  block_bool(@Param('login') login:string,  @Param('followedlogin') followedlogin:string)
    {
-    User.findOne({where : {login:id}}).then(user => {
+    User.findOne({where : {login:followedlogin}}).then(user => {
       if (!user)
         return;
       })
-      return this.contactsService.block_bool(login, id);
+      return this.contactsService.block_bool(login, followedlogin);
 }
 
   @Patch(':id/:loginfollo/block')
