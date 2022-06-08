@@ -1,12 +1,10 @@
 import { WebSocketGateway, SubscribeMessage, ConnectedSocket, MessageBody, WebSocketServer} from '@nestjs/websockets';
 import { JwtGuard } from 'src/auth/guards/jwt.guard';
-import { ChatService } from './chat.service';
-import { CreateChatDto } from './dto/create-chat.dto';
-import { UpdateChatDto } from './dto/update-chat.dto';
+import { CreateMessageDto } from './dto/create-message.dto';
 import {UseGuards,Request} from '@nestjs/common';
 import { User } from 'src/users/entities/user.entity';
 import { Server, Socket } from 'socket.io';
-import { Message } from 'src/messages/entities/message.entity';
+import { MessagesService } from './messages.service';
 
 @WebSocketGateway({
   cors:{
@@ -14,27 +12,27 @@ import { Message } from 'src/messages/entities/message.entity';
   },
 })
 @UseGuards(JwtGuard) 
-export class ChatGateway
+export class MessagesGateway
 {
   @WebSocketServer()
   server: Server;
-  constructor(private readonly chatService: ChatService) {}
+  constructor(private readonly messageService: MessagesService) {}
 
   @SubscribeMessage('createChat')
-  async create(@Request() req, @MessageBody() createChatDto: CreateChatDto) {
+  async create(@Request() req,@MessageBody('name') name:string, @MessageBody() createMessageDto: CreateMessageDto) {
     const usr:User = req.user;
-    const chat = await  this.chatService.create(usr, createChatDto);
+    const chat = await  this.messageService.create(usr, name, createMessageDto);
     this.server.emit('message', chat);
     return chat;
   }
   @SubscribeMessage('findAllChat')
   findAll() {
-    return this.chatService.findAll();
+    return this.messageService.findAll();
   }
 
   @SubscribeMessage('joinchat')
   joinRoom( @Request() req , @MessageBody('name') name:string) {
     const usr: User = req.user;
-    return this.chatService.identify(name, usr);
+    return this.messageService.identify(name, usr);
   }
 }

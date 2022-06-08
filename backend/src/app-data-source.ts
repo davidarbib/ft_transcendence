@@ -5,7 +5,7 @@ import { Contact } from './contacts/entities/contact.entity';
 import { Match } from './matches/entities/match.entity';
 import { Channel } from './channels/entities/channel.entity';
 import { ChanParticipant } from './chan-participants/entities/chan-participant.entity';
-import { Message } from "./messages/entities/message.entity";
+import { Messages } from "./messages/entities/message.entity";
 export const myDataSource = new DataSource({
     type: "postgres",
     host: "db",
@@ -17,7 +17,7 @@ export const myDataSource = new DataSource({
         Contact,
         Player,
         Match,
-        Message,
+        Messages,
         Channel,
         ChanParticipant ],
     synchronize: true,

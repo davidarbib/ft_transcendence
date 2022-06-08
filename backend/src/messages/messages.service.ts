@@ -1,49 +1,50 @@
 import { Injectable } from '@nestjs/common';
 import { myDataSource } from 'src/app-data-source';
-import { Channel } from 'src/channels/entities/channel.entity';
+import { Messages } from 'src/messages/entities/message.entity';
 import { CreateMessageDto } from './dto/create-message.dto';
-import { UpdateMessageDto } from './dto/update-message.dto';
-import { Message } from './entities/message.entity';
+import { Repository } from 'typeorm';
+import { User } from 'src/users/entities/user.entity';
+import { Channel } from 'src/channels/entities/channel.entity';
+import { ChanParticipant } from 'src/chan-participants/entities/chan-participant.entity';
+import { channel } from 'diagnostics_channel';
+
 
 @Injectable()
 export class MessagesService {
-  create(createMessageDto: CreateMessageDto) {
-    return myDataSource.getRepository(Message).save(createMessageDto);
+ 
+  constructor (
+    private msgRepo : Repository<Messages>,
+  )
+  {
+    this.msgRepo = myDataSource.getRepository(Messages);
+  }
+  async create(usr:User ,name: string, createMessageDto: CreateMessageDto) {
+
+    const chan  = await myDataSource.getRepository(Channel).findOne({where : {name : name}})
+      createMessageDto.author = usr;
+      createMessageDto.time = new Date();
+      createMessageDto.chan = chan; 
+      myDataSource.getRepository(Channel).save(chan);
+      const msg = await this.msgRepo.create(createMessageDto)
+      chan.messages.push(msg);
+      await myDataSource.getRepository(channel).save(chan);
+
+    return msg;
   }
 
   findAll() {
-    return myDataSource.getRepository(Message).find();
+    return this.msgRepo;
   }
 
-  findOne(id: string) {
-    return myDataSource.getRepository(Message).findOneBy({id});
-  }
-
-  async update(id:string, updateMessageDto: UpdateMessageDto) {
-    const msgRepo = myDataSource.getRepository(Message);
-    const msgToUpdate = await msgRepo.findOneBy({id});
-    const {content, author, chan} = updateMessageDto;
-    msgToUpdate.content = content;
-    msgToUpdate.author = author;
-    msgToUpdate.chan = chan;
-    myDataSource.getRepository(Channel).save(msgToUpdate);
-  }
-
-  async remove(id:string) {
-
-    const messRepo = myDataSource.getRepository(Channel);
-    const msgToRemove = await messRepo.findOneBy({id});
-
-    return msgToRemove.remove();
-  }
-
-  async insertMsg() : Promise<string>
+  async identify(name: string, usr:User)
   {
-    const msg : Message = new Message;
-    msg.content =  'cc dav c le back end ki parle';
-    msg.time = new Date();
-    await myDataSource.getRepository(Message).save(msg);
-    console.log("my msg is created");
-    return "my msg is ok";
+
+    const chan = await myDataSource.getRepository(Channel).findOne({where : {name:name}})
+    const chanPart : ChanParticipant = new ChanParticipant;
+    chanPart.participant = usr;
+    chanPart.chan = chan;
+    chan.participants.push(chanPart);
+    await myDataSource.getRepository(Channel).save(chan);
+    await myDataSource.getRepository(ChanParticipant).create(chanPart);
   }
 }

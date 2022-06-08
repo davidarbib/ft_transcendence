@@ -4,7 +4,7 @@ import { Channel } from "../entities/channel.entity";
 
 import { PartialType} from "@nestjs/swagger";
 import { ChanParticipant } from "src/chan-participants/entities/chan-participant.entity";
-import { Message } from "src/messages/entities/message.entity";
+import { Messages } from "src/messages/entities/message.entity";
 export class CreateChannelDto extends Channel
 {
     @IsString()
@@ -20,6 +20,6 @@ export class CreateChannelDto extends Channel
 
     participants : ChanParticipant[]
 
-    messages: Message[];
+    messages: Messages[];
     
 }

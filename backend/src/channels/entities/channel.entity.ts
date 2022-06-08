@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Column, Entity, PrimaryGeneratedColumn, OneToMany, BaseEntity } from "typeorm";
 import { ChanParticipant } from "src/chan-participants/entities/chan-participant.entity"
-import { Message } from "src/messages/entities/message.entity"
+import { Messages } from "src/messages/entities/message.entity"
 
 export enum ChanType
 {
@@ -45,6 +45,6 @@ export class Channel extends BaseEntity
     participants: ChanParticipant[];
 
     @ApiProperty()
-    @OneToMany(() => Message, (message : Message) => message.chan)
-    messages: Message[];
+    @OneToMany(() => Messages, (message : Messages) => message.chan)
+    messages: Messages[];
 }

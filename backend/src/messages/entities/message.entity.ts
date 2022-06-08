@@ -4,7 +4,7 @@ import { User } from "src/users/entities/user.entity";
 import { Channel } from "src/channels/entities/channel.entity";
 
 @Entity()
-export class Message {
+export class Messages {
 
     @PrimaryGeneratedColumn("uuid")
     id: string;

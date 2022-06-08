@@ -13,7 +13,7 @@ import { createDataModule } from './Create_data/createData.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
-import { ChatModule } from './chat/chat.module';
+
 
 let envPath = 'src/.env';
 
@@ -33,7 +33,6 @@ let envPath = 'src/.env';
       ContactsModule,
       createDataModule,
       AuthModule,
-      ChatModule,
     ], 
 })
 export class AppModule {

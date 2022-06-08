@@ -14,7 +14,7 @@ export class ContactsService {
     newContact.block = contact.block;
     return myDataSource.getRepository(Contact).save(newContact);
   }
-
+  
   findAll() {
     return myDataSource.getRepository(Contact).find();
   }

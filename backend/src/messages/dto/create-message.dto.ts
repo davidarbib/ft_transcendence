@@ -1,12 +1,3 @@
-import { IsString } from "class-validator";
-import { Channel } from "src/channels/entities/channel.entity";
-import { User } from "src/users/entities/user.entity";
+import { Messages } from "../entities/message.entity";
 
-export class CreateMessageDto {
-
-    @IsString()
-    content:string;
-
-    author: User;
-    chan : Channel;
-}
+export class CreateMessageDto extends Messages {}
