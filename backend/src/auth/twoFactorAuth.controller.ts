@@ -21,6 +21,7 @@ export class TwoFactorAuthController
     constructor
     (
         private twoFactorAuthService : TwoFactorAuthService,
+        private authService : AuthService,
         private usersService : UsersService,
     )
     { }
@@ -46,7 +47,11 @@ export class TwoFactorAuthController
     @HttpCode(200)
     @Post('turn-on')
     @UseGuards(JwtGuard)
-    async turnOnTwoFactorAuth(@Req() request: Request, @Body() { code } : TwoFactorAuthCodeDto)
+    async turnOnTwoFactorAuth
+    (
+        @Req() request: Request, 
+        @Body() { code } : TwoFactorAuthCodeDto,
+    )
     {
         console.log(`code: ${code}`);
         const user : User = await this.usersService.findOne(request.user.id);
@@ -54,9 +59,41 @@ export class TwoFactorAuthController
         console.log(`valid code: ${isCodeValid}`);
         
         if (!isCodeValid) {
-            throw new UnauthorizedException("Wrong 2FA code");
+            throw new UnauthorizedException("Wrong code");
         }
 
         await this.usersService.turnOnTwoFactor(request.user.id);
+    }
+
+    @HttpCode(200)
+    @Post('authenticate')
+    @UseGuards(JwtGuard)
+    async authenticate
+    (
+        @Req() request: Request,
+        @Body() { code } : TwoFactorAuthCodeDto,
+        @Res() response : Response,
+    )
+    {
+        const user : User = await this.usersService.findOne(request.user.id);
+        const isCodeValid : boolean = await this.twoFactorAuthService.isTwoFactorAuthValid(code, user);
+        
+        if (!isCodeValid) {
+            throw new UnauthorizedException("Wrong code");
+        }
+
+        const { accessToken } = await this.authService.login(request.user, true);
+
+        response.cookie(
+            process.env.JWT_COOKIE_KEY,
+            accessToken,
+            {
+                httpOnly: false, //toggle to true on prod
+                expires: new Date(Date.now() + process.env.JWT_EXPIRATION_MS),
+                sameSite: "lax",
+            }
+        );
+
+        return response.redirect('http://localhost:8000');
     }
 }

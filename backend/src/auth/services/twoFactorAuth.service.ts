@@ -5,11 +5,16 @@ import * as node2fa from 'node-2fa';
 import { TwoFactorSecret } from 'src/utils/types';
 import { Response } from 'express';
 import { toFileStream } from 'qrcode';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class TwoFactorAuthService
 {
-    constructor(private usersService : UsersService)
+    constructor
+    (
+        private usersService : UsersService,
+        private jwtService: JwtService,
+    )
     { }
 
     public async generateTwoFactorSecret(user: User) : Promise<TwoFactorSecret>
@@ -32,10 +37,5 @@ export class TwoFactorAuthService
         if (delta !== 0)
             return false;
         return true;
-    }
-
-    public async pipeQrCodeStream(stream: Response, url: string)
-    {
-        return toFileStream(stream, url);
     }
 }

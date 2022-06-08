@@ -12,6 +12,7 @@ import { SessionSerializer } from './utils/Serializer';
 import { LocalStrategy } from './strategies/local.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { JwtTwoFaStrategy } from './strategies/jwtTwoFa.strategy';
 import { ConfigService } from '@nestjs/config';
 import { JwtGuard } from './guards/jwt.guard';
 import { TwoFactorAuthController } from './twoFactorAuth.controller';
@@ -42,6 +43,7 @@ import { TwoFactorAuthService } from './services/twoFactorAuth.service';
     DiscordStrategy,
     LocalStrategy,
     JwtStrategy,
+    JwtTwoFaStrategy,
     SessionSerializer,
     {
       provide: 'AUTH_SERVICE',

@@ -1,5 +1,13 @@
 import { User } from "src/users/entities/user.entity"
 
+export type JwtPayload = {sub: string; login: string};
+
+export type JwtTwoFaPayload = {
+  sub: string;
+  login: string,
+  twoFactorAuthentified: boolean
+};
+
 export type UserDetails =
 {
     login: string,
