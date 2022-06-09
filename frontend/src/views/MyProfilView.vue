@@ -6,13 +6,13 @@ import axios from "axios";
 import { useUserStore } from "@/stores/auth";
 import { apiStore } from "@/stores/api";
 import { onMounted } from "vue";
-import type User from "@/stores/auth";
 import { useRouter } from "vue-router";
 import { ref } from "vue";
 
 const api = apiStore();
 const userStore = useUserStore();
 const router = useRouter();
+let openModal = ref(false);
 
 onMounted(() => {
   if (userStore.user.id === "default") {
@@ -77,6 +77,22 @@ onMounted(() => {
             class="h-1/3 focus:outline-none border border-gray-300 px-1"
           />
         </div>
+        <div class="toggle-2fa">
+          <button class="secondary-button" @click="openModal = !openModal">
+            Activate 2fa
+          </button>
+        </div>
+        <Teleport to="body">
+          <div v-if="openModal" class="modal">
+            <div class="modal-inner">
+              <img src="@/assets/sphere_mini.png" />
+              <input type="text" placeholder="Enter you code here" />
+              <button @click="openModal = !openModal" class="secondary-button">
+                Submit
+              </button>
+            </div>
+          </div>
+        </Teleport>
       </div>
     </div>
     <div class="contact-bar">
@@ -116,7 +132,6 @@ onMounted(() => {
     display: flex;
     flex-direction: column;
     align-items: space-around;
-    // justify-content: baseline;
 
     header {
       display: flex;
@@ -168,6 +183,16 @@ onMounted(() => {
         cursor: pointer;
       }
     }
+
+    .toggle-2fa {
+      width: 100%;
+      margin-top: 3rem;
+      button {
+        margin: auto;
+        width: 80%;
+      }
+    }
+
     .update-user-infos {
       width: 60%;
       margin: auto;
@@ -176,6 +201,34 @@ onMounted(() => {
   }
   .hidden {
     opacity: 0;
+  }
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 999;
+  background-color: rgba(0, 0, 0, 0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .modal-inner {
+    background: linear-gradient(v.$primary, v.$dark-blue) fixed;
+    padding: 3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    input,
+    button {
+      padding: 1rem 10rem;
+      margin: 2rem 0;
+    }
   }
 }
 </style>
