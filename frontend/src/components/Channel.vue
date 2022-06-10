@@ -23,13 +23,16 @@ function toggleChannelMenu(id: number) {
       :key="channel.id"
     >
       <div class="user-pseudo py-2">
-        <p>{{ channel.name }}</p><p class="icon" @click="toggleChannelMenu(channel.id)"><i class="fa-solid fa-gear"></i></p>
+        <p>{{ channel.name }}</p>
+        <p class="icon" @click="toggleChannelMenu(channel.id)">
+          <i class="fa-solid fa-gear"></i>
+        </p>
       </div>
       <Transition name="slide-fade">
         <div v-if="channelOptions && channelSelected === channel.id">
           <ul class="list">
             <li><router-link to="/chat">leave</router-link></li>
-            <li><router-link to="/qiwjeoi">rename</router-link></li>
+            <li><router-link to="/">rename</router-link></li>
           </ul>
         </div>
       </Transition>
@@ -49,7 +52,6 @@ function toggleChannelMenu(id: number) {
     display: grid;
     -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none; /* Safari */
-    -khtml-user-select: none; /* Konqueror HTML */
     -moz-user-select: none; /* Old versions of Firefox */
     -ms-user-select: none; /* Internet Explorer/Edge */
     user-select: none; /* Non-prefixed version, currently */
@@ -72,7 +74,7 @@ function toggleChannelMenu(id: number) {
         padding-left: 1rem;
       }
     }
-  
+
     .slide-fade-enter-active {
       transition: all 0.3s ease-out;
     }

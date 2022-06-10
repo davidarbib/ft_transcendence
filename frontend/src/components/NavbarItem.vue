@@ -79,16 +79,16 @@ const visibleToggle = () => {
       </li>
       <li>
         <router-link
-          to="/tuto"
+          to="/"
           class="block text-sm px-2 py-4 text-gray-300 hover:bg-[#e63380] transition duration-700"
           >Tutorial</router-link
         >
       </li>
       <li>
         <router-link
-          to="/profil"
+          to="/profile"
           class="block text-sm px-2 py-4 text-gray-300 hover:bg-[#e63380] transition duration-700"
-          >Profil</router-link
+          >Profile</router-link
         >
       </li>
     </ul>

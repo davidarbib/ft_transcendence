@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import LockClosedIcon from "@heroicons/vue/solid";
-import Title from "@/components/Title.vue";
 import { ref } from "vue";
 
 const volumeButton = ref(true);
