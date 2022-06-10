@@ -42,8 +42,8 @@ const router = createRouter({
       component: MyProfilView,
     },
     {
-      path: "/profil/:pseudo",
-      name: "profil",
+      path: "/profile/:pseudo",
+      name: "profile",
       component: ProfilView,
       props: true
     },

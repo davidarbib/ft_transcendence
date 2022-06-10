@@ -47,16 +47,16 @@ function toggleFriendMenu(id: number) {
         <p v-else class="offline">offline</p>
         <Transition name="slide-fade">
           <div v-if="friendMenu && friendSelected === user.id">
-            <ul class="liste">
+            <ul class="list">
               <li><router-link to="/chat">chat</router-link></li>
               <li>
-                <router-link :to="'/profil/' + user.pseudo"
+                <router-link :to="'/profile/' + user.pseudo"
                   >profil</router-link
                 >
               </li>
-              <li><router-link to="/qiwjeoi">invite</router-link></li>
-              <li><router-link to="/qwpeok">block</router-link></li>
-              <li><router-link to="/sekse">spectate</router-link></li>
+              <li><router-link to="/">invite</router-link></li>
+              <li><router-link to="/">block</router-link></li>
+              <li><router-link to="/">spectate</router-link></li>
             </ul>
           </div>
         </Transition>
@@ -72,7 +72,7 @@ function toggleFriendMenu(id: number) {
   height: 92vh;
   overflow: scroll;
 
-  .liste {
+  .list {
     list-style: inside;
 
     li:hover {
@@ -87,7 +87,6 @@ function toggleFriendMenu(id: number) {
     grid-template-rows: 10% 1fr;
     -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none; /* Safari */
-    -khtml-user-select: none; /* Konqueror HTML */
     -moz-user-select: none; /* Old versions of Firefox */
     -ms-user-select: none; /* Internet Explorer/Edge */
     user-select: none; /* Non-prefixed version, currently */
