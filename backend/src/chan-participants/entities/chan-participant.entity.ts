@@ -34,14 +34,17 @@ export class ChanParticipant extends BaseEntity{
     @ApiProperty()
     @Column({
         type: "boolean",
-        nullable: false
+        nullable: false,
+        default:false
     })
     mute: boolean;
 
     @ApiProperty()
     @Column({
         type: "boolean",
-        nullable: false
+        nullable: false,
+        default:false
+
     })
     ban: boolean;
 

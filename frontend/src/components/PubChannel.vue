@@ -1,6 +1,24 @@
 <script setup lang="ts">
 import ChatModal from '@/components/ChatModal.vue';
-import channels from "@/assets/msg_test.json";
+//import channels from "@/assets/msg_test.json";
+import axios from "axios";
+import { useChanStore } from "@/stores/auth";
+import { ref, onMounted, reactive } from "vue";
+
+const chanStore = useChanStore();
+let test = reactive<Array<Channel>>({Channel:[]});
+
+onMounted(() => {
+  axios.defaults.withCredentials = true;
+  axios
+    .get('http://localhost:8090/channels')
+    .then((response) => {
+      test.values = response.data;
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+});
 </script>
 
 <template>
@@ -12,11 +30,10 @@ import channels from "@/assets/msg_test.json";
     <h1>Public channels :</h1>
     <div
       class="user-card rounded my-2 bg-black bg-opacity-10 font-medium hover:bg-opacity-30 transition duration-300"
-      v-for="channel in channels"
-      :key="channel.id"
-    >
-      <div class="pub-chan-info py-2">
-        <p>{{ channel.name }}</p>
+   >
+      <div class="pub-chan-info py-2"
+        v-for="(channel, key) in test.values">
+      <p>  {{channel.name}} </p>
         <p class="secondary-button interact">Join</p>
       </div>
     </div>

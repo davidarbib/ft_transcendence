@@ -1,4 +1,3 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Request, Res } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
 import { ChannelsService } from './channels.service';
 import { CreateChannelDto } from './dto/create-channel.dto';
@@ -8,8 +7,13 @@ import { User } from 'src/users/entities/user.entity';
 import { ChanParticipant } from 'src/chan-participants/entities/chan-participant.entity';
 import { myDataSource } from 'src/app-data-source';
 import { Channel } from './entities/channel.entity';
+import { JwtGuard } from 'src/auth/guards/jwt.guard';
+import { Controller, Get, Post,
+  Body, Patch, Param, Delete,
+  BadRequestException, UseGuards,Request, Res} from '@nestjs/common';
 
 @Controller('channels')
+@UseGuards(JwtGuard)
 @ApiTags('channels')
 
 export class ChannelsController {
@@ -19,7 +23,8 @@ export class ChannelsController {
   create(@Body() createChannelDto: CreateChannelDto, @Request() req)
   {
     const CreateChannel = plainToClass(CreateChannelDto, createChannelDto);
-    const usr: User = req.usr.usr;
+   const usr: User = req.user;
+   console.log(usr.username);
     return this.channelsService.create(CreateChannel, usr);
   }
   @Get()

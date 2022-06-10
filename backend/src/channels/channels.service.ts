@@ -10,14 +10,13 @@ import {HttpException, HttpStatus} from '@nestjs/common'
 
 @Injectable()
 export class ChannelsService {
-  create(createChannel: CreateChannelDto, usr :User) {
+  async create(createChannel: CreateChannelDto, usr :User) {
     const chanPart : ChanParticipant = new ChanParticipant;
     chanPart.participant = usr;
     chanPart.chan = createChannel;
     chanPart.privilege = ChanPartStatus.OWNER;
-    usr.chanParticipations.push(chanPart);
-    createChannel.participants.push(chanPart);
-    return myDataSource.getRepository(Channel).save(createChannel);
+    myDataSource.getRepository(Channel).save(createChannel);
+    await myDataSource.getRepository(ChanParticipant).save(chanPart);
   }
 
   findAll() {

@@ -2,7 +2,6 @@
 import NavbarItem from "@/components/NavbarItem.vue";
 import Channel from "@/components/Channel.vue";
 import PubChannel from "@/components/PubChannel.vue";
-import messages from "@/assets/msg_body_test.json";z
 </script>
 
 <template>

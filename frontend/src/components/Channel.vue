@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import channels from "@/assets/msg_test.json";
 import { ref } from "vue";
-
+import { io } from 'socket.io-client'
 const searched = ref("");
 const channelOptions = ref(false);
 const channelSelected = ref(-1);
