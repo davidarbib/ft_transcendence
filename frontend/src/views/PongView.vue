@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import BlockGame from "@/components/BlockGame.vue";
+import BlockGame from "@/components/BlockGameComponent.vue";
 </script>
 
 <template>

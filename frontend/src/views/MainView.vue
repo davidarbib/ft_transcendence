@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import NavbarItem from "@/components/NavbarItem.vue";
-import Contact from "@/components/Contact.vue";
-import Title from "@/components/Title.vue";
+import NavbarItem from "@/components/NavbarItemComponent.vue";
+import Contact from "@/components/ContactComponent.vue";
+import Title from "@/components/TitleComponent.vue";
 import { ref, onMounted } from "vue";
 import { computed } from "@vue/reactivity";
 import { apiStore } from "@/stores/api";

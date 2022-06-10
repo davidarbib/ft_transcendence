@@ -46,7 +46,6 @@ const visibleToggle = () => {
         <button class="outline-none mobile-menu-button" @click="visibleToggle">
           <svg
             class="w-6 h-6 text-gray-500 hover:text-[#e63380]"
-            x-show="!showMenu"
             fill="none"
             stroke-linecap="round"
             stroke-linejoin="round"

@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import NavbarItem from "@/components/NavbarItem.vue";
-import Contact from "../components/Contact.vue";
-import Historic from "@/components/Historic.vue";
+import NavbarItem from "@/components/NavbarItemComponent.vue";
+import Contact from "../components/ContactComponent.vue";
+import Historic from "@/components/HistoricComponent.vue";
 import axios from "axios";
 import { useUserStore } from "@/stores/auth";
 import { apiStore } from "@/stores/api";

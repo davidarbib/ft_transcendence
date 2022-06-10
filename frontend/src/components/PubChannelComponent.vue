@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ChatModal from "@/components/ChatModal.vue";
+import ChatModal from "@/components/ChatModalComponent.vue";
 import channels from "@/assets/msg_test.json";
 </script>
 

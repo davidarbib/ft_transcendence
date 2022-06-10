@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import NavbarItem from "@/components/NavbarItem.vue";
-import Channel from "@/components/Channel.vue";
-import PubChannel from "@/components/PubChannel.vue";
+import NavbarItem from "@/components/NavbarItemComponent.vue";
+import Channel from "@/components/ChannelComponent.vue";
+import PubChannel from "@/components/PubChannelComponent.vue";
 import messages from "@/assets/msg_body_test.json";
 </script>
 

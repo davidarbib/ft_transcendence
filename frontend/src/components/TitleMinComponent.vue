@@ -1,25 +1,24 @@
 <script setup lang="ts"></script>
 
 <template>
-  <div class="title-section">
+  <div class="container hidden lg:block h-8 w-auto">
     <h1 class="title">
       <span class="metal raise clip">PONG</span>
     </h1>
-    <h2 class="subtitle">vice</h2>
+    <h2 class="subtitle">Vice</h2>
   </div>
 </template>
 
 <style lang="scss" scoped>
 @use "../assets/variables.scss" as v;
 @import url("https://fonts.googleapis.com/css2?family=Caveat&family=Fredoka+One&display=swap");
-.title-section {
+.container {
   text-align: center;
   padding: 0;
-  margin: 0;
 }
 
 .title {
-  font-size: 10rem;
+  font-size: 2rem;
   font-family: "Fredoka One", sans-serif;
   font-weight: 500;
   text-transform: uppercase;
@@ -30,10 +29,10 @@
 .subtitle {
   font-family: Caveat, cursive;
   text-transform: capitalize;
-  font-size: 7rem;
+  font-size: 1.5rem;
   position: relative;
-  top: -8rem;
-  right: -9.5rem;
+  top: -20px;
+  right: -40px;
   font-weight: 600;
   padding: 0;
   margin: 0;
@@ -55,7 +54,6 @@
     hsl(212, 92%, 76%) 85%
   );
   color: transparent;
-  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-stroke: 2px hsl(200, 65%, 80%);
 }
