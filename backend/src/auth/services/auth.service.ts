@@ -7,6 +7,7 @@ import { AuthenticationProvider } from './auth';
 import { UserDetails } from 'src/utils/types';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from 'src/auth/strategies/jwt.strategy';
+import { JwtTwoFaPayload } from 'src/utils/types';
 
 @Injectable()
 export class AuthService implements AuthenticationProvider
@@ -20,17 +21,17 @@ export class AuthService implements AuthenticationProvider
       this.userRepo = myDataSource.getRepository(User);
     }
 
-    async login(user: any)
+    public async login(user: any, twoFactorAuthentified: boolean = false)
     {
-      const payload: JwtPayload = { login: user.login, sub: user.id};
-      //console.log(user.login, user.id); //TODO
-      user = await this.userService.switchStatus(user.id, UserStatus.ONLINE);
-      return {
-        accessToken: this.jwtService.sign(payload),
-      };
+        const payload : JwtTwoFaPayload = {
+            login: user.login, 
+            sub: user.id,
+            twoFactorAuthentified: twoFactorAuthentified,
+        }
+        return { accessToken: this.jwtService.sign(payload) };
     }
 
-    async validateUser(details: UserDetails)
+    public async validateUser(details: UserDetails)
     {
       const { login } = details;
       console.log('login: ');

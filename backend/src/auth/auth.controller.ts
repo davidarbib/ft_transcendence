@@ -5,6 +5,7 @@ import { User } from 'src/users/entities/user.entity';
 import { Api42Guard } from './guards/api42.guard';
 import { LocalGuard } from './guards/local.guard';
 import { JwtGuard } from './guards/jwt.guard';
+import { JwtTwoFaGuard } from './guards/jwtTwoFa.guard';
 import { AuthService } from './services/auth.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { DiscordGuard } from './guards/discord.guard';
@@ -77,7 +78,7 @@ export class AuthController {
     }
 
     @Get('current')
-    @UseGuards(JwtGuard)
+    @UseGuards(JwtTwoFaGuard)
     getHello(@Req() request: Request): any
     {
         return request.user;
