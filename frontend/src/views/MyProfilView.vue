@@ -12,6 +12,7 @@ const api = apiStore();
 const userStore = useUserStore();
 let openModal = ref(false);
 let qrCode = ref("");
+let auth2FaCode = ref("");
 
 const activate2fa = () => {
   axios
@@ -24,6 +25,19 @@ const activate2fa = () => {
     })
     .then(() => {
       openModal.value = !openModal.value;
+    });
+};
+
+const submit2faCode = () => {
+  axios
+    .post(`${api.url}/2fa/authenticate`, {
+      code: auth2FaCode.value,
+    })
+    .then(() => {
+      openModal.value = !openModal.value;
+    })
+    .catch((error) => {
+      console.log(error);
     });
 };
 
@@ -100,13 +114,11 @@ onMounted(() => {
               <img :src="qrCode" alt="Qr Code" />
               <input
                 type="text"
-                placeholder="Enter you code here"
+                placeholder="Type your code here"
+                v-model="auth2FaCode"
                 class="w-full text-center rounded-md my-6 py-4"
               />
-              <button
-                @click="openModal = !openModal"
-                class="secondary-button w-full"
-              >
+              <button @click="submit2faCode" class="secondary-button w-full">
                 Submit
               </button>
             </div>
