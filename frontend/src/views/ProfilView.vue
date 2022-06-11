@@ -6,7 +6,6 @@ import axios from "axios";
 import { useUserStore } from "@/stores/auth";
 import { apiStore } from "@/stores/api";
 import { onMounted } from "vue";
-import type User from "@/stores/auth";
 import { useRouter } from "vue-router";
 import { ref } from "vue";
 
@@ -34,34 +33,35 @@ onMounted(() => {
     .get(`${api.url}/users/${props.pseudo}`)
     .then((response) => {
       user.value = response.data;
-      if (response.data === "") router.push({ path: "/profil_not_found" });
-      if (user.value === userStore.$state.user)
+      if (response.data === "") router.push({ path: "/profile_not_found" });
+      if (user.value.username === userStore.$state.user.username)
         isCurrentUserProfile.value = true;
     })
     .catch((error) => {
-      router.push({ path: "/profil_not_found" });
+      console.log(error);
+      router.push({ path: "/profile_not_found" });
     });
 });
 </script>
 
 <template>
-  <div class="profil-section">
+  <div class="profile-section">
     <div class="navbar">
       <NavbarItem />
     </div>
     <div class="historic">
       <Historic />
     </div>
-    <div class="profil-card bg-black bg-opacity-10">
+    <div class="profile-card bg-black bg-opacity-10">
       <header>
         <div class="secondary-button">
           <router-link to="/chat"> send message </router-link>
         </div>
-        <div v-if="user.avatarRef === null" class="profil-picture h-36 w-36">
-          <img src="@/assets/sphere_mini.png" alt="user profil picture" />
+        <div v-if="user.avatarRef === null" class="profile-picture h-36 w-36">
+          <img src="@/assets/sphere_mini.png" alt="user profile picture" />
         </div>
-        <div v-else class="profil-picture h-36 w-36">
-          <img :src="user.avatarRef" alt="user profil picture" />
+        <div v-else class="profile-picture h-36 w-36">
+          <img :src="user.avatarRef" alt="user profile picture" />
         </div>
         <div class="secondary-button">
           <router-link to="/"> + add friend </router-link>
@@ -102,7 +102,7 @@ onMounted(() => {
 <style scoped lang="scss">
 @use "../assets/variables.scss" as v;
 
-.profil-section {
+.profile-section {
   display: grid;
   grid-template-columns: 25% 50% 25%;
   grid-template-rows: 10% 80% 10%;
@@ -122,16 +122,13 @@ onMounted(() => {
     margin-right: 1rem;
   }
 
-  .profil-card {
+  .profile-card {
     grid-column-start: 2;
     grid-row: 2/4;
     border-radius: 0.375rem;
     margin-top: 3rem;
     display: flex;
     flex-direction: column;
-    align-items: space-around;
-    // justify-content: baseline;
-
     header {
       display: flex;
       flex-direction: row;
@@ -147,7 +144,7 @@ onMounted(() => {
         align-items: center;
       }
 
-      .profil-picture {
+      .profile-picture {
         position: relative;
         top: -2rem;
       }
@@ -177,8 +174,7 @@ onMounted(() => {
     }
     .update-user-infos {
       width: 60%;
-      margin: auto;
-      margin-bottom: 1rem;
+      margin: auto auto 1rem;
     }
   }
   .hidden {
