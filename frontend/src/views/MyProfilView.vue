@@ -110,7 +110,7 @@ onMounted(() => {
         </div>
         <Teleport to="body">
           <div v-if="openModal" class="modal">
-            <div class="modal-inner p-32">
+            <div class="modal-inner p-32 rounded-md">
               <img :src="qrCode" alt="Qr Code" />
               <input
                 type="text"
