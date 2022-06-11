@@ -11,10 +11,25 @@ import { ref } from "vue";
 const api = apiStore();
 const userStore = useUserStore();
 let openModal = ref(false);
+let qrCode = ref("");
+
+const activate2fa = () => {
+  axios
+    .post(`${api.url}/2fa/generate`)
+    .then((response) => {
+      qrCode.value = response.data;
+    })
+    .catch((error) => {
+      console.log(error);
+    })
+    .then(() => {
+      openModal.value = !openModal.value;
+    });
+};
 
 onMounted(() => {
+  axios.defaults.withCredentials = true;
   if (userStore.user.id === "default") {
-    axios.defaults.withCredentials = true;
     axios
       .get(`${api.url}/auth/current`)
       .then((response) => {
@@ -75,16 +90,23 @@ onMounted(() => {
           />
         </div>
         <div class="toggle-2fa">
-          <button class="secondary-button" @click="openModal = !openModal">
+          <button class="secondary-button" @click="activate2fa">
             Activate 2fa
           </button>
         </div>
         <Teleport to="body">
           <div v-if="openModal" class="modal">
-            <div class="modal-inner">
-              <img src="@/assets/sphere_mini.png" alt="qrcode" />
-              <input type="text" placeholder="Enter you code here" />
-              <button @click="openModal = !openModal" class="secondary-button">
+            <div class="modal-inner p-32">
+              <img :src="qrCode" alt="Qr Code" />
+              <input
+                type="text"
+                placeholder="Enter you code here"
+                class="w-full text-center rounded-md my-6 py-4"
+              />
+              <button
+                @click="openModal = !openModal"
+                class="secondary-button w-full"
+              >
                 Submit
               </button>
             </div>
@@ -212,17 +234,10 @@ onMounted(() => {
 
   .modal-inner {
     background: linear-gradient(v.$primary, v.$dark-blue) fixed;
-    padding: 3rem;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-
-    input,
-    button {
-      padding: 1rem 10rem;
-      margin: 2rem 0;
-    }
   }
 }
 </style>
