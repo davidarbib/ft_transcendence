@@ -13,6 +13,7 @@ const userStore = useUserStore();
 let openModal = ref(false);
 let qrCode = ref("");
 let auth2FaCode = ref("");
+let auth2faError = ref(false);
 
 const activate2fa = () => {
   axios
@@ -34,9 +35,11 @@ const submit2faCode = () => {
       code: auth2FaCode.value,
     })
     .then(() => {
+      auth2faError.value = false;
       openModal.value = !openModal.value;
     })
     .catch((error) => {
+      auth2faError.value = true;
       console.log(error);
     });
 };
@@ -118,6 +121,9 @@ onMounted(() => {
                 v-model="auth2FaCode"
                 class="w-full text-center rounded-md my-6 py-4"
               />
+              <p class="text-rose-500 mb-5" v-if="auth2faError">
+                Error Wrong 2fa code
+              </p>
               <button @click="submit2faCode" class="secondary-button w-full">
                 Submit
               </button>
@@ -250,6 +256,10 @@ onMounted(() => {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    input:focus {
+      outline: none;
+    //  border: 1px solid red;
+    }
   }
 }
 </style>
