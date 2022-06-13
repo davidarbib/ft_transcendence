@@ -4,8 +4,8 @@ import ChatModal from '@/components/ChatModal.vue';
 import axios from "axios";
 import { useChanStore } from "@/stores/auth";
 import { ref, onMounted, reactive } from "vue";
+import { computed } from "@vue/reactivity";
 
-const chanStore = useChanStore();
 let test = reactive<Array<Channel>>({Channel:[]});
 
 onMounted(() => {
@@ -19,6 +19,7 @@ onMounted(() => {
       console.log(error);
     });
 });
+
 </script>
 
 <template>

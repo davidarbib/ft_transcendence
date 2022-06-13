@@ -2,6 +2,33 @@
 import NavbarItem from "@/components/NavbarItem.vue";
 import Channel from "@/components/Channel.vue";
 import PubChannel from "@/components/PubChannel.vue";
+import axios from "axios";
+import { ref, onMounted, reactive } from "vue";
+
+const msgList = reactive<Array<Messages>>({Messages:[]});
+
+onMounted(() => {
+  axios.defaults.withCredentials = true;
+  axios
+    .get('http://localhost:8090/message')
+    .then((response) => {
+      msgList.values = response.data;
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+});
+
+function sendMessage(){
+  axios.defaults.withCredentials = true;
+  axios
+    .post('http://localhost:8090/message', {content: '1235'})
+    .then((response) => 
+    {
+    })
+    .catch((error) => console.log('error with the send of the message'))
+}
+
 </script>
 
 <template>
@@ -15,11 +42,11 @@ import PubChannel from "@/components/PubChannel.vue";
     <div class="messages text-gray-300">
       <div
         class="message bg-black bg-opacity-20 w-3/4 mx-2 rounded p-2"
-        v-for="message in messages"
+        v-for="message in msgList.values"
       >
         <p class="underline-offset-auto">
           <span class="sender text-[#e63380] font-bold">
-            {{ message.sender }}
+            {{ message.author.username }}
           </span>
           <span class="text-xs text-gray-400"> 11/11/2022 at 19h05 </span>
         </p>

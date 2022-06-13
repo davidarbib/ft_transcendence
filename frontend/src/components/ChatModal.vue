@@ -3,6 +3,7 @@
 //import { apiStore } from "@/stores/api";
 import { ref } from "vue";
 import axios from "axios";
+import { RouterLink, useRouter } from "vue-router";
 
 const open = ref(false);
 // const api = apiStore();
@@ -11,7 +12,7 @@ function createChannel(){
   open.value = false;
   axios.defaults.withCredentials = true;
   axios
-    .post('http://localhost:8090/channels', {name: 'pouet'})
+    .post('http://localhost:8090/channels', {name: '1235'})
     .then((response) => 
     {
     })
@@ -65,7 +66,7 @@ function createChannel(){
         <button @click="open = false" class="cancel secondary-button">
           Cancel
         </button>
-        <button @click="createChannel" class="valid primary-button">div2</button>
+        <button @click="createChannel" class="valid primary-button"> Create </button>
       </div>
     </div>
   </Teleport>
