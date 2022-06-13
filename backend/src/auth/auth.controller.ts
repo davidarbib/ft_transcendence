@@ -33,7 +33,7 @@ export class AuthController {
             {
                 httpOnly: false, //toggle to true on prod
                 expires: new Date(Date.now() + process.env.JWT_EXPIRATION_MS),
-                sameSite: "lax",
+                sameSite: "none",
             }
         );
         //return req.user;
@@ -68,7 +68,7 @@ export class AuthController {
             {
                 httpOnly: false, //toggle to true on prod
                 expires: new Date(Date.now() + jwtMs),
-                sameSite: "lax",
+                sameSite: "none",
             }
         );
         //return req.user;
