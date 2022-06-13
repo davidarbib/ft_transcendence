@@ -3,10 +3,6 @@ export function logoutUser() {
   clearAuthToken();
 }
 
-export function setAuthToken(token: string) {
-  document.cookie = `${AUTH_TOKEN_KEY}=${token}`;
-}
-
 export function getAuthToken(): string | null {
   const cookieArr = document.cookie.split(";");
 
