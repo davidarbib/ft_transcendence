@@ -33,8 +33,6 @@ export class AuthService implements AuthenticationProvider
     public async validateUser(details: UserDetails)
     {
       const { login } = details;
-      console.log('login: ');
-      console.log(login);
       const user = await this.findUser(login);
       if (user) return user;
       return this.createUser(details);

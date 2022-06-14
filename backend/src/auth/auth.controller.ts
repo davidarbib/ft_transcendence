@@ -25,14 +25,14 @@ export class AuthController {
     @UseGuards(Api42Guard)
     async redirect(@Req() req: Request, @Res({ passthrough: true }) response: Response)
     {
-        console.log("redirection")
         const { accessToken } = await this.authService.login(req.user);
+        const jwtMs = parseInt(process.env.JWT_EXPIRATION_MS);
         response.cookie(
             process.env.JWT_COOKIE_KEY,
             accessToken,
             {
                 httpOnly: false, //toggle to true on prod
-                expires: new Date(Date.now() + process.env.JWT_EXPIRATION_MS),
+                expires: new Date(Date.now() + jwtMs),
                 sameSite: "none",
             }
         );
