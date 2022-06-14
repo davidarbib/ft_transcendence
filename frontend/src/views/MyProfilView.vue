@@ -6,9 +6,7 @@ import axios from "axios";
 import { useUserStore } from "@/stores/auth";
 import { apiStore } from "@/stores/api";
 import { onMounted } from "vue";
-import type User from "@/stores/auth";
 import { useRouter } from "vue-router";
-import { ref } from "vue";
 
 const api = apiStore();
 const userStore = useUserStore();
@@ -30,20 +28,20 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="profil-section">
+  <div class="profile-section">
     <div class="navbar">
       <NavbarItem />
     </div>
     <div class="historic">
       <Historic />
     </div>
-    <div class="profil-card bg-black bg-opacity-10">
+    <div class="profile-card bg-black bg-opacity-10">
       <header>
         <div class="secondary-button">
           <router-link to="/"> Update profile picture </router-link>
         </div>
-        <div class="profil-picture h-36 w-36">
-          <img src="@/assets/sphere_mini.png" alt="user profil picture" />
+        <div class="profile-picture h-36 w-36">
+          <img src="@/assets/sphere_mini.png" alt="user profile picture" />
         </div>
         <div class="secondary-button">
           <router-link to="/"> Edit username </router-link>
@@ -73,7 +71,6 @@ onMounted(() => {
             v-model="userStore.user.username"
             type="text"
             autocomplete="current-password"
-            required="true"
             class="h-1/3 focus:outline-none border border-gray-300 px-1"
           />
         </div>
@@ -88,7 +85,7 @@ onMounted(() => {
 <style scoped lang="scss">
 @use "../assets/variables.scss" as v;
 
-.profil-section {
+.profile-section {
   display: grid;
   grid-template-columns: 25% 50% 25%;
   grid-template-rows: 10% 80% 10%;
@@ -108,15 +105,13 @@ onMounted(() => {
     margin-right: 1rem;
   }
 
-  .profil-card {
+  .profile-card {
     grid-column-start: 2;
     grid-row: 2/4;
     border-radius: 0.375rem;
     margin-top: 3rem;
     display: flex;
     flex-direction: column;
-    align-items: space-around;
-    // justify-content: baseline;
 
     header {
       display: flex;
@@ -133,7 +128,7 @@ onMounted(() => {
         align-items: center;
       }
 
-      .profil-picture {
+      .profile-picture {
         position: relative;
         top: -2rem;
       }
@@ -170,8 +165,7 @@ onMounted(() => {
     }
     .update-user-infos {
       width: 60%;
-      margin: auto;
-      margin-bottom: 1rem;
+      margin: auto auto 1rem;
     }
   }
   .hidden {

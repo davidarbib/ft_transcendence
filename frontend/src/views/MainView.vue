@@ -21,8 +21,8 @@ const formattedElapsedTime = computed(() => {
     elapsedTimeS.value = 0;
     elapsedTimeM.value++;
   }
-  let second = elapsedTimeS.value.toString();
-  let minute = elapsedTimeM.value.toString();
+  let second: string;
+  let minute: string;
   if (elapsedTimeS.value < 10) second = "0" + elapsedTimeS.value.toString();
   else second = elapsedTimeS.value.toString();
   if (elapsedTimeM.value < 10) minute = "0" + elapsedTimeM.value.toString();
@@ -73,7 +73,7 @@ onMounted(() => {
         </div>
       </div>
       <select v-model="game_mode" id="b2" class="secondary-button">
-        <option value="plage">Plage</option>
+        <option value="beach">Beach</option>
         <option value="vice">Vice</option>
         <option value="monkey">Monkey</option>
         <option value="mario">Mario</option>
@@ -91,7 +91,7 @@ onMounted(() => {
   display: grid;
   grid-template-columns: 80% 20%;
   grid-template-rows: 10% 90%;
-  gap: 0% 0px;
+  gap: 0 0;
   grid-auto-flow: row;
   grid-template-areas:
     "navbar navbar"
