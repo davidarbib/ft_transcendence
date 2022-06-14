@@ -50,8 +50,8 @@ onMounted(() => {
       userStore.user = response.data;
       console.log(userStore.user);
     })
-    .catch((error) => {
-      console.log(error);
+    .catch(() => {
+      // do nothing
     });
 });
 </script>
