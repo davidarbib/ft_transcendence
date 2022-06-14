@@ -2,13 +2,9 @@ import { Body, Controller, Get, Post, Res, Req, UseGuards, Injectable, UseInterc
 import { Response } from 'express';
 import { Request } from 'express';
 import { User } from 'src/users/entities/user.entity';
-import { Api42Guard } from './guards/api42.guard';
-import { LocalGuard } from './guards/local.guard';
 import { JwtGuard } from './guards/jwt.guard';
 import { JwtTwoFaGuard } from './guards/jwtTwoFa.guard';
 import { AuthService } from './services/auth.service';
-import { JwtStrategy } from './strategies/jwt.strategy';
-import { DiscordGuard } from './guards/discord.guard';
 import { TwoFactorAuthService } from './services/twoFactorAuth.service';
 import { UsersService } from 'src/users/users.service';
 import { TwoFactorSecret } from 'src/utils/types';
@@ -33,7 +29,7 @@ export class TwoFactorAuthController
     {
         let user : User = await this.usersService.findOne(request.user.id);
         let twoFactor : TwoFactorSecret = await this.twoFactorAuthService.generateTwoFactorSecret(user);
-        //return this.twoFactorAuthService.pipeQrCodeStream(response, twoFactor.uri);
+
         await toDataURL(twoFactor.uri)
         .then(url => {
             console.log(url);
@@ -54,10 +50,8 @@ export class TwoFactorAuthController
         @Body() { code } : TwoFactorAuthCodeDto,
     )
     {
-        console.log(`code: ${code}`);
         const user : User = await this.usersService.findOne(request.user.id);
         const isCodeValid : boolean = await this.twoFactorAuthService.isTwoFactorAuthValid(code, user);
-        console.log(`valid code: ${isCodeValid}`);
         
         if (!isCodeValid) {
             throw new UnauthorizedException("Wrong code");
