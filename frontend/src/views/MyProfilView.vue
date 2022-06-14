@@ -2,6 +2,7 @@
 import NavbarItem from "@/components/NavbarItemComponent.vue";
 import Contact from "../components/ContactComponent.vue";
 import Historic from "@/components/HistoricComponent.vue";
+import NotificationMessage from "@/components/NotificationMessageComponent.vue";
 import axios from "axios";
 import { useUserStore } from "@/stores/auth";
 import { apiStore } from "@/stores/api";
@@ -64,6 +65,12 @@ onMounted(() => {
     <div class="navbar">
       <NavbarItem />
     </div>
+    <notification-message type="success-2fa" header="Success"
+      ><p>You can log in with 2fa now</p></notification-message
+    >
+    <notification-message type="error-2fa" header="Error"
+      ><p>Please provide a valid code</p></notification-message
+    >
     <div class="historic">
       <Historic />
     </div>
