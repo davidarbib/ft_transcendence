@@ -7,6 +7,7 @@ import { User } from 'src/users/entities/user.entity';
 import { Channel } from 'src/channels/entities/channel.entity';
 import { ChanParticipant } from 'src/chan-participants/entities/chan-participant.entity';
 import { channel } from 'diagnostics_channel';
+import { Console } from 'console';
 
 
 @Injectable()
@@ -18,28 +19,36 @@ export class MessagesService {
   {
     this.msgRepo = myDataSource.getRepository(Messages);
   }
-  async create(usr:User ,name: string, createMessageDto: CreateMessageDto) {
+  async create(login:string ,name: string, createMessageDto: CreateMessageDto) {
 
     const chan  = await myDataSource.getRepository(Channel).findOne({where : {name : name}})
-      createMessageDto.author = usr;
-      createMessageDto.time = new Date();
-      createMessageDto.chan = chan; 
-      myDataSource.getRepository(Channel).save(chan);
-      const msg = await this.msgRepo.create(createMessageDto)
-      chan.messages.push(msg);
-      await myDataSource.getRepository(channel).save(chan);
+    const usr  = await myDataSource.getRepository(User).findOne({where : {login : login}})
+    
+    //  if (!usr)
+    //return ; // need to implement HTTPrequest
+    createMessageDto.author = usr;
+    createMessageDto.time = new Date();
+    createMessageDto.chan = chan; 
+    createMessageDto.login = login; 
+    myDataSource.getRepository(Channel).save(chan);
+    const msg = await this.msgRepo.save(createMessageDto)
+    console.log(login);
+    //  chan.messages.push(msg);
+      await myDataSource.getRepository(Channel).save(chan);
 
     return msg;
   }
 
-  findAll() {
-    return this.msgRepo;
+  async findAll() {
+    const msg = await myDataSource.getRepository(Messages).find();
+    return msg
   }
 
-  async identify(name: string, usr:User)
+  async identify(login: string, name:string)
   {
 
     const chan = await myDataSource.getRepository(Channel).findOne({where : {name:name}})
+    const usr = await myDataSource.getRepository(User).findOne({where : {login:login}})
     const chanPart : ChanParticipant = new ChanParticipant;
     chanPart.participant = usr;
     chanPart.chan = chan;

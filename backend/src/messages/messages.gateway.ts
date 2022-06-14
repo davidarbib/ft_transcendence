@@ -12,7 +12,6 @@ import { Messages } from './entities/message.entity';
     origin: '*',
   },
 })
-@UseGuards(JwtGuard) 
 export class MessagesGateway
 {
   @WebSocketServer()
@@ -20,20 +19,20 @@ export class MessagesGateway
   constructor(private readonly messageService: MessagesService) {}
 
   @SubscribeMessage('createMessage')
-  async create(@Request() req,@MessageBody('name') name:string, @MessageBody() createMessageDto: CreateMessageDto) {
-    const usr:User = req.user;
-    const chat = await  this.messageService.create(usr, name, createMessageDto);
-    this.server.emit('message', Messages);
-    return chat;
+  async create(@MessageBody('name') name:string,@MessageBody('login') login :string, @MessageBody() createMessageDto: CreateMessageDto) {
+    const message = await  this.messageService.create(login, name, createMessageDto);
+   this.server.emit('message', message);
+    return message;
   }
-  @SubscribeMessage('findAllChat')
-  findAll() {
-    return this.messageService.findAll();
+  @SubscribeMessage('findAllMessage')
+  async findAll() {
+    const msg = await this.messageService.findAll();
+    return msg;
   }
 
-  @SubscribeMessage('joinchat')
-  joinRoom( @Request() req , @MessageBody('name') name:string) {
-    const usr: User = req.user;
-    return this.messageService.identify(name, usr);
+  @SubscribeMessage('joinchan')
+  joinRoom( @MessageBody('login') login:string, @MessageBody('name') name:string) {
+    console.log("hihi");
+    return this.messageService.identify(name, login);
   }
 }

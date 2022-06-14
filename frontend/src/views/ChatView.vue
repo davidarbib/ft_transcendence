@@ -3,31 +3,35 @@ import NavbarItem from "@/components/NavbarItem.vue";
 import Channel from "@/components/Channel.vue";
 import PubChannel from "@/components/PubChannel.vue";
 import axios from "axios";
-import { ref, onMounted, reactive } from "vue";
+import { ref, onMounted, reactive, onBeforeMount } from "vue";
+import { io } from "socket.io-client";
+//import messages from "@/assets/msg_body_test.json";
 
-const msgList = reactive<Array<Messages>>({Messages:[]});
+const socket = io('http://localhost:8090');
+const messages = ref ([]);
+const messageText = ref ('');
+const joined = ref(false);
+const NAME = ref('');
 
-onMounted(() => {
-  axios.defaults.withCredentials = true;
-  axios
-    .get('http://localhost:8090/message')
-    .then((response) => {
-      msgList.values = response.data;
+onBeforeMount(() => {
+
+    socket.emit ('findAllMessage', {} , (response) => {
+      messages.value = response;
     })
-    .catch((error) => {
-      console.log(error);
-    });
-});
+}); //devoir rajouter le nom du chan pour afficher chaque msg, et pvr l'affichier
+
+socket.on ('message', (message) => {
+  messages.value.push(message);
+}); 
 
 function sendMessage(){
-  axios.defaults.withCredentials = true;
-  axios
-    .post('http://localhost:8090/message', {content: '1235'})
-    .then((response) => 
-    {
-    })
-    .catch((error) => console.log('error with the send of the message'))
+  socket.emit('createMessage', {name: "1235", login: "m3L_dis", content: "slt c le test"}, () => {
+   messageText.value = '';
+  });
 }
+
+
+
 
 </script>
 
@@ -42,14 +46,9 @@ function sendMessage(){
     <div class="messages text-gray-300">
       <div
         class="message bg-black bg-opacity-20 w-3/4 mx-2 rounded p-2"
-        v-for="message in msgList.values"
-      >
-        <p class="underline-offset-auto">
-          <span class="sender text-[#e63380] font-bold">
-            {{ message.author.username }}
-          </span>
-          <span class="text-xs text-gray-400"> 11/11/2022 at 19h05 </span>
-        </p>
+          v-for="message in messages">
+            {{ message.login}} : 
+           {{message.time}}
         <p>{{ message.content }}</p>
       </div>
     </div>
@@ -58,13 +57,14 @@ function sendMessage(){
         type="text"
         class="h-3/4 w-3/4 px-2 focus:outline-none border rounded border-gray-300"
       />
-      <p class="px-3"><i class="fa-solid fa-paper-plane"></i></p>
+       <button @click="sendMessage" class="valid primary-button"> Create </button>
     </div>
     <div class="channel-pub">
       <PubChannel />
     </div>
   </div>
 </template>
+
 
 <style scoped lang="scss">
 @use "../assets/variables.scss" as v;

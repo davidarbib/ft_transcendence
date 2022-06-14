@@ -5,7 +5,6 @@ import axios from "axios";
 import { useChanStore } from "@/stores/auth";
 import { ref, onMounted, reactive } from "vue";
 import { computed } from "@vue/reactivity";
-
 let test = reactive<Array<Channel>>({Channel:[]});
 
 onMounted(() => {
@@ -19,7 +18,9 @@ onMounted(() => {
       console.log(error);
     });
 });
-
+  function  joinchan() {
+  socket.emit('joinchan', {login: "m3L_dis", name : "1235"})
+ }
 </script>
 
 <template>
@@ -35,7 +36,7 @@ onMounted(() => {
       <div class="pub-chan-info py-2"
         v-for="(channel, key) in test.values">
       <p>  {{channel.name}} </p>
-        <p class="secondary-button interact">Join</p>
+        <button @click = "joinchan" class="secondary-button interact">Join</button>
       </div>
     </div>
   </div>
