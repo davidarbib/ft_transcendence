@@ -5,6 +5,7 @@ import { User } from 'src/users/entities/user.entity';
 import { Api42Guard } from './guards/api42.guard';
 import { LocalGuard } from './guards/local.guard';
 import { JwtGuard } from './guards/jwt.guard';
+import { JwtTwoFaGuard } from './guards/jwtTwoFa.guard';
 import { AuthService } from './services/auth.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { DiscordGuard } from './guards/discord.guard';
@@ -66,6 +67,14 @@ export class TwoFactorAuthController
     }
 
     @HttpCode(200)
+    @Post('turn-off')
+    @UseGuards(JwtTwoFaGuard)
+    async turnOffTwoFactorAuth(@Req() request: Request)
+    {
+        await this.usersService.turnOffTwoFactor(request.user.id);
+    }
+
+    @HttpCode(200)
     @Post('authenticate')
     @UseGuards(JwtGuard)
     async authenticate
@@ -90,7 +99,7 @@ export class TwoFactorAuthController
             {
                 httpOnly: false, //toggle to true on prod
                 expires: new Date(Date.now() + process.env.JWT_EXPIRATION_MS),
-                sameSite: "lax",
+                sameSite: "none",
             }
         );
 
