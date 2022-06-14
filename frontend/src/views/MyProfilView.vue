@@ -14,7 +14,9 @@ const userStore = useUserStore();
 let openModal = ref(false);
 let qrCode = ref("");
 let auth2FaCode = ref("");
-let auth2faError = ref(false);
+let error2fa = ref(false);
+let success2fa = ref(false);
+let closeNotification = ref();
 
 const activate2fa = () => {
   axios
@@ -31,16 +33,22 @@ const activate2fa = () => {
 };
 
 const submit2faCode = () => {
+  closeNotification.value = setInterval(() => {
+    if (success2fa.value === true) success2fa.value = false;
+    else if (error2fa.value === true) error2fa.value = false;
+  }, 5000);
   axios
     .post(`${api.url}/2fa/turn-on`, {
       code: auth2FaCode.value,
     })
     .then(() => {
-      auth2faError.value = false;
+      error2fa.value = false;
+      success2fa.value = true;
       openModal.value = !openModal.value;
     })
     .catch((error) => {
-      auth2faError.value = true;
+      error2fa.value = true;
+      success2fa.value = false;
       console.log(error);
     });
 };
@@ -65,10 +73,10 @@ onMounted(() => {
     <div class="navbar">
       <NavbarItem />
     </div>
-    <notification-message type="success-2fa" header="Success"
+    <notification-message type="success-2fa" header="Success" v-if="success2fa"
       ><p>You can log in with 2fa now</p></notification-message
     >
-    <notification-message type="error-2fa" header="Error"
+    <notification-message type="error-2fa" header="Error" v-if="error2fa"
       ><p>Please provide a valid code</p></notification-message
     >
     <div class="historic">
@@ -128,7 +136,7 @@ onMounted(() => {
                 v-model="auth2FaCode"
                 class="w-full text-center rounded-md my-6 py-4"
               />
-              <p class="text-rose-500 mb-5" v-if="auth2faError">
+              <p class="text-rose-500 mb-5" v-if="error2fa">
                 Error Wrong 2fa code
               </p>
               <button @click="submit2faCode" class="secondary-button w-full">
