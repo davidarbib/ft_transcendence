@@ -31,7 +31,7 @@ const activate2fa = () => {
 
 const submit2faCode = () => {
   axios
-    .post(`${api.url}/2fa/authenticate`, {
+    .post(`${api.url}/2fa/turn-on`, {
       code: auth2FaCode.value,
     })
     .then(() => {
@@ -258,7 +258,6 @@ onMounted(() => {
     align-items: center;
     input:focus {
       outline: none;
-    //  border: 1px solid red;
     }
   }
 }
