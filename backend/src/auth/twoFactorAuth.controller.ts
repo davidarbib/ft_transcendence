@@ -70,17 +70,7 @@ export class TwoFactorAuthController
         
         const { accessToken } = await this.authService.login(request.user, false);
 
-        const jwtMs = parseInt(process.env.JWT_EXPIRATION_MS);
-        response.cookie(
-            process.env.JWT_COOKIE_KEY,
-            accessToken,
-            {
-                httpOnly: false, //toggle to true on prod
-                expires: new Date(Date.now() + jwtMs),
-                sameSite: "none",
-            }
-        );
-
+        this.authService.generateCookie(response, accessToken);
         return;
     }
 
@@ -102,18 +92,7 @@ export class TwoFactorAuthController
         }
 
         const { accessToken } = await this.authService.login(request.user, true);
-
-        const jwtMs = parseInt(process.env.JWT_EXPIRATION_MS);
-        response.cookie(
-            process.env.JWT_COOKIE_KEY,
-            accessToken,
-            {
-                httpOnly: false, //toggle to true on prod
-                expires: new Date(Date.now() + jwtMs),
-                sameSite: "none",
-            }
-        );
-
+        this.authService.generateCookie(response, accessToken);
         return response.redirect('http://localhost:8000');
     }
 }

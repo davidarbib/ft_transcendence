@@ -26,16 +26,7 @@ export class AuthController {
     async redirect(@Req() req: Request, @Res({ passthrough: true }) response: Response)
     {
         const { accessToken } = await this.authService.login(req.user);
-        const jwtMs = parseInt(process.env.JWT_EXPIRATION_MS);
-        response.cookie(
-            process.env.JWT_COOKIE_KEY,
-            accessToken,
-            {
-                httpOnly: false, //toggle to true on prod
-                expires: new Date(Date.now() + jwtMs),
-                sameSite: "none",
-            }
-        );
+        this.authService.generateCookie(response, accessToken);
         //return req.user;
         //return accessToken; //uncomment to obtain bearer token for curl/postman tests
         return response.redirect('http://localhost:8000');
@@ -61,16 +52,7 @@ export class AuthController {
     async discordRedirect(@Req() req: Request, @Res({ passthrough: true }) response: Response)
     {
         const { accessToken } = await this.authService.login(req.user);
-        const jwtMs = parseInt(process.env.JWT_EXPIRATION_MS);
-        response.cookie(
-            process.env.JWT_COOKIE_KEY,
-            accessToken,
-            {
-                httpOnly: false, //toggle to true on prod
-                expires: new Date(Date.now() + jwtMs),
-                sameSite: "none",
-            }
-        );
+        this.authService.generateCookie(response, accessToken);
         //return req.user;
         //return accessToken; //uncomment to obtain bearer token for curl/postman tests
         return response.redirect('http://localhost:8000');
