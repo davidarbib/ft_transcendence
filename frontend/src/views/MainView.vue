@@ -50,8 +50,10 @@ onMounted(() => {
       userStore.user = response.data;
       console.log(userStore.user);
     })
-    .catch(() => {
-      // do nothing
+    .catch((error) => {
+      console.log(error.request.responseText);
+      if (error.request.responseText.includes("2FA needed"))
+        console.log("Hello my friend");
     });
 });
 </script>
