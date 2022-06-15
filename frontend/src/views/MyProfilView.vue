@@ -17,6 +17,7 @@ let auth2FaCode = ref("");
 let error2fa = ref(false);
 let success2fa = ref(false);
 let closeNotification = ref();
+let success2faMessage = ref("Success");
 
 const activate2fa = () => {
   axios
@@ -44,14 +45,31 @@ const submit2faCode = () => {
     .then(() => {
       error2fa.value = false;
       success2fa.value = true;
+      success2faMessage.value = "You can log in with 2fa now";
+      userStore.auth2fa = true;
       openModal.value = !openModal.value;
     })
     .catch((error) => {
       error2fa.value = true;
       success2fa.value = false;
+      userStore.auth2fa = false;
       console.log(error);
     });
 };
+
+const turnoff2fa = () => {
+  closeNotification.value = setInterval(() => {
+    if (success2fa.value === true) success2fa.value = false;
+    else if (error2fa.value === true) error2fa.value = false;
+  }, 5000);
+  axios.post(`${api.url}/2fa/turn-off`).then(() => {
+    success2faMessage.value = "2fa turned off !";
+    success2fa.value = true;
+    userStore.auth2fa = false;
+  }).catch(() => {
+    userStore.auth2fa = false;
+  })
+}
 
 onMounted(() => {
   axios.defaults.withCredentials = true;
@@ -122,8 +140,11 @@ onMounted(() => {
           />
         </div>
         <div class="toggle-2fa">
-          <button class="secondary-button" @click="activate2fa">
-            Activate 2fa
+          <button class="secondary-button" @click="activate2fa" v-if="!userStore.auth2fa">
+            Turn On 2fa
+          </button>
+          <button class="secondary-button" @click="turnoff2fa" v-if="userStore.auth2fa">
+            Turn Off 2fa
           </button>
         </div>
         <Teleport to="body">

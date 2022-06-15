@@ -13,6 +13,6 @@ export const useUserStore = defineStore({
       lossCount: "0",
       winCount: "0",
     },
-    test: 42,
+    auth2fa: false,
   }),
 });
