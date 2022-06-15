@@ -1,21 +1,19 @@
 <script setup lang="ts">
 
-//import { apiStore } from "@/stores/api";
 import { ref } from "vue";
 import axios from "axios";
 import { RouterLink, useRouter } from "vue-router";
 
 const open = ref(false);
-// const api = apiStore();
+const createChanName = ref('');
+const createChanPass = ref('');
+const chan_setting = ref('private');
 
 function createChannel(){
   open.value = false;
   axios.defaults.withCredentials = true;
   axios
-    .post('http://localhost:8090/channels', {name: '1235'})
-    .then((response) => 
-    {
-    })
+    .post('http://localhost:8090/channels', {name: createChanName.value})
     .catch((error) => console.log('error with the creation of channel'))
 }
 
@@ -30,6 +28,7 @@ function createChannel(){
       <div class="modal-inner">
         <div class=""><slot /></div>
         <input
+          v-model="createChanName"
           id="email-address"
           name="email"
           type="email"
@@ -46,9 +45,10 @@ function createChannel(){
         />
         <select v-model="chan_setting" class="status secondary-button">
           <option value="private">Private</option>
-          <option value="default">Public</option>
+          <option value="public">Public</option>
         </select>
         <input
+          v-model="createChanPass"
           id="password"
           name="password"
           type="password"

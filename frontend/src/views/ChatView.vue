@@ -5,16 +5,18 @@ import PubChannel from "@/components/PubChannel.vue";
 import axios from "axios";
 import { ref, onMounted, reactive, onBeforeMount } from "vue";
 import { io } from "socket.io-client";
+import { useUserStore } from "@/stores/auth"
 //import messages from "@/assets/msg_body_test.json";
 
+const userStore = useUserStore();
 const socket = io('http://localhost:8090');
 const messages = ref ([]);
 const messageText = ref ('');
 const joined = ref(false);
-const NAME = ref('');
+const getName = ref('NO CHANNEL SELECTED');
+const myInput = ref('');
 
 onBeforeMount(() => {
-
     socket.emit ('findAllMessage', {} , (response) => {
       messages.value = response;
     })
@@ -22,32 +24,35 @@ onBeforeMount(() => {
 
 socket.on ('message', (message) => {
   messages.value.push(message);
-}); 
+});
 
 function sendMessage(){
-  socket.emit('createMessage', {name: "1235", login: "m3L_dis", content: "slt c le test"}, () => {
+  socket.emit('createMessage', {name: "1235", login: userStore.user.login, content: myInput.value}, () => {
    messageText.value = '';
+   myInput.value = '';
   });
 }
-
-
-
 
 </script>
 
 <template>
   <div class="chat-section">
+
     <div class="navbar-item">
       <NavbarItem />
     </div>
     <div class="channel-list">
-      <Channel />
+      <Channel @name='(msg) => getName = msg'/>
+    </div>
+    <div class="channel-pub">
+      <PubChannel @name='(msg) => getName = msg' :key="channels"/>
     </div>
     <div class="messages text-gray-300">
+      <p class="text-2xl"> {{ getName }} </p>
       <div
         class="message bg-black bg-opacity-20 w-3/4 mx-2 rounded p-2"
           v-for="message in messages">
-            {{ message.login}} : 
+            {{ message.login}} :
            {{message.time}}
         <p>{{ message.content }}</p>
       </div>
@@ -55,13 +60,12 @@ function sendMessage(){
     <div class="message-input">
       <input
         type="text"
+        v-model="myInput"
         class="h-3/4 w-3/4 px-2 focus:outline-none border rounded border-gray-300"
       />
-       <button @click="sendMessage" class="valid primary-button"> Create </button>
+       <button @click="sendMessage" class="valid primary-button"> send </button>
     </div>
-    <div class="channel-pub">
-      <PubChannel />
-    </div>
+
   </div>
 </template>
 

@@ -2,14 +2,38 @@
 import channels from "@/assets/msg_test.json";
 import { ref } from "vue";
 import { io } from 'socket.io-client'
+
 const searched = ref("");
 const channelOptions = ref(false);
 const channelSelected = ref(-1);
+const channelName = ref('');
 
 function toggleChannelMenu(id: number) {
   channelSelected.value = id;
   channelOptions.value = !channelOptions.value;
 }
+
+function selectChannel(name: string) {
+  channelName.value = name;
+  console.log('name');
+  emit('name', channelName.value);
+}
+
+const emit = defineEmits(['name']);
+// onMounted(() => {
+//   axios.defaults.withCredentials = true;
+//   axios
+//     .get('http://localhost:8090/channels')
+//     .then((response) => {
+//       test.values = response.data;
+//     })
+//     .catch((error) => {
+//       console.log(error);
+//     });
+// });
+
+
+
 </script>
 
 <template>
@@ -18,12 +42,16 @@ function toggleChannelMenu(id: number) {
     <br />
     <br />
     <div
+      @click="selectChannel(channel.name)"
       class="user-card rounded my-2 bg-black bg-opacity-10 font-medium hover:bg-opacity-30 transition duration-300"
       v-for="channel in channels"
       :key="channel.id"
     >
-      <div class="user-pseudo py-2">
-        <p>{{ channel.name }}</p><p class="icon" @click="toggleChannelMenu(channel.id)"><i class="fa-solid fa-gear"></i></p>
+      <div class="user-pseudo py-2" >
+        <p>{{ channel.name }}</p>
+        <p class="icon" @click="toggleChannelMenu(channel.id, channel.name)">
+          <i class="fa-solid fa-gear"></i>
+        </p>
       </div>
       <Transition name="slide-fade">
         <div v-if="channelOptions && channelSelected === channel.id">
@@ -72,7 +100,7 @@ function toggleChannelMenu(id: number) {
         padding-left: 1rem;
       }
     }
-  
+
     .slide-fade-enter-active {
       transition: all 0.3s ease-out;
     }
