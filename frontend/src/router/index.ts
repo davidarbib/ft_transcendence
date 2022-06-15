@@ -7,8 +7,8 @@ import GameModeView from "@/views/GameModeView.vue";
 import HomeView from "@/views/HomeView.vue";
 import MainView from "@/views/MainView.vue";
 import PongView from "@/views/PongView.vue";
-import ProfilView from "@/views/ProfilView.vue";
-import MyProfilView from "@/views/MyProfilView.vue";
+import ProfileView from "@/views/ProfilView.vue";
+import MyProfileView from "@/views/MyProfilView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -18,8 +18,8 @@ const router = createRouter({
       name: "home",
       component: HomeView,
       meta: {
-        allowAnonymous: true
-      }
+        allowAnonymous: true,
+      },
     },
     {
       path: "/main",
@@ -37,15 +37,15 @@ const router = createRouter({
       component: PongView,
     },
     {
-      path: "/myprofile",
-      name: "myprofile",
-      component: MyProfilView,
+      path: "/my_profile",
+      name: "my_profile",
+      component: MyProfileView,
     },
     {
-      path: "/profil/:pseudo",
-      name: "profil",
-      component: ProfilView,
-      props: true
+      path: "/profile/:pseudo",
+      name: "profile",
+      component: ProfileView,
+      props: true,
     },
     {
       path: "/mode",
@@ -57,24 +57,22 @@ const router = createRouter({
       name: "error",
       component: ErrorView,
       meta: {
-        allowAnonymous: true
-      }
-    }
-  ]
-})
+        allowAnonymous: true,
+      },
+    },
+  ],
+});
 
 router.beforeEach((to, from, next) => {
-  if (to.name == 'home' && isLoggedIn()) {
-    next({ path: '/main' })
-  }
-  else if (!to.meta.allowAnonymous && !isLoggedIn()) {
+  if (to.name == "home" && isLoggedIn()) {
+    next({ path: "/main" });
+  } else if (!to.meta.allowAnonymous && !isLoggedIn()) {
     next({
-      path: '/',
-    })
+      path: "/",
+    });
+  } else {
+    next();
   }
-  else {
-    next()
-  }
-})
+});
 
 export default router;

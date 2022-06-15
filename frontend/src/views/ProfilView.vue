@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import NavbarItem from "@/components/NavbarItem.vue";
-import Contact from "../components/Contact.vue";
-import Historic from "@/components/Historic.vue";
+import NavbarItem from "@/components/NavbarItemComponent.vue";
+import Contact from "../components/ContactComponent.vue";
+import Historic from "@/components/HistoricComponent.vue";
 import axios from "axios";
 import { useUserStore } from "@/stores/auth";
 import { apiStore } from "@/stores/api";
@@ -34,10 +34,10 @@ onMounted(() => {
     .then((response) => {
       user.value = response.data;
       if (response.data === "") router.push({ path: "/profile_not_found" });
-      if (user.value === userStore.$state.user)
+      if (user.value.username === userStore.$state.user.username)
         isCurrentUserProfile.value = true;
-    })
-    .catch(() => {
+    }).catch((error) => {
+      console.log(error);
       router.push({ path: "/profile_not_found" });
     });
 });
@@ -128,7 +128,10 @@ onMounted(() => {
     margin-top: 3rem;
     display: flex;
     flex-direction: column;
+<<<<<<< HEAD
 
+=======
+>>>>>>> dfcdeb3
     header {
       display: flex;
       flex-direction: row;

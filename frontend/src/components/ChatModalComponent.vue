@@ -18,7 +18,6 @@ const open = ref(false);
             name="email"
             type="email"
             autocomplete="email"
-            required="true"
             class="w-full h-1/2 rounded-t-md focus:outline-none border border-gray-300"
             placeholder="Email address"
           />
@@ -28,7 +27,6 @@ const open = ref(false);
             name="password"
             type="password"
             autocomplete="current-password"
-            required="true"
             class="w-full h-1/2 rounded-b-md focus:outline-none border border-gray-300"
             placeholder="Password"
           />

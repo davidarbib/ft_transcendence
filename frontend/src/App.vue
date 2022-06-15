@@ -1,7 +1,6 @@
 <script setup lang="ts"></script>
 
 <template>
-  <!-- Ne pas supprimer router view ! -->
   <router-view />
 </template>
 

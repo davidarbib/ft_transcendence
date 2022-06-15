@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import Title from "@/components/TitleMax.vue";
-import MusicLoop from "../components/MusicLoop.vue";
+import Title from "@/components/TitleMaxComponent.vue";
+import MusicLoop from "../components/MusicLoopComponent.vue";
 </script>
 
 <template>
