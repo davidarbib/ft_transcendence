@@ -12,7 +12,7 @@ const validMimeTYpe  : ValidMimeTYpe[] = [ 'image/png' , 'image/jpg' , 'image/jp
 export const Imagestorage = {
 
     storage : diskStorage({
-    destination: './uploads/profile-image',
+    destination: 'public',
     filename: (req, file, cb) => {
       const filename: string = path.parse(file.originalname).name + uuidv4()
       const ext :string = path.parse(file.originalname).ext;

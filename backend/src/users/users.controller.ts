@@ -13,6 +13,10 @@ import { UseInterceptors } from '@nestjs/common';
 import { UploadedFile } from '@nestjs/common';
 import { ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { Observable, of } from 'rxjs';
+import {v4 as uuidv4} from 'uuid'
+import * as path from 'path';
+
+
 import { Imagestorage } from './images-ref/image.storage';
 type ValidMimeTYpe = 'image/png' |'image/jpg' | 'image/jpeg ';
 
@@ -55,7 +59,7 @@ uploadFile(@UploadedFile() file , @Request()  req) : any {
   const fileext = allowMimeType.includes(file.mimetype);
   if (!fileext) return of({error: 'File must be a png'});
   const user: User = req.user;
-  user.avatarRef = file.path;
+  user.avatarRef = file.filename;
   console.log(user.avatarRef);
   return myDataSource.getRepository(User).save(user);
 }

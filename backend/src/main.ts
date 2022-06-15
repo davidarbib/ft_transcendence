@@ -4,6 +4,7 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import * as session from 'express-session'
 import * as passport from 'passport'
 import * as cookieParser from 'cookie-parser';
+import * as express from 'express';
 
 import { ValidationPipe } from '@nestjs/common';
 
@@ -46,7 +47,7 @@ async function bootstrap()
     origin:true
   }) // pour connecter le back et le front !!!
 
-
+  app.use(express.static('public'));
   await app.listen(PORT, () => console.log(`Running on Port : ${PORT}`));
 }
 
