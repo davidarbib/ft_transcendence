@@ -44,6 +44,6 @@ export class JwtTwoFaStrategy extends PassportStrategy(Strategy, 'jwt-two-factor
             return user;
         }
 
-        throw new UnauthorizedException();
+        throw new UnauthorizedException('2FA needed');
     }
 }

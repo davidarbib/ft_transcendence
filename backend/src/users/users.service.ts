@@ -76,11 +76,16 @@ export class UsersService {
 
   async setTwoFactorSecret(userId: string, secret: string)
   {
-    this.userRepo.update(userId, {twoFactorSecret: secret});
+    return this.userRepo.update(userId, {twoFactorSecret: secret});
   }
   
   async turnOnTwoFactor(userId: string)
   {
-    this.userRepo.update(userId, {twoFactorEnabled: true});
+    return this.userRepo.update(userId, {twoFactorEnabled: true});
+  }
+
+  async turnOffTwoFactor(userId: string)
+  {
+    return this.userRepo.update(userId, {twoFactorEnabled: false});
   }
 }
