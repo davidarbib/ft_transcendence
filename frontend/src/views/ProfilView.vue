@@ -128,10 +128,6 @@ onMounted(() => {
     margin-top: 3rem;
     display: flex;
     flex-direction: column;
-<<<<<<< HEAD
-
-=======
->>>>>>> dfcdeb3
     header {
       display: flex;
       flex-direction: row;
