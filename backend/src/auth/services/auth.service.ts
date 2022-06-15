@@ -44,7 +44,7 @@ export class AuthService implements AuthenticationProvider
             {
                 httpOnly: false, //toggle to true on prod
                 expires: new Date(Date.now() + jwtMs),
-                sameSite: "none",
+                sameSite: "lax",
             }
         );
     }
