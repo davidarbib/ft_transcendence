@@ -7,6 +7,7 @@ import { CreateChannelDto } from './dto/create-channel.dto';
 import { UpdateChannelDto } from './dto/update-channel.dto';
 import { Channel } from './entities/channel.entity';
 import {HttpException, HttpStatus} from '@nestjs/common'
+import { cachedDataVersionTag } from 'v8';
 
 @Injectable()
 export class ChannelsService {
@@ -28,6 +29,16 @@ export class ChannelsService {
     return  myDataSource.getRepository(Channel).findOneBy({name});
   }
 
+  async findChan(usr:User)
+  {
+    const test = await myDataSource.getRepository(ChanParticipant).find({ relations: ['participant', 'chan'] });
+    let arr: any = [];
+    test.forEach(element => {
+      if (element.participant.login == usr.login)
+        arr.push(element.chan)
+    });
+    return arr;
+  }
   async update(name: string, updateChannelDto: UpdateChannelDto, usr : User, channel : Channel)
   {
     const chanPart = await myDataSource.getRepository(ChanParticipant).createQueryBuilder("chanpart")

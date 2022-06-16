@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { Column, Entity, PrimaryGeneratedColumn, OneToMany, BaseEntity } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn, OneToMany, BaseEntity , JoinColumn} from "typeorm";
 import { ChanParticipant } from "src/chan-participants/entities/chan-participant.entity"
 import { Messages } from "src/messages/entities/message.entity"
 

@@ -36,6 +36,11 @@ export class ChannelsController {
   findOne(@Param('name') name: string) {
     return this.channelsService.findOne(name);
   }
+  @Get('/chan/:login')
+  findChan(@Request() req) {
+    const usr:User = req.user;
+    return this.channelsService.findChan(usr);
+  }
 
 
   

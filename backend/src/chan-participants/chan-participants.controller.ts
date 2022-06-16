@@ -12,15 +12,14 @@ export class ChanParticipantsController {
 
   @Post()
   async create(@Param('name') name :string , @Request() req) {
-  const usr: User = req.usr.usr;
+  const usr: User = req.user;
   const chan= await myDataSource.getRepository(Channel).findOneBy({name});
-if (chan.participants.includes(usr.chanParticipations[0])) return;
+//if (chan.participants.includes(usr.chanParticipations[0])) return;
 // si la ligne ne marche pasfo boucle sur usr.chanParticipant  
   const chanPart : ChanParticipant = new ChanParticipant;
   chanPart.participant =  usr;
   const channel = await myDataSource.getRepository(Channel).findOneBy({name :name});
   chanPart.chan = channel;
-  usr.chanParticipations.push(chanPart); // c'est suffisant ? ou fo save
     return await myDataSource.getRepository(ChanParticipant).save(chanPart);
   }
 /*

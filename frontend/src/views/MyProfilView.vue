@@ -11,6 +11,7 @@ import { useRouter } from "vue-router";
 import { ref } from "vue";
 const api = apiStore();
 const userStore = useUserStore();
+
 const router = useRouter();
 onMounted(() => {
   if (userStore.user.id === "default") {
