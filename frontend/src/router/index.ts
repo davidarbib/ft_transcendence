@@ -74,9 +74,6 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   if (to.name == "home" && isLoggedIn()) {
-    if (is2faRequired()) {
-      next({ path: "/auth2fa" });
-    }
     next({ path: "/main" });
   } else if (!to.meta.allowAnonymous && !isLoggedIn()) {
     next({

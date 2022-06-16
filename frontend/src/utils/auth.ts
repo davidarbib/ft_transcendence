@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const AUTH_TOKEN_KEY = "pongJwt";
-const API_URL = "http://localhost:8090"
+const API_URL = "http://localhost:8090";
 
 export function logoutUser() {
   clearAuthToken();
@@ -29,13 +29,18 @@ export function isLoggedIn(): boolean {
   return !!authToken;
 }
 
-export function is2faRequired() : boolean {
+export async function is2faRequired(): Promise<boolean> {
   let responseState = false;
-  axios.get(`${API_URL}/auth/current`).then(() =>{
-    responseState = false;
-  }).catch((error) => {
-    if (error.request.responseText.includes("2FA needed"))
-      responseState = true;
-  });
+  await axios
+    .get(`${API_URL}/auth/current`)
+    .then(() => {
+      responseState = false;
+      return false;
+    })
+    .catch((error) => {
+      if (error.request.responseText.includes("2FA needed"))
+        responseState = true;
+      return true;
+    });
   return responseState;
 }
