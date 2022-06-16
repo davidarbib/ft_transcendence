@@ -62,14 +62,17 @@ const turnoff2fa = () => {
     if (success2fa.value === true) success2fa.value = false;
     else if (error2fa.value === true) error2fa.value = false;
   }, 5000);
-  axios.post(`${api.url}/2fa/turn-off`).then(() => {
-    success2faMessage.value = "2fa turned off !";
-    success2fa.value = true;
-    userStore.auth2fa = false;
-  }).catch(() => {
-    userStore.auth2fa = false;
-  })
-}
+  axios
+    .post(`${api.url}/2fa/turn-off`)
+    .then(() => {
+      success2faMessage.value = "2fa turned off !";
+      success2fa.value = true;
+      userStore.auth2fa = false;
+    })
+    .catch(() => {
+      userStore.auth2fa = false;
+    });
+};
 
 onMounted(() => {
   axios.defaults.withCredentials = true;
@@ -140,10 +143,18 @@ onMounted(() => {
           />
         </div>
         <div class="toggle-2fa">
-          <button class="secondary-button" @click="activate2fa" v-if="!userStore.auth2fa">
+          <button
+            class="secondary-button"
+            @click="activate2fa"
+            v-if="!userStore.auth2fa"
+          >
             Turn On 2fa
           </button>
-          <button class="secondary-button" @click="turnoff2fa" v-if="userStore.auth2fa">
+          <button
+            class="secondary-button"
+            @click="turnoff2fa"
+            v-if="userStore.auth2fa"
+          >
             Turn Off 2fa
           </button>
         </div>
