@@ -2,10 +2,13 @@
 import ChatModal from '@/components/ChatModal.vue';
 //import channels from "@/assets/msg_test.json";
 import axios from "axios";
+import { io } from 'socket.io-client'
 import { useChanStore } from "@/stores/auth";
-import { ref, onMounted, reactive } from "vue";
+import { ref, onMounted, reactive, watch } from "vue";
 import { computed } from "@vue/reactivity";
-let test = reactive<Array<Channel>>({Channel:[]});
+
+const test = reactive<Array<Channel>>({Channel:[]});
+const channelName = ref('');
 
 onMounted(() => {
   axios.defaults.withCredentials = true;
@@ -18,9 +21,14 @@ onMounted(() => {
       console.log(error);
     });
 });
-  function  joinchan() {
-  socket.emit('joinchan', {login: "m3L_dis", name : "1235"})
- }
+
+function  joinchan(name: string) {
+  channelName.value = name;
+  emit('name', channelName.value);
+  // socket.emit('joinchan', {login: "m3L_dis", name : "1235"})
+}
+
+const emit = defineEmits(['name']);
 </script>
 
 <template>
@@ -34,9 +42,10 @@ onMounted(() => {
       class="user-card rounded my-2 bg-black bg-opacity-10 font-medium hover:bg-opacity-30 transition duration-300"
    >
       <div class="pub-chan-info py-2"
-        v-for="(channel, key) in test.values">
-      <p>  {{channel.name}} </p>
-        <button @click = "joinchan" class="secondary-button interact">Join</button>
+        v-for="channel in test.values"
+        :key="channel.id">
+        <p> {{channel.name}} </p>
+        <button @click="joinchan(channel.name)" class="secondary-button interact">Join</button>
       </div>
     </div>
   </div>
