@@ -36,11 +36,19 @@ export async function is2faRequired(): Promise<boolean> {
     .then((response) => {
       responseState = false;
       console.log(response);
+      console.log("CUCK DE REUSSITE");
+      return responseState;
     })
     .catch((error) => {
       console.log(error);
-      if (error.request.responseText.includes("2FA needed"))
+      console.log("CUCK D'ERREUR");
+      if (error.request.responseText.includes("2FA needed")) {
         responseState = true;
+        console.log("JE CHANGE BIEN LA VALEUR TKT LA MIF");
+      }
+      return responseState;
     });
+  console.log("CUCK DE FIN");
   return responseState;
 }
+

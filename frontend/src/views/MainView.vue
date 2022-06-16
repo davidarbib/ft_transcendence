@@ -48,10 +48,10 @@ onMounted(() => {
     .get(`${api.url}/auth/current`)
     .then((response) => {
       userStore.user = response.data;
-      console.log(userStore.user);
+      // console.log(userStore.user);
     })
     .catch((error) => {
-      console.log(error.request.responseText);
+      // console.log(error.request.responseText);
       if (error.request.responseText.includes("2FA needed"))
         console.log("Hello my friend");
     });
