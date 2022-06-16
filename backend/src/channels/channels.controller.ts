@@ -36,13 +36,22 @@ export class ChannelsController {
   findOne(@Param('name') name: string) {
     return this.channelsService.findOne(name);
   }
-  @Get('/chan/:login')
+  @Get('/chan')
   findChan(@Request() req) {
     const usr:User = req.user;
     return this.channelsService.findChan(usr);
   }
 
+  @Get('/chanpriv')
+  findChanPriv() {
+    return this.channelsService.findChanPriv();
+  }
 
+
+  @Get('/chanpublic')
+  findChanPublic() {
+    return this.channelsService.findChanPublic();
+  }
   
   @Patch('/update/:name')
  async  update(@Param('name') name: string, @Body() updateChannelDto: UpdateChannelDto, @Request() req) {

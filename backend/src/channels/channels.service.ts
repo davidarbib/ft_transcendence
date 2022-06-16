@@ -5,9 +5,10 @@ import { ChanParticipant, ChanPartStatus } from 'src/chan-participants/entities/
 import { User } from 'src/users/entities/user.entity';
 import { CreateChannelDto } from './dto/create-channel.dto';
 import { UpdateChannelDto } from './dto/update-channel.dto';
-import { Channel } from './entities/channel.entity';
+import { Channel, ChanType } from './entities/channel.entity';
 import {HttpException, HttpStatus} from '@nestjs/common'
 import { cachedDataVersionTag } from 'v8';
+import { channel } from 'diagnostics_channel';
 
 @Injectable()
 export class ChannelsService {
@@ -29,6 +30,26 @@ export class ChannelsService {
     return  myDataSource.getRepository(Channel).findOneBy({name});
   }
 
+  async findChanPriv()
+  {
+    const test = await myDataSource.getRepository(Channel).find();
+    let arr: any = [];
+    test.forEach(element => {
+      if (element.type == ChanType.PRIVATE)
+        arr.push(element)
+    });
+    return arr;
+  }
+  async findChanPublic()
+  {
+      const test = await myDataSource.getRepository(Channel).find();
+      let arr: any = [];
+      test.forEach(element => {
+        if (element.type == ChanType.PUBLIC)
+          arr.push(element)
+      });
+      return arr;
+  }
   async findChan(usr:User)
   {
     const test = await myDataSource.getRepository(ChanParticipant).find({ relations: ['participant', 'chan'] });

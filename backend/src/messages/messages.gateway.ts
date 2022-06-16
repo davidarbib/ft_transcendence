@@ -30,6 +30,12 @@ export class MessagesGateway
     return msg;
   }
 
+  @SubscribeMessage('findMessageFromChan')
+  async findMsg(@MessageBody('name') name:string)
+  {
+    return this.messageService.findMsg(name);
+  }
+
   @SubscribeMessage('joinchan')
   joinRoom( @MessageBody('login') login:string, @MessageBody('name') name:string) {
     console.log("hihi");

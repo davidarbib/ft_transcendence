@@ -44,6 +44,18 @@ export class MessagesService {
     return msg
   }
 
+  async findMsg(name: string)
+  {
+    const msg = await this.msgRepo.find({ relations: [ 'chan'] })
+    let arr : any = [];
+    msg.forEach(element => {
+      if (element.chan.name = name)
+        arr.push(element);
+
+    });
+    return arr;
+  }
+
   async identify(login: string, name:string)
   {
 
