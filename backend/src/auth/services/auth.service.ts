@@ -49,6 +49,24 @@ export class AuthService implements AuthenticationProvider
         );
     }
 
+    public async generateLogoutCookie
+    (
+      @Res({ passthrough: true }) response : Response,
+      accessToken: string
+    )
+    {
+        const jwtMs = 0;
+        response.cookie(
+            process.env.JWT_COOKIE_KEY,
+            accessToken,
+            {
+                httpOnly: false, //toggle to true on prod
+                expires: new Date(Date.now() + jwtMs),
+                sameSite: "lax",
+            }
+        );
+    }
+
     public async validateUser(details: UserDetails)
     {
       const { login } = details;

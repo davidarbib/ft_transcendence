@@ -68,9 +68,14 @@ export class AuthController {
 
     @Get('logout')
     @UseGuards(JwtGuard)
-    logout(@Req() request: Request): any
+    logout
+    (
+        @Req() request: Request,
+        @Res({ passthrough: true }) response: Response
+    ): string
     {
         //update user status
+        this.authService.generateCookie(response, "xxxxxxxxxxx");
         return "Logout successful";
     }
 
