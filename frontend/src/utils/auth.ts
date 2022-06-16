@@ -21,7 +21,7 @@ export function getAuthToken(): string | null {
 }
 
 export function clearAuthToken(): void {
-  document.cookie = `${AUTH_TOKEN_KEY}=`;
+  document.cookie = `${AUTH_TOKEN_KEY}=` + ";expires=Thu, 01 Jan 1970 00:00:01 GMT";
 }
 
 export function isLoggedIn(): boolean {
@@ -33,14 +33,14 @@ export async function is2faRequired(): Promise<boolean> {
   let responseState = false;
   await axios
     .get(`${API_URL}/auth/current`)
-    .then(() => {
+    .then((response) => {
       responseState = false;
-      return false;
+      console.log(response);
     })
     .catch((error) => {
+      console.log(error);
       if (error.request.responseText.includes("2FA needed"))
         responseState = true;
-      return true;
     });
   return responseState;
 }
