@@ -48,9 +48,11 @@ onMounted(() => {
     .get(`${api.url}/auth/current`)
     .then((response) => {
       userStore.user = response.data;
+      console.log(response.data);
     })
     .catch(() => {
       userStore.auth2fa = false;
+      console.log("Error");
     });
 });
 </script>
