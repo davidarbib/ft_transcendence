@@ -2,6 +2,7 @@
 import { ref, watch } from "vue";
 import { apiStore } from "@/stores/api";
 import axios from "axios";
+import router from "@/router";
 
 let code = ref("");
 let codeInvalid = ref("hidden");
@@ -17,6 +18,7 @@ watch(code, (newCode) => {
       .then((response) => {
         console.log(response.data);
         codeInvalid.value = "hidden";
+        router.push({ name: "main" });
       })
       .catch((error) => {
         console.log(error);
