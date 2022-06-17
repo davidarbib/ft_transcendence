@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
-import { isLoggedIn } from "@/utils/auth";
+import { is2faAuthenticated, is2faEnabled, isLoggedIn } from "@/utils/auth";
 
 import ChatView from "@/views/ChatView.vue";
 import ErrorView from "@/views/ErrorView.vue";
@@ -70,6 +70,8 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
+  is2faEnabled();
+  is2faAuthenticated();
   if (to.name == "home" && isLoggedIn()) {
     next({ path: "/main" });
   } else if (!to.meta.allowAnonymous && !isLoggedIn()) {
