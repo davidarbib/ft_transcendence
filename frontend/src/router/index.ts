@@ -57,9 +57,6 @@ const router = createRouter({
       path: "/auth2fa",
       name: "auth2fa",
       component: Auth2faView,
-      meta: {
-        allowAnonymous: true,
-      },
     },
     {
       path: "/:catchAll(.*)",
@@ -73,27 +70,19 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  // is2faRequired().then((status) => {
-  //   if (!status) {
-  //     next();
-  //   } else {
-  //     console.log("Status is true !");
-  //     if (to.name == "home" && isLoggedIn()) {
-  //       next({ path: "/auth2fa" });
-  //     } else if (!to.meta.allowAnonymous && !isLoggedIn()) {
-  //       next({ path: "/" });
-  //     }
-  //   }
-  // });
-  if (to.name == "home" && isLoggedIn()) {
-    next({ path: "/main" });
-  } else if (!to.meta.allowAnonymous && !isLoggedIn()) {
-    next({
-      path: "/",
-    });
-  } else {
-    next();
-  }
+  is2faRequired().then((status) => {
+    if (!status) {
+      if (to.name == "home" && isLoggedIn()) {
+        next({ path: "/main" });
+      } else if (!to.meta.allowAnonymous && !isLoggedIn()) {
+        next({ path: "/" });
+      } else next();
+    } else {
+      if (to.name == "home" && isLoggedIn()) next({ path: "/auth2fa" });
+      else if (!to.meta.allowAnonymous && isLoggedIn()) next({ path: "/" });
+      else next();
+    }
+  });
 });
 
 export default router;

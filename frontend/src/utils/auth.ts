@@ -4,7 +4,8 @@ const AUTH_TOKEN_KEY = "pongJwt";
 const API_URL = "http://localhost:8090";
 
 export function logoutUser() {
-  clearAuthToken();
+  axios.post(`${API_URL}/auth/logout`).then(r => );
+  // clearAuthToken();
 }
 
 export function getAuthToken(): string | null {
@@ -21,7 +22,8 @@ export function getAuthToken(): string | null {
 }
 
 export function clearAuthToken(): void {
-  document.cookie = `${AUTH_TOKEN_KEY}=` + ";expires=Thu, 01 Jan 1970 00:00:01 GMT";
+  document.cookie =
+    `${AUTH_TOKEN_KEY}=` + ";expires=Thu, 01 Jan 1970 00:00:01 GMT";
 }
 
 export function isLoggedIn(): boolean {
@@ -30,25 +32,21 @@ export function isLoggedIn(): boolean {
 }
 
 export async function is2faRequired(): Promise<boolean> {
-  let responseState = false;
-  await axios
+  axios.defaults.withCredentials = true;
+  return axios
     .get(`${API_URL}/auth/current`)
     .then((response) => {
-      responseState = false;
       console.log(response);
-      console.log("CUCK DE REUSSITE");
-      return responseState;
+      console.log("You're Connected");
+      return false;
     })
     .catch((error) => {
       console.log(error);
-      console.log("CUCK D'ERREUR");
       if (error.request.responseText.includes("2FA needed")) {
-        responseState = true;
-        console.log("JE CHANGE BIEN LA VALEUR TKT LA MIF");
+        return true;
+      } else {
+        console.log("Not Connected");
+        return false;
       }
-      return responseState;
     });
-  console.log("CUCK DE FIN");
-  return responseState;
 }
-
