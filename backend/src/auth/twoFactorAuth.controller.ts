@@ -92,6 +92,6 @@ export class TwoFactorAuthController
 
         const { accessToken } = await this.authService.login(request.user, true, user.twoFactorEnabled);
         this.authService.generateCookie(response, accessToken);
-        return response.redirect('http://localhost:8000');
+        return ;
     }
 }
