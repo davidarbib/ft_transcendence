@@ -10,7 +10,6 @@ import { UsersService } from 'src/users/users.service';
 import { TwoFactorSecret } from 'src/utils/types';
 import { toDataURL } from 'qrcode';
 import { TwoFactorAuthCodeDto } from './dto/TwoFactorAuthCodeDto';
-import { PassThrough } from 'stream';
 
 @Controller('2fa')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -91,7 +90,7 @@ export class TwoFactorAuthController
             throw new UnauthorizedException("Wrong code");
         }
 
-        const { accessToken } = await this.authService.login(request.user, true);
+        const { accessToken } = await this.authService.login(request.user, true, user.twoFactorEnabled);
         this.authService.generateCookie(response, accessToken);
         return response.redirect('http://localhost:8000');
     }
