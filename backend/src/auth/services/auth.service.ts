@@ -21,12 +21,18 @@ export class AuthService implements AuthenticationProvider
       this.userRepo = myDataSource.getRepository(User);
     }
 
-    public async login(user: any, twoFactorAuthentified: boolean = false)
+    public async login
+    (
+      user: any,
+      twoFactorEnabled: boolean = false,
+      twoFactorAuthentified: boolean = false,
+    )
     {
         const payload : JwtTwoFaPayload = {
             login: user.login, 
             sub: user.id,
             twoFactorAuthentified: twoFactorAuthentified,
+            twoFactorEnabled: twoFactorEnabled,
         }
         return { accessToken: this.jwtService.sign(payload) };
     }

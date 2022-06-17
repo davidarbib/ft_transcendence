@@ -6,6 +6,7 @@ export type JwtTwoFaPayload = {
   sub: string;
   login: string,
   twoFactorAuthentified: boolean
+  twoFactorEnabled: boolean
 };
 
 export type UserDetails =

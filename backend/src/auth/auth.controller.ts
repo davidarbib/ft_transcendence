@@ -7,12 +7,15 @@ import { LocalGuard } from './guards/local.guard';
 import { JwtGuard } from './guards/jwt.guard';
 import { JwtTwoFaGuard } from './guards/jwtTwoFa.guard';
 import { AuthService } from './services/auth.service';
-import { JwtStrategy } from './strategies/jwt.strategy';
+import { UsersService } from 'src/users/users.service';
 import { DiscordGuard } from './guards/discord.guard';
 
 @Controller('auth')
 export class AuthController {
-    constructor(private readonly authService: AuthService) {}
+    constructor
+    (
+        private readonly authService: AuthService,
+        private readonly usersService: UsersService) {}
     
     @Get('login')
     @UseGuards(Api42Guard)
@@ -25,7 +28,8 @@ export class AuthController {
     @UseGuards(Api42Guard)
     async redirect(@Req() req: Request, @Res({ passthrough: true }) response: Response)
     {
-        const { accessToken } = await this.authService.login(req.user);
+        const user : User = await this.usersService.findOne(req.user.id);
+        const { accessToken } = await this.authService.login(req.user, user.twoFactorEnabled);
         this.authService.generateCookie(response, accessToken);
         //return req.user;
         //return accessToken; //uncomment to obtain bearer token for curl/postman tests
@@ -51,7 +55,8 @@ export class AuthController {
     @UseGuards(DiscordGuard)
     async discordRedirect(@Req() req: Request, @Res({ passthrough: true }) response: Response)
     {
-        const { accessToken } = await this.authService.login(req.user);
+        const user : User = await this.usersService.findOne(req.user.id);
+        const { accessToken } = await this.authService.login(req.user, user.twoFactorEnabled);
         this.authService.generateCookie(response, accessToken);
         //return req.user;
         //return accessToken; //uncomment to obtain bearer token for curl/postman tests
