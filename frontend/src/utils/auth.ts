@@ -4,8 +4,10 @@ const AUTH_TOKEN_KEY = "pongJwt";
 const API_URL = "http://localhost:8090";
 
 export function logoutUser() {
-  axios.post(`${API_URL}/auth/logout`).then(r => );
-  // clearAuthToken();
+  axios.defaults.withCredentials = true;
+  axios.post(`${API_URL}/auth/logout`).then(() => {
+    clearAuthToken();
+  });
 }
 
 export function getAuthToken(): string | null {
@@ -23,7 +25,8 @@ export function getAuthToken(): string | null {
 
 export function clearAuthToken(): void {
   document.cookie =
-    `${AUTH_TOKEN_KEY}=` + ";expires=Thu, 01 Jan 1970 00:00:01 GMT";
+    `${AUTH_TOKEN_KEY}=` +
+    ";expires=Thu, 01 Jan 1970 00:00:01 GMT;SameSite=None;Secure";
 }
 
 export function isLoggedIn(): boolean {
