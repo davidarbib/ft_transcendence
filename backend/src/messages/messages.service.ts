@@ -23,7 +23,6 @@ export class MessagesService {
 
     const chan  = await myDataSource.getRepository(Channel).findOne({where : {name : name}})
     const usr  = await myDataSource.getRepository(User).findOne({where : {login : login}})
-    
     //  if (!usr)
     //return ; // need to implement HTTPrequest
     createMessageDto.author = usr;
@@ -32,7 +31,6 @@ export class MessagesService {
     createMessageDto.login = login; 
     myDataSource.getRepository(Channel).save(chan);
     const msg = await this.msgRepo.save(createMessageDto)
-    console.log(login);
     //  chan.messages.push(msg);
       await myDataSource.getRepository(Channel).save(chan);
 
@@ -49,7 +47,7 @@ export class MessagesService {
     const msg = await this.msgRepo.find({ relations: [ 'chan'] })
     let arr : any = [];
     msg.forEach(element => {
-      if (element.chan.name = name)
+      if (element.chan.name == name)
         arr.push(element);
 
     });

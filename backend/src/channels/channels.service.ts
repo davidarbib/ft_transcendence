@@ -50,6 +50,7 @@ export class ChannelsService {
       });
       return arr;
   }
+  
   async findChan(usr:User)
   {
     const test = await myDataSource.getRepository(ChanParticipant).find({ relations: ['participant', 'chan'] });

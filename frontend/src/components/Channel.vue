@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import channels from "@/assets/msg_test.json";
-import { ref } from "vue";
 import { io } from 'socket.io-client'
+import { ref, computed } from "vue";
+import axios from "axios";
+
 
 const searched = ref("");
+const chan = ref([]);
 const channelOptions = ref(false);
 const channelSelected = ref(-1);
 const channelName = ref('');
@@ -12,6 +15,20 @@ function toggleChannelMenu(id: number) {
   channelSelected.value = id;
   channelOptions.value = !channelOptions.value;
 }
+
+const ourchan = computed(() => {
+ axios.defaults.withCredentials = true;
+  const addr = 'http://localhost:8090/channels/chan/m3L_dis';
+  axios
+    .get(addr)
+    .then((response) => {
+      chan.value = response.data;
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+    return chan.value
+});
 
 function selectChannel(name: string) {
   channelName.value = name;
@@ -44,7 +61,7 @@ const emit = defineEmits(['name']);
     <div
       @click="selectChannel(channel.name)"
       class="user-card rounded my-2 bg-black bg-opacity-10 font-medium hover:bg-opacity-30 transition duration-300"
-      v-for="channel in channels"
+      v-for="channel in ourchan"
       :key="channel.id"
     >
       <div class="user-pseudo py-2" >

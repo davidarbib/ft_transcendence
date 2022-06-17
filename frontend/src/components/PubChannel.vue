@@ -3,30 +3,50 @@ import ChatModal from '@/components/ChatModal.vue';
 //import channels from "@/assets/msg_test.json";
 import axios from "axios";
 import { io } from 'socket.io-client'
-import { useChanStore } from "@/stores/auth";
+import { useChanStore, useUserStore } from "@/stores/auth";
 import { ref, onMounted, reactive, watch } from "vue";
 import { computed } from "@vue/reactivity";
-
-const test = reactive<Array<Channel>>({Channel:[]});
+import socket from "@/views/ChatView.vue"
+const chanpu = ref([]);
+const chanpriv = ref([]);
 const channelName = ref('');
+const userStore = useUserStore();
 
-onMounted(() => {
+const allchanpublic = computed(() => {
   axios.defaults.withCredentials = true;
+  const addr = `http://localhost:8090/channels/chanpriv/${userStore.user.login}`;
   axios
-    .get('http://localhost:8090/channels')
+    .get(addr)
     .then((response) => {
-      test.values = response.data;
+      chanpu.value = response.data;
     })
     .catch((error) => {
       console.log(error);
     });
+    return chanpu.value
 });
 
 function  joinchan(name: string) {
-  channelName.value = name;
-  emit('name', channelName.value);
-  // socket.emit('joinchan', {login: "m3L_dis", name : "1235"})
+  console.log("yolo");
+   socket.emit('joinchan', {login: "m3L_dis", name : name})
 }
+/*
+const allchanpriv = computed(() => {
+  console.log("wtf");
+  axios.defaults.withCredentials = true;
+  const addr = `http://localhost:8090/channels/chanpriv/${userStore.user.login}`;
+  axios
+    .get(addr)
+    .then((response) => {
+      chanpriv.value = response.data;
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+    return chanpriv.value
+});
+*/
+
 
 const emit = defineEmits(['name']);
 </script>
@@ -42,7 +62,7 @@ const emit = defineEmits(['name']);
       class="user-card rounded my-2 bg-black bg-opacity-10 font-medium hover:bg-opacity-30 transition duration-300"
    >
       <div class="pub-chan-info py-2"
-        v-for="channel in test.values"
+        v-for="channel in allchanpublic"
         :key="channel.id">
         <p> {{channel.name}} </p>
         <button @click="joinchan(channel.name)" class="secondary-button interact">Join</button>

@@ -17,21 +17,23 @@ const getName = ref('NO CHANNEL SELECTED');
 const myInput = ref('');
 
 onBeforeMount(() => {
-    socket.emit ('findAllMessage', {} , (response) => {
+    socket.emit ('findMessageFromChan', {name : getName} , (response) => {
       messages.value = response;
     })
-}); //devoir rajouter le nom du chan pour afficher chaque msg, et pvr l'affichier
+});
 
 socket.on ('message', (message) => {
   messages.value.push(message);
 });
 
 function sendMessage(){
-  socket.emit('createMessage', {name: "1235", login: userStore.user.login, content: myInput.value}, () => {
+  socket.emit('createMessage', {name: getName, login: userStore.user.login, content: myInput.value}, () => {
    messageText.value = '';
    myInput.value = '';
   });
-}
+};
+
+
 
 </script>
 

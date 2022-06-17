@@ -36,19 +36,17 @@ export class ChannelsController {
   findOne(@Param('name') name: string) {
     return this.channelsService.findOne(name);
   }
-  @Get('/chan')
+  @Get('/chan/:login')
   findChan(@Request() req) {
     const usr:User = req.user;
     return this.channelsService.findChan(usr);
   }
 
-  @Get('/chanpriv')
+  @Get('/chanpriv/:login')
   findChanPriv() {
     return this.channelsService.findChanPriv();
   }
-
-
-  @Get('/chanpublic')
+  @Get('/chanpublic/:login')
   findChanPublic() {
     return this.channelsService.findChanPublic();
   }
