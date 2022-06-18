@@ -12,7 +12,8 @@ export const useUserStore = defineStore({
       avatarRef: null,
       lossCount: "0",
       winCount: "0",
+      twoFactorEnabled: false,
+      twoFactorSecret: "",
     },
-    auth2fa: false,
   }),
 });

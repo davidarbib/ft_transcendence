@@ -18,6 +18,7 @@ let error2fa = ref(false);
 let success2fa = ref(false);
 let closeNotification = ref();
 let success2faMessage = ref("Success");
+let is2faEnabled = ref(userStore.user.twoFactorEnabled);
 
 const activate2fa = () => {
   axios
@@ -46,13 +47,15 @@ const submit2faCode = () => {
       error2fa.value = false;
       success2fa.value = true;
       success2faMessage.value = "You can log in with 2fa now";
-      userStore.auth2fa = true;
+      userStore.user.twoFactorEnabled = true;
+      is2faEnabled.value = true;
       openModal.value = !openModal.value;
     })
     .catch((error) => {
       error2fa.value = true;
       success2fa.value = false;
-      userStore.auth2fa = false;
+      userStore.user.twoFactorEnabled = false;
+      is2faEnabled.value = true;
       console.log(error);
     });
 };
@@ -67,10 +70,12 @@ const turnoff2fa = () => {
     .then(() => {
       success2faMessage.value = "2fa turned off !";
       success2fa.value = true;
-      userStore.auth2fa = false;
+      userStore.user.twoFactorEnabled = false;
+      is2faEnabled.value = false;
     })
     .catch(() => {
-      userStore.auth2fa = false;
+      userStore.user.twoFactorEnabled = false;
+      is2faEnabled.value = false;
     });
 };
 
@@ -86,6 +91,8 @@ onMounted(() => {
         console.log(error);
       });
   }
+  console.log(`is2faEnabled : ${is2faEnabled.value}`);
+  console.log(`userStore.2fa : ${userStore.user.twoFactorEnabled}`);
 });
 </script>
 
@@ -146,15 +153,11 @@ onMounted(() => {
           <button
             class="secondary-button"
             @click="activate2fa"
-            v-if="!userStore.auth2fa"
+            v-if="!is2faEnabled"
           >
             Turn On 2fa
           </button>
-          <button
-            class="secondary-button"
-            @click="turnoff2fa"
-            v-if="userStore.auth2fa"
-          >
+          <button class="secondary-button" @click="turnoff2fa" v-else>
             Turn Off 2fa
           </button>
         </div>

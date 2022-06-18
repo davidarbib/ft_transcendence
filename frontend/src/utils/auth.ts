@@ -1,6 +1,5 @@
 import axios from "axios";
 import jwt_decode from "jwt-decode";
-import jwtDecode from "jwt-decode";
 
 const AUTH_TOKEN_KEY = "pongJwt";
 const API_URL = "http://localhost:8090";

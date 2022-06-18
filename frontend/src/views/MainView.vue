@@ -49,9 +49,9 @@ onMounted(() => {
     .then((response) => {
       userStore.user = response.data;
       console.log(response.data);
+      console.log(userStore.user);
     })
     .catch(() => {
-      userStore.auth2fa = false;
       console.log("Error");
     });
 });
