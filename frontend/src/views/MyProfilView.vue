@@ -91,8 +91,6 @@ onMounted(() => {
         console.log(error);
       });
   }
-  console.log(`is2faEnabled : ${is2faEnabled.value}`);
-  console.log(`userStore.2fa : ${userStore.user.twoFactorEnabled}`);
 });
 </script>
 
@@ -102,7 +100,7 @@ onMounted(() => {
       <NavbarItem />
     </div>
     <notification-message type="success-2fa" header="Success" v-if="success2fa"
-      ><p>You can log in with 2fa now</p></notification-message
+      ><p>{{ success2faMessage }}</p></notification-message
     >
     <notification-message type="error-2fa" header="Error" v-if="error2fa"
       ><p>Please provide a valid code</p></notification-message
