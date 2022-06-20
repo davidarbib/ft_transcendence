@@ -38,6 +38,7 @@ export class MessagesGateway
 
   @SubscribeMessage('joinchan')
   joinRoom( @MessageBody('login') login:string, @MessageBody('name') name:string) {
-    return this.messageService.identify(name, login);
+    console.log(login);
+    return this.messageService.identify(login, name);
   }
 }

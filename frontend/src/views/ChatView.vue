@@ -3,31 +3,38 @@ import NavbarItem from "@/components/NavbarItem.vue";
 import Channel from "@/components/Channel.vue";
 import PubChannel from "@/components/PubChannel.vue";
 import axios from "axios";
-import { ref, onMounted, reactive, onBeforeMount } from "vue";
+import { ref, onMounted, reactive, onBeforeMount, watch } from "vue";
 import { io } from "socket.io-client";
 import { useUserStore } from "@/stores/auth"
+import { computed } from "@vue/reactivity";
 //import messages from "@/assets/msg_body_test.json";
 
 const userStore = useUserStore();
-const socket = io('http://localhost:8090');
+const  socket = io('http://localhost:8090');
 const messages = ref ([]);
 const messageText = ref ('');
 const joined = ref(false);
-const getName = ref('NO CHANNEL SELECTED');
+const getName =  ref('NO CHANNEL SELECTED');
 const myInput = ref('');
 
-onBeforeMount(() => {
-    socket.emit ('findMessageFromChan', {name : getName} , (response) => {
+/*
+const getMsg  = computed(()  => {
+  console.log('getMsg' + getName.value)
+    socket.emit ('findMessageFromChan', {name : getName.value} , (response) => {
       messages.value = response;
-    })
+    });
 });
+onMounted(() => {
+  getMsg;
+});*/
+
 
 socket.on ('message', (message) => {
   messages.value.push(message);
 });
 
 function sendMessage(){
-  socket.emit('createMessage', {name: getName, login: userStore.user.login, content: myInput.value}, () => {
+  socket.emit('createMessage', {name: getName.value, login: userStore.user.login, content: myInput.value}, () => {
    messageText.value = '';
    myInput.value = '';
   });
@@ -44,17 +51,17 @@ function sendMessage(){
       <NavbarItem />
     </div>
     <div class="channel-list">
-      <Channel @name='(msg) => getName = msg'/>
+      <Channel @msg='(msgs) => messages = msgs' :msgs="messages"/>
     </div>
-    <div class="channel-pub">
-      <PubChannel @name='(msg) => getName = msg' :key="channels"/>
-    </div>
+      <div class="channel-pub">
+        <PubChannel @msg='(msg) => getName = msg' :key="channels"/>
+      </div>
     <div class="messages text-gray-300">
-      <p class="text-2xl"> {{ getName }} </p>
+      <p class="text-2xl"> {{ getName}} </p>
       <div
         class="message bg-black bg-opacity-20 w-3/4 mx-2 rounded p-2"
           v-for="message in messages">
-            {{ message.login}} :
+            {{ getName}} :
            {{message.time}}
         <p>{{ message.content }}</p>
       </div>

@@ -6,11 +6,11 @@ import { io } from 'socket.io-client'
 import { useChanStore, useUserStore } from "@/stores/auth";
 import { ref, onMounted, reactive, watch } from "vue";
 import { computed } from "@vue/reactivity";
-import socket from "@/views/ChatView.vue"
 const chanpu = ref([]);
 const chanpriv = ref([]);
 const channelName = ref('');
 const userStore = useUserStore();
+const  socket = io('http://localhost:8090');
 
 const allchanpublic = computed(() => {
   axios.defaults.withCredentials = true;
@@ -28,7 +28,10 @@ const allchanpublic = computed(() => {
 
 function  joinchan(name: string) {
   console.log("yolo");
-   socket.emit('joinchan', {login: "m3L_dis", name : name})
+   socket.emit('joinchan', {login: userStore.user.login, name : name}) , (response) => {
+    
+   }
+
 }
 /*
 const allchanpriv = computed(() => {

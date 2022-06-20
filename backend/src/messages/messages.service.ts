@@ -29,7 +29,8 @@ export class MessagesService {
     createMessageDto.time = new Date();
     createMessageDto.chan = chan; 
     createMessageDto.login = login; 
-    myDataSource.getRepository(Channel).save(chan);
+    console.log(name);
+   await myDataSource.getRepository(Channel).save(chan);
     const msg = await this.msgRepo.save(createMessageDto)
     //  chan.messages.push(msg);
       await myDataSource.getRepository(Channel).save(chan);
@@ -56,14 +57,13 @@ export class MessagesService {
 
   async identify(login: string, name:string)
   {
-
     const chan = await myDataSource.getRepository(Channel).findOne({where : {name:name}})
     const usr = await myDataSource.getRepository(User).findOne({where : {login:login}})
+    console.log(chan);
     const chanPart : ChanParticipant = new ChanParticipant;
     chanPart.participant = usr;
     chanPart.chan = chan;
-    chan.participants.push(chanPart);
-    await myDataSource.getRepository(Channel).save(chan);
-    await myDataSource.getRepository(ChanParticipant).create(chanPart);
+  //  chan.participants.push(chanPart);
+    await myDataSource.getRepository(ChanParticipant).save(chanPart);
   }
 }

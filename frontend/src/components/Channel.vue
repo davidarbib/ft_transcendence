@@ -3,14 +3,27 @@ import channels from "@/assets/msg_test.json";
 import { io } from 'socket.io-client'
 import { ref, computed } from "vue";
 import axios from "axios";
+const  socket = io('http://localhost:8090');
 
+
+const props = defineProps({
+  msgs: []
+})
 
 const searched = ref("");
 const chan = ref([]);
+const messages = ref([]);
 const channelOptions = ref(false);
 const channelSelected = ref(-1);
 const channelName = ref('');
 
+
+function showMessages(name :string ) {
+   socket.emit ('findMessageFromChan', {name :name } , (response) => {
+      messages.value = response;
+   });
+   emit('msg', messages.value);
+   }
 function toggleChannelMenu(id: number) {
   channelSelected.value = id;
   channelOptions.value = !channelOptions.value;
@@ -32,7 +45,7 @@ const ourchan = computed(() => {
 
 function selectChannel(name: string) {
   channelName.value = name;
-  console.log('name');
+  console.log('selectChannel :' + channelName.value);
   emit('name', channelName.value);
 }
 
@@ -59,7 +72,7 @@ const emit = defineEmits(['name']);
     <br />
     <br />
     <div
-      @click="selectChannel(channel.name)"
+      @click="selectChannel(channel.name); showMessages(channel.name)"
       class="user-card rounded my-2 bg-black bg-opacity-10 font-medium hover:bg-opacity-30 transition duration-300"
       v-for="channel in ourchan"
       :key="channel.id"
