@@ -51,17 +51,18 @@ function sendMessage(){
       <NavbarItem />
     </div>
     <div class="channel-list">
-      <Channel @msg='(msgs) => messages = msgs' :msgs="messages"/>
+      <Channel @name='(msg) => getName = msg' :key="channels"/>
     </div>
       <div class="channel-pub">
-        <PubChannel @msg='(msg) => getName = msg' :key="channels"/>
+        <PubChannel @name='(msgs) => getName = msgs' :key="channels"/>
       </div>
     <div class="messages text-gray-300">
       <p class="text-2xl"> {{ getName}} </p>
       <div
         class="message bg-black bg-opacity-20 w-3/4 mx-2 rounded p-2"
-          v-for="message in messages">
-            {{ getName}} :
+          @msg=' (msgo) => messages.push(msgo) '
+         v-for="message in messages">
+            {{ userStore.user.login}} :
            {{message.time}}
         <p>{{ message.content }}</p>
       </div>

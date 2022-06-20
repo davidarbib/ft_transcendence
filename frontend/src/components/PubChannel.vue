@@ -23,6 +23,7 @@ const allchanpublic = computed(() => {
     .catch((error) => {
       console.log(error);
     });
+   // console.log(chanpu.value)
     return chanpu.value
 });
 

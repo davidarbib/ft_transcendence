@@ -6,10 +6,6 @@ import axios from "axios";
 const  socket = io('http://localhost:8090');
 
 
-const props = defineProps({
-  msgs: []
-})
-
 const searched = ref("");
 const chan = ref([]);
 const messages = ref([]);
@@ -21,9 +17,11 @@ const channelName = ref('');
 function showMessages(name :string ) {
    socket.emit ('findMessageFromChan', {name :name } , (response) => {
       messages.value = response;
-   });
+   console.log(messages.value)
    emit('msg', messages.value);
+   });
    }
+
 function toggleChannelMenu(id: number) {
   channelSelected.value = id;
   channelOptions.value = !channelOptions.value;
@@ -49,7 +47,7 @@ function selectChannel(name: string) {
   emit('name', channelName.value);
 }
 
-const emit = defineEmits(['name']);
+const emit = defineEmits(['name', 'msg']);
 // onMounted(() => {
 //   axios.defaults.withCredentials = true;
 //   axios
