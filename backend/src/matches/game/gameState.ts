@@ -1,5 +1,12 @@
-export enum PowerUp{
-    NONE,
+export enum PowerUp
+{
+    'NONE',
+}
+
+export class Vector2D
+{
+    public x: number;
+    public y: number;
 }
 
 export class BallState
@@ -8,14 +15,17 @@ export class BallState
     public yPos: number;
     public size: number;
     public velocity: number; 
+    public direction: Vector2D;
 }
 
 export class PlayerState
 {
+    public xPos: number;
     public yPos: number;
     public score: number;
     public powerUp: PowerUp;
     public handicap: number;
+    public velocity: number;
 }
 
 export class GameState
