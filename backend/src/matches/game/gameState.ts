@@ -20,6 +20,7 @@ export class BallState
 
 export class PlayerState
 {
+    public id: string;
     public xPos: number;
     public yPos: number;
     public score: number;
@@ -30,6 +31,7 @@ export class PlayerState
 
 export class GameState
 {
+    public id: string;
     public height: number;
     public width: number;
     public player1: PlayerState;

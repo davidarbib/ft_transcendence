@@ -13,6 +13,7 @@ import { createDataModule } from './Create_data/createData.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 let envPath = 'src/.env';
 
@@ -20,9 +21,10 @@ let envPath = 'src/.env';
   imports:
     [
       ConfigModule.forRoot({
-         envFilePath: envPath,
-         isGlobal: true,
+        envFilePath: envPath,
+        isGlobal: true,
       }),
+      EventEmitterModule.forRoot(),
       UsersModule,
       ChannelsModule,
       MatchesModule,
@@ -32,7 +34,6 @@ let envPath = 'src/.env';
       ContactsModule,
       createDataModule,
       AuthModule,
-      GamesModule,
     ],
 })
 export class AppModule {

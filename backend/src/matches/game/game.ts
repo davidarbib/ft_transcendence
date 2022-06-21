@@ -1,6 +1,8 @@
 import { GameState, Vector2D, PowerUp } from "./gameState";
 import * as param from "./constants";
 import { initialize } from "passport";
+import { EventEmitter2 } from "@nestjs/event-emitter";
+import { ScoreEvent } from "./score.event";
 
 interface GameOptions
 {
@@ -9,22 +11,47 @@ interface GameOptions
     p2Handicap: number,
 }
 
+interface Ids
+{
+    gameId: string,
+    playerOneId: string,
+    playerTwoId: string,
+}
+
 export class Game
 {
     private state : GameState;
 
     constructor
     (
+        gameId : string,
+        playerOneId : string,
+        playerTwoId : string,
         winThresh : number = param.WINTHRESH,
         p1Handicap : number = param.HANDICAP,
         p2Handicap : number = param.HANDICAP,
+        private emitter: EventEmitter2,
     )
     {
-        this.init({winThresh, p1Handicap, p2Handicap});
+        this.init(
+            { gameId, playerOneId, playerTwoId },
+            { winThresh, p1Handicap, p2Handicap },
+        );
     }
 
-    private init(options: GameOptions)
+    public getState()
     {
+        return this.state;
+    }
+
+    private init
+    (
+        ids: Ids,
+        options: GameOptions,
+    )
+    {
+        this.state.id = ids.gameId;
+
         //TODO four-angle random direction 
         const ballVector : Vector2D = {
             x : 0,
@@ -40,6 +67,7 @@ export class Game
         };
 
         this.state.player1 = {
+            id: ids.playerOneId, 
             xPos: param.P1PADX,
             yPos: param.PADY,
             score: 0,
@@ -49,6 +77,7 @@ export class Game
         }
 
         this.state.player2 = {
+            id: ids.playerTwoId, 
             xPos: param.P2PADX,
             yPos: param.PADY,
             score: 0,
@@ -58,8 +87,33 @@ export class Game
         }
     }
     
+    private wallBounce()
+    {
+    }
+
+    private padBounce()
+    {
+    }
+
+    private notifyAboutScore()
+    {
+        this.emitter.emit(
+            'score',
+            new ScoreEvent(this.state.player1.id, {}),
+        );
+    }
+
+    private didPlayer1Wins() : boolean
+    {
+        return (this.state.player1.score >= this.state.winThresh);
+    }
+
+    private didPlayer2Wins() : boolean
+    {
+        return (this.state.player2.score >= this.state.winThresh);
+    }
+
     public loop()
     {
-
     }
 }

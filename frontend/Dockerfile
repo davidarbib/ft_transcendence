@@ -14,10 +14,12 @@ RUN apt update -y && apt upgrade -y \
     && npm install
 # && chown -R frontDev .
 
-COPY . .    
+COPY . .
 
 EXPOSE 8000
 
 # USER frontDev
 
-CMD ["npm", "run", "dev"]
+CMD chmod 777 node_modules \
+    && npm run dev
+# CMD ["npm", "run", "dev"]
