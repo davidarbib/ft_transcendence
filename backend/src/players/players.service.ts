@@ -1,26 +1,47 @@
 import { Injectable } from '@nestjs/common';
-import { CreatePlayerDto } from './dto/create-player.dto';
-import { UpdatePlayerDto } from './dto/update-player.dto';
+import { Repository } from 'typeorm';
+import { Player } from './entities/player.entity';
+import { User } from 'src/users/entities/user.entity';
+import { Match } from 'src/matches/entities/match.entity';
 
 @Injectable()
-export class PlayersService {
-  create(createPlayerDto: CreatePlayerDto) {
-    return 'This action adds a new player';
+export class PlayersService
+{
+  constructor (private playerRepo: Repository<Player>)
+  { }
+
+  create(user: User, match: Match) : Promise<Player>
+  {
+    let player: Player = new Player();
+    
+    player.userRef = user;
+    player.matchRef = match;
+    return this.playerRepo.save(player);
   }
 
-  findAll() {
-    return `This action returns all players`;
+  findAll() : Promise<Player[]>
+  {
+    return this.playerRepo.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} player`;
+  findOne(id: string) : Promise<Player>
+  {
+    return this.playerRepo.findOne({
+      where: {id : id},
+    })
   }
 
-  update(id: number, updatePlayerDto: UpdatePlayerDto) {
-    return `This action updates a #${id} player`;
+  incrementScore(player: Player) : string
+  {
+    player.score++;
+    this.playerRepo.save(player);
+    return 'this action increment score';
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} player`;
+  setWinner(player: Player) : string
+  {
+    player.winner = true;
+    this.playerRepo.save(player);
+    return 'this action set the player as winner';
   }
 }

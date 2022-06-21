@@ -1,26 +1,47 @@
 import { Injectable } from '@nestjs/common';
-import { CreateMatchDto } from './dto/create-match.dto';
-import { UpdateMatchDto } from './dto/update-match.dto';
+import { Repository } from 'typeorm';
+import { Match } from 'src/matches/entities/match.entity';
+import { Player } from 'src/players/entities/player.entity';
 
 @Injectable()
 export class MatchesService {
-  create(createMatchDto: CreateMatchDto) {
+  constructor (private matchRepo : Repository<Match>)
+  {}
+
+  create() : Promise<Match>
+  {
+    let match : Match = new Match();
+    return this.matchRepo.save(match);
+  }
+
+  init(match: Match, player1 : Player, player2: Player) : string
+  {
+    match.players.push(player1);
+    match.players.push(player2);
+    match.active = true;
+    this.matchRepo.save(match);
+
     return 'This action adds a new match';
   }
 
-  findAll() {
-    return `This action returns all matches`;
+  findAllFinished() : Promise<Match[]>
+  {
+    return this.matchRepo.find({
+      where: { active: true }
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} match`;
+  findOne(id: string) : Promise<Match> 
+  {
+    return this.matchRepo.findOne({
+      where: { id: id }
+    });
   }
 
-  update(id: number, updateMatchDto: UpdateMatchDto) {
-    return `This action updates a #${id} match`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} match`;
+  finish(match: Match) : string
+  {
+    match.active = false;
+    this.matchRepo.save(match);
+    return 'this action set the match as finished';
   }
 }

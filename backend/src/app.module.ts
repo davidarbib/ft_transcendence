@@ -32,7 +32,8 @@ let envPath = 'src/.env';
       ContactsModule,
       createDataModule,
       AuthModule,
-    ], 
+      GamesModule,
+    ],
 })
 export class AppModule {
   constructor()
