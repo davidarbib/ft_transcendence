@@ -1,19 +1,21 @@
 <script setup lang="ts">
+const getName = ref('');
+let message: { value: any; };
+
 import NavbarItem from "@/components/NavbarItem.vue";
 import Channel from "@/components/Channel.vue";
 import PubChannel from "@/components/PubChannel.vue";
 import axios from "axios";
-import { ref, onMounted, reactive, onBeforeMount, watch } from "vue";
-import { io } from "socket.io-client";
-import { useUserStore } from "@/stores/auth"
-import { computed } from "@vue/reactivity";
+import {ref, onMounted, reactive, onBeforeMount, watch} from "vue";
+import {io} from "socket.io-client";
+import {useUserStore} from "@/stores/auth"
+import {computed} from "@vue/reactivity";
 
 const userStore = useUserStore();
-const  socket = io('http://localhost:8090');
-const messages = ref ([]);
-const messageText = ref ('');
+const socket = io('http://localhost:8090');
+let messages : any = reactive([]);
+const messageText = ref('');
 const joined = ref(false);
-const getName =  ref('NO CHANNEL SELECTED');
 const myInput = ref('');
 
 /*
@@ -28,18 +30,18 @@ onMounted(() => {
 });*/
 
 
-socket.on ('message', (message) => {
-  messages.value.push(message);
+socket.on('message', (message) => {
+  console.log(message);
+  messages.push({name: message.name.value});
+  console.log(messages);
 });
 
-function sendMessage(){
+function sendMessage() {
   socket.emit('createMessage', {name: getName.value, login: userStore.user.login, content: myInput.value}, () => {
-   messageText.value = '';
-   myInput.value = '';
+    messageText.value = '';
+    myInput.value = '';
   });
 };
-
-
 
 </script>
 
@@ -50,10 +52,10 @@ function sendMessage(){
       <NavbarItem />
     </div>
     <div class="channel-list">
-      <Channel @name='(msg) => getName = msg' :key="channels"/>
+      <Channel @name='(msg) => getName = msg'/>
     </div>
       <div class="channel-pub">
-        <PubChannel @name='(msgs) => getName = msgs' :key="channels"/>
+        <PubChannel @name='(msgs) => getName = msgs'/>
       </div>
     <div class="messages text-gray-300">
       <p class="text-2xl"> {{ getName}} </p>
