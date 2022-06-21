@@ -7,7 +7,6 @@ import { ref, onMounted, reactive, onBeforeMount, watch } from "vue";
 import { io } from "socket.io-client";
 import { useUserStore } from "@/stores/auth"
 import { computed } from "@vue/reactivity";
-//import messages from "@/assets/msg_body_test.json";
 
 const userStore = useUserStore();
 const  socket = io('http://localhost:8090');
