@@ -5,8 +5,12 @@ export enum PowerUp
 
 export class Vector2D
 {
-    public x: number;
-    public y: number;
+    constructor
+    (
+        public x: number,
+        public y: number,
+    )
+    { }
 }
 
 export class BallState

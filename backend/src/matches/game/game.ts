@@ -1,8 +1,10 @@
-import { GameState, Vector2D, PowerUp } from "./gameState";
+import { GameState, Vector2D, PowerUp, PlayerState } from "./gameState";
 import * as param from "./constants";
 import { initialize } from "passport";
 import { EventEmitter2 } from "@nestjs/event-emitter";
-import { ScoreEvent } from "./score.event";
+import { GameFinishEvent, ScoreEvent } from "./game.event";
+import { Player } from "src/players/entities/player.entity";
+import { InternalServerErrorException } from "@nestjs/common";
 
 interface GameOptions
 {
@@ -16,6 +18,12 @@ interface Ids
     gameId: string,
     playerOneId: string,
     playerTwoId: string,
+}
+
+export enum PadCmd
+{
+    UP,
+    DOWN
 }
 
 export class Game
@@ -95,25 +103,74 @@ export class Game
     {
     }
 
-    private notifyAboutScore()
+    private notifyScore(playerId: string)
     {
         this.emitter.emit(
             'score',
-            new ScoreEvent(this.state.player1.id, {}),
+            new ScoreEvent(playerId, {}),
         );
     }
 
-    private didPlayer1Wins() : boolean
+    private notifyGameFinished()
     {
-        return (this.state.player1.score >= this.state.winThresh);
+        this.emitter.emit(
+            'game_finished',
+            new GameFinishEvent(this.state.id, {}),
+        );
     }
 
-    private didPlayer2Wins() : boolean
+    private didPlayerWins(player: PlayerState) : boolean
     {
-        return (this.state.player2.score >= this.state.winThresh);
+        return (player.score >= this.state.winThresh);
+    }
+
+    private playerSelector(playerId: string) : PlayerState
+    {
+        if (playerId === this.state.player1.id)
+            return this.state.player1;
+        else
+            return this.state.player2;
+    }
+
+    private scorePoint(player: PlayerState)
+    {
+        this.state.ball.direction = new Vector2D(1, 1); //random direction
+        this.state.ball.xPos = this.state.width/2;
+        this.state.ball.yPos = this.state.height/2;
+
+        this.state.player1.yPos = this.state.height/2;
+        this.state.player2.yPos = this.state.height/2;
+
+        player.score++;
+
+        this.notifyScore(player.id);
+        if (this.didPlayerWins(player))
+        {
+           //TODO 
+        }
+        //control win    
     }
 
     public loop()
     {
+    }
+    
+    public movePad(playerId: string, cmd: PadCmd)
+    {
+        let playerState : PlayerState = this.playerSelector(playerId);
+        let velocity : number = playerState.velocity;
+        switch (cmd)
+        {
+            case PadCmd.UP:
+                playerState.yPos += Math.min(velocity, playerState.yPos);
+                break;
+            case PadCmd.DOWN:
+                const wallDistance : number = this.state.height - playerState.yPos;
+                playerState.yPos -= Math.min(velocity, wallDistance);
+                break;
+            default:
+                throw new InternalServerErrorException("Bad command");
+                break;
+        }
     }
 }
