@@ -8,6 +8,8 @@ import { useUserStore } from "@/stores/auth";
 import { apiStore } from "@/stores/api";
 import { onMounted } from "vue";
 import { ref } from "vue";
+import router from "@/router";
+import { logoutUser } from "@/utils/auth";
 
 const api = apiStore();
 const userStore = useUserStore();
@@ -50,6 +52,8 @@ const submit2faCode = () => {
       userStore.user.twoFactorEnabled = true;
       is2faEnabled.value = true;
       openModal.value = !openModal.value;
+      logoutUser();
+      router.push({ name: "home" });
     })
     .catch((error) => {
       error2fa.value = true;

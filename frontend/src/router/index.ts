@@ -57,9 +57,6 @@ const router = createRouter({
       path: "/auth2fa",
       name: "auth2fa",
       component: Auth2faView,
-      meta: {
-        allowAnonymous: true,
-      },
     },
     {
       path: "/:catchAll(.*)",
@@ -73,8 +70,6 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  is2faEnabled();
-  is2faAuthenticated();
   if (to.name == "home" && isLoggedIn()) {
     if (is2faEnabled() && !is2faAuthenticated()) next({ path: "auth2fa" });
     else next({ path: "/main" });
