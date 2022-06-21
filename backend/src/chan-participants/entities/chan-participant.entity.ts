@@ -3,7 +3,12 @@ import { Column, Entity, PrimaryGeneratedColumn, ManyToOne, BaseEntity } from "t
 import { User } from "src/users/entities/user.entity";
 import { Channel } from "src/channels/entities/channel.entity";
 import { timeStamp } from "console";
-
+export enum ChanPartStatus
+{
+    OWNER = 'owner',
+    ADMIN = 'admin',
+    NORMAL = 'normal'
+}
 @Entity()
 export class ChanParticipant extends BaseEntity{
     
@@ -20,22 +25,26 @@ export class ChanParticipant extends BaseEntity{
 
     @ApiProperty()
     @Column({
-        type: "boolean",
-        nullable: false
+        type: "enum",
+        enum: ChanPartStatus,
+        default: ChanPartStatus.NORMAL
     })
-    admin: boolean;
+    privilege: ChanPartStatus;
 
     @ApiProperty()
     @Column({
         type: "boolean",
-        nullable: false
+        nullable: false,
+        default:false
     })
     mute: boolean;
 
     @ApiProperty()
     @Column({
         type: "boolean",
-        nullable: false
+        nullable: false,
+        default:false
+
     })
     ban: boolean;
 

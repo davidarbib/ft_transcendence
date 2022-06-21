@@ -1,11 +1,9 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-<<<<<<< HEAD
-=======
 import * as passport from 'passport'
->>>>>>> game_backend
 import * as cookieParser from 'cookie-parser';
+import * as express from 'express';
 
 import { ValidationPipe } from '@nestjs/common';
 
@@ -28,13 +26,11 @@ async function bootstrap()
   const doc = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('/', app, doc);
 
-<<<<<<< HEAD
   app.enableCors({
     credentials: true,
     origin: true,
     methods: "PUT, POST, GET, HEAD, DELETE, PATCH",
   });
-=======
   //app.use(passport.initialize());
 
   app.enableCors({
@@ -42,8 +38,7 @@ async function bootstrap()
     origin:true
   }); // pour connecter le back et le front !!!
 
->>>>>>> game_backend
-
+  app.use(express.static('public'));
   await app.listen(PORT, () => console.log(`Running on Port : ${PORT}`));
 }
 

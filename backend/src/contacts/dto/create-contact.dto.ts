@@ -8,5 +8,5 @@ export class CreateContactDto {
     followedlogin:string;
 
   //  @IsBoolean()
-    blocked:boolean;
+    block:boolean;
 }

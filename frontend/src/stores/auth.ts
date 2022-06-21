@@ -17,3 +17,10 @@ export const useUserStore = defineStore({
     },
   }),
 });
+
+export const useChanStore = defineStore({
+  id: 'channel',
+  state: () => ({
+    channel: {id: "default", name: "", type: "", password: ""}
+  })
+})

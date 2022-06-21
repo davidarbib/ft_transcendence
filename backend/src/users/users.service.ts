@@ -32,11 +32,16 @@ export class UsersService {
      } });
   }
 
-  async update(id:string, updateUserDto: UpdateUserDto) {
-    const usrToUpdate= await this.userRepo.findOneBy({id});
-    const {login} = updateUserDto;
-    usrToUpdate.login = login;
-    myDataSource.getRepository(User).save(usrToUpdate);
+  async update(usr: User, updateUserDto: UpdateUserDto) {
+    const {username} = updateUserDto;
+    usr.username = username;
+   return  myDataSource.getRepository(User).save(usr);
+  }
+  async dfa_update(usr:User, updatedto : UpdateUserDto)
+  {
+    const {doubleFA} = updatedto;
+    usr.doubleFA = doubleFA;
+    return  myDataSource.getRepository(User).save(usr);
   }
 
   async remove(id: string) {

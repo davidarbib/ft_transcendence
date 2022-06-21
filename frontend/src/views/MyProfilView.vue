@@ -8,7 +8,6 @@ import { useUserStore } from "@/stores/auth";
 import { apiStore } from "@/stores/api";
 import { onMounted } from "vue";
 import { ref } from "vue";
-
 const api = apiStore();
 const userStore = useUserStore();
 let openModal = ref(false);
@@ -79,6 +78,7 @@ const turnoff2fa = () => {
     });
 };
 
+const router = useRouter();
 onMounted(() => {
   axios.defaults.withCredentials = true;
   if (userStore.user.id === "default") {
@@ -193,17 +193,14 @@ onMounted(() => {
   display: grid;
   grid-template-columns: 25% 50% 25%;
   grid-template-rows: 10% 80% 10%;
-
   .contact-bar {
     grid-column-start: 3;
     margin-left: 1rem;
   }
-
   .navbar {
     grid-column: 1/4;
     grid-row-start: 1;
   }
-
   .historic {
     grid-column-start: 1;
     margin-right: 1rem;
@@ -216,11 +213,12 @@ onMounted(() => {
     margin-top: 3rem;
     display: flex;
     flex-direction: column;
+    align-items: space-around;
+    // justify-content: baseline;
     header {
       display: flex;
       flex-direction: row;
       justify-content: space-around;
-
       .secondary-button {
         width: 20%;
         height: 40%;
@@ -230,13 +228,11 @@ onMounted(() => {
         justify-content: center;
         align-items: center;
       }
-
-      .profile-picture {
+      .profil-picture {
         position: relative;
         top: -2rem;
       }
     }
-
     .stats {
       margin-bottom: 4rem;
       ul {
@@ -244,7 +240,6 @@ onMounted(() => {
         flex-direction: row;
         justify-content: center;
         text-align: center;
-
         .stats-value {
           color: rgb(161, 161, 161);
           font-size: 0.7rem;
@@ -256,12 +251,10 @@ onMounted(() => {
       flex-direction: row;
       justify-content: space-around;
       margin-bottom: 2rem;
-
       input {
         width: 80%;
         border-radius: 0.375rem;
       }
-
       p {
         cursor: pointer;
       }
@@ -310,3 +303,4 @@ onMounted(() => {
   }
 }
 </style>
+

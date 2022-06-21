@@ -14,14 +14,12 @@ export class MatchesService {
     return this.matchRepo.save(match);
   }
 
-  init(match: Match, player1 : Player, player2: Player) : string
+  init(match: Match, player1 : Player, player2: Player)
   {
     match.players.push(player1);
     match.players.push(player2);
     match.active = true;
-    this.matchRepo.save(match);
-
-    return 'This action adds a new match';
+    return this.matchRepo.save(match);
   }
 
   findAllFinished() : Promise<Match[]>
@@ -37,6 +35,8 @@ export class MatchesService {
       where: { id: id }
     });
   }
+
+
 
   finish(match: Match) : string
   {
