@@ -5,8 +5,9 @@ import { ref, computed } from "vue";
 import axios from "axios";
 import socket from "@/views/ChatView.vue"
 import showMessages from "@/views/ChatView.vue"
+import {useUserStore} from "@/stores/auth";
 
-
+const userStore = useUserStore();
 const searched = ref("");
 const chan = ref([]);
 const messages = ref([]);
@@ -21,9 +22,9 @@ function toggleChannelMenu(id: number) {
 
 const ourchan = computed(() => {
  axios.defaults.withCredentials = true;
-  const addr = 'http://localhost:8090/channels/chan/m3L_dis';
+  // eslint-disable-next-line vue/no-async-in-computed-properties
   axios
-    .get(addr)
+    .get(`http://localhost:8090/channels/chan/${userStore.user.login}`)
     .then((response) => {
       chan.value = response.data;
     })
@@ -64,7 +65,6 @@ const emit = defineEmits(['name', 'msg']);
         <div v-if="channelOptions && channelSelected === channel.id">
           <ul class="list">
             <li><router-link to="/chat">leave</router-link></li>
-            <li><router-link to="/qiwjeoi">rename</router-link></li>
           </ul>
         </div>
       </Transition>
