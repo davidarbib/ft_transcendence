@@ -5,30 +5,17 @@ let message: { value: any; };
 import NavbarItem from "@/components/NavbarItem.vue";
 import Channel from "@/components/Channel.vue";
 import PubChannel from "@/components/PubChannel.vue";
-import axios from "axios";
-import {ref, onMounted, reactive, onBeforeMount, watch} from "vue";
+import {ref, reactive} from "vue";
 import {io} from "socket.io-client";
 import {useUserStore} from "@/stores/auth"
 import {computed} from "@vue/reactivity";
 
 const userStore = useUserStore();
 const socket = io('http://localhost:8090');
-let messages : any = ref([]);
+let messages : any = reactive([]);
 const messageText = ref('');
 const joined = ref(false);
 const myInput = ref('');
-
-/*
-const getMsg  = computed(()  => {
-  console.log('getMsg' + getName.value)
-    socket.emit ('findMessageFromChan', {name : getName.value} , (response) => {
-      messages.value = response;
-    });
-});
-onMounted(() => {
-  getMsg;
-});*/
-
 
 socket.on('message', (message) => {
   console.log(message);

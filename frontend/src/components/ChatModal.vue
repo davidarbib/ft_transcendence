@@ -12,9 +12,11 @@ const chan_setting = ref('private');
 function createChannel(){
   open.value = false;
   axios.defaults.withCredentials = true;
-    console.log(createChanName.value);
+  console.log(createChanName.value);
+  console.log(createChanPass.value);
+  console.log(chan_setting.value);
   axios
-    .post('http://localhost:8090/channels', {name: createChanName.value, type : "private"})
+    .post('http://localhost:8090/channels', {name: createChanName.value, type : chan_setting.value})
     .catch((error) => console.log('error with the creation of channel'))
 }
 

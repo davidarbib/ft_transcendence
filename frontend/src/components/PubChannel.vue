@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import ChatModal from '@/components/ChatModal.vue';
-//import channels from "@/assets/msg_test.json";
 import axios from "axios";
 import { io } from 'socket.io-client'
 import { useChanStore, useUserStore } from "@/stores/auth";
@@ -14,7 +13,7 @@ const  socket = io('http://localhost:8090');
 
 const allchanpublic = computed(() => {
   axios.defaults.withCredentials = true;
-  const addr = `http://localhost:8090/channels/chanpriv/${userStore.user.login}`;
+  const addr = `http://localhost:8090/channels/chanpublic/${userStore.user.login}`;
   axios
     .get(addr)
     .then((response) => {
@@ -23,20 +22,16 @@ const allchanpublic = computed(() => {
     .catch((error) => {
       console.log(error);
     });
-   // console.log(chanpu.value)
     return chanpu.value
 });
 
-function  joinchan(name: string) {
-  console.log("yolo");
-   socket.emit('joinchan', {login: userStore.user.login, name : name}) , (response) => {
-    
-   }
-
+function  joinchan(name: string)
+{
+   socket.emit('joinchan', {login: userStore.user.login, name : name})
 }
-/*
+
+
 const allchanpriv = computed(() => {
-  console.log("wtf");
   axios.defaults.withCredentials = true;
   const addr = `http://localhost:8090/channels/chanpriv/${userStore.user.login}`;
   axios
@@ -49,7 +44,7 @@ const allchanpriv = computed(() => {
     });
     return chanpriv.value
 });
-*/
+
 
 
 const emit = defineEmits(['name']);
@@ -59,19 +54,30 @@ const emit = defineEmits(['name']);
   <div class="pub-chan-section">
     <div class="pub-chan-menu">
       <ChatModal> <p>Create Channel</p></ChatModal>
-      <ChatModal> <p>Join Channel</p></ChatModal>
     </div>
-    <h1>Public channels :</h1>
+    <h1>Public :</h1>
     <div
       class="user-card rounded my-2 bg-black bg-opacity-10 font-medium hover:bg-opacity-30 transition duration-300"
    >
       <div class="pub-chan-info py-2"
-        v-for="channel in allchanpublic"
+       v-for="channel in allchanpublic"
         :key="channel.id">
         <p> {{channel.name}} </p>
         <button @click="joinchan(channel.name)" class="secondary-button interact">Join</button>
       </div>
     </div>
+    <h1>
+      Private :
+    </h1>
+    <div class="user-card rounded my-2 bg-black bg-opacity-10 font-medium hover:bg-opacity-30 transition duration-300"
+    >
+    <div class="pub-chan-info py-2"
+         v-for="channel in allchanpriv"
+         :key="channel.id">
+      <p> {{channel.name}} </p>
+      <button @click="joinchan(channel.name)" class="secondary-button interact">Join</button>
+    </div>
+  </div>
   </div>
 </template>
 
@@ -82,7 +88,9 @@ const emit = defineEmits(['name']);
   overflow: scroll;
   margin-right: 1rem;
   color: v.$primary;
-
+  .priv-chan-info {
+    color: #5b4182;
+  }
   .pub-chan-menu {
     display: flex;
     flex-direction: row;
@@ -91,6 +99,7 @@ const emit = defineEmits(['name']);
       margin-right: 1rem;
     }
   }
+
   h1 {
     margin-top: 1rem;
     font-size: 2rem;

@@ -15,7 +15,6 @@ export class CreateChannelDto extends Channel
    
     @IsString()
     @IsOptional()
-    @Length(1,10)
     password: string;
 
     participants : ChanParticipant[]

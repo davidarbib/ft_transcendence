@@ -14,16 +14,6 @@ const channelOptions = ref(false);
 const channelSelected = ref(-1);
 const channelName = ref('');
 
-/*
-function showMessages(name :string ) {
-   socket.emit ('findMessageFromChan', {name :name } , (response) => {
-      messages.value = response;
-      console.log()
-   console.log(messages.value)
-   emit('msg', messages.value);
-   });
-   }
-*/
 function toggleChannelMenu(id: number) {
   channelSelected.value = id;
   channelOptions.value = !channelOptions.value;
@@ -50,19 +40,6 @@ function selectChannel(name: string) {
 
 }
 const emit = defineEmits(['name', 'msg']);
-// onMounted(() => {
-//   axios.defaults.withCredentials = true;
-//   axios
-//     .get('http://localhost:8090/channels')
-//     .then((response) => {
-//       test.values = response.data;
-//     })
-//     .catch((error) => {
-//       console.log(error);
-//     });
-// });
-
-
 
 </script>
 
