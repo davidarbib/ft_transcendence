@@ -36,6 +36,7 @@
     "cookie-parser": "^1.4.6",
     "dotenv": "^16.0.1",
     "express-session": "^1.17.3",
+    "ml-matrix": "^6.10.1",
     "passport": "^0.5.3",
     "passport-42": "^1.2.6",
     "passport-discord": "^0.1.4",

@@ -1,4 +1,5 @@
-import { GameState, Vector2D, PowerUp, PlayerState } from "./gameState";
+import { GameState, PowerUp, PlayerState } from "./gameState";
+import { Vector2D, getAngle, normalize, getReflectedVector } from "./vector.utils"
 import * as param from "./constants";
 import { initialize } from "passport";
 import { EventEmitter2 } from "@nestjs/event-emitter";
@@ -21,6 +22,12 @@ interface Ids
 }
 
 export enum PadCmd
+{
+    UP,
+    DOWN
+}
+
+export enum Wall
 {
     UP,
     DOWN
@@ -52,6 +59,29 @@ export class Game
         return this.state;
     }
 
+    public loop()
+    {
+    }
+    
+    public movePad(playerId: string, cmd: PadCmd)
+    {
+        let playerState : PlayerState = this.playerSelector(playerId);
+        let velocity : number = playerState.velocity;
+        switch (cmd)
+        {
+            case PadCmd.UP:
+                playerState.yPos += Math.min(velocity, playerState.yPos);
+                break;
+            case PadCmd.DOWN:
+                const wallDistance : number = this.state.height - playerState.yPos;
+                playerState.yPos -= Math.min(velocity, wallDistance);
+                break;
+            default:
+                throw new InternalServerErrorException("Bad command");
+                break;
+        }
+    }
+
     private init
     (
         ids: Ids,
@@ -78,6 +108,7 @@ export class Game
             id: ids.playerOneId, 
             xPos: param.P1PADX,
             yPos: param.PADY,
+            size: param.PADSIZE,
             score: 0,
             powerUp: PowerUp.NONE,
             handicap: options.p1Handicap,
@@ -88,6 +119,7 @@ export class Game
             id: ids.playerTwoId, 
             xPos: param.P2PADX,
             yPos: param.PADY,
+            size: param.PADSIZE,
             score: 0,
             powerUp: PowerUp.NONE,
             handicap: options.p2Handicap,
@@ -95,12 +127,38 @@ export class Game
         }
     }
     
-    private wallBounce()
+    /*
+    ** pick a side for ball service
+    */
+    private randomSide(): number
     {
+        if (Math.random() < 0.5)
+            return -1;
+        return 1;
     }
 
-    private padBounce()
+    private wallBounce(wall: Wall)
     {
+        let normal: Vector2D;
+
+        if (wall == Wall.UP)
+            normal = new Vector2D(0, 1);
+        else
+            normal = new Vector2D(0, -1);
+        
+        this.state.ball.direction = getReflectedVector(this.state.ball.direction, normal);
+    }
+
+    /*
+    ** different types of bounce :
+    ** - 50% center pad : wallBounce algorithm
+    ** - edges : bounce up for up edge, bounce down for down edge
+    */
+
+    private padBounce(pad: PlayerState)
+    {
+        let 
+        let boundaries = { }                
     }
 
     private notifyScore(playerId: string)
@@ -132,45 +190,26 @@ export class Game
             return this.state.player2;
     }
 
-    private scorePoint(player: PlayerState)
+    private scorePoint(player: PlayerState) : boolean
     {
-        this.state.ball.direction = new Vector2D(1, 1); //random direction
-        this.state.ball.xPos = this.state.width/2;
-        this.state.ball.yPos = this.state.height/2;
-
-        this.state.player1.yPos = this.state.height/2;
-        this.state.player2.yPos = this.state.height/2;
+        let xDirection : number;
+        let yDirection : number;
 
         player.score++;
 
         this.notifyScore(player.id);
         if (this.didPlayerWins(player))
-        {
-           //TODO 
-        }
-        //control win    
-    }
+            return true;
 
-    public loop()
-    {
-    }
-    
-    public movePad(playerId: string, cmd: PadCmd)
-    {
-        let playerState : PlayerState = this.playerSelector(playerId);
-        let velocity : number = playerState.velocity;
-        switch (cmd)
-        {
-            case PadCmd.UP:
-                playerState.yPos += Math.min(velocity, playerState.yPos);
-                break;
-            case PadCmd.DOWN:
-                const wallDistance : number = this.state.height - playerState.yPos;
-                playerState.yPos -= Math.min(velocity, wallDistance);
-                break;
-            default:
-                throw new InternalServerErrorException("Bad command");
-                break;
-        }
+        this.state.serviceSide *= -1;
+        xDirection = this.state.serviceSide;
+        yDirection = this.randomSide();  
+        this.state.ball.direction = normalize(new Vector2D(xDirection, yDirection));
+        this.state.ball.xPos = this.state.width/2;
+        this.state.ball.yPos = this.state.height/2;
+
+        this.state.player1.yPos = this.state.height/2;
+        this.state.player2.yPos = this.state.height/2;
+        return false;
     }
 }

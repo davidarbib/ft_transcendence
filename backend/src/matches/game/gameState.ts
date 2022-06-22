@@ -3,16 +3,6 @@ export enum PowerUp
     'NONE',
 }
 
-export class Vector2D
-{
-    constructor
-    (
-        public x: number,
-        public y: number,
-    )
-    { }
-}
-
 export class BallState
 {
     public xPos: number;
@@ -27,6 +17,7 @@ export class PlayerState
     public id: string;
     public xPos: number;
     public yPos: number;
+    public size: number;
     public score: number;
     public powerUp: PowerUp;
     public handicap: number;
@@ -42,4 +33,5 @@ export class GameState
     public player2: PlayerState;
     public ball: BallState;
     public winThresh: number;
+    public serviceSide: number;
 }
