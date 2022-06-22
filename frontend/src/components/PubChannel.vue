@@ -54,6 +54,7 @@ const emit = defineEmits(['name']);
   <div class="pub-chan-section">
     <div class="pub-chan-menu">
       <ChatModal> <p>Create Channel</p></ChatModal>
+      <ChatModal> <p>OUI Channel</p></ChatModal>
     </div>
     <h1>Public :</h1>
     <div

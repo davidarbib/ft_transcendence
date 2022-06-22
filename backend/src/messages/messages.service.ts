@@ -9,6 +9,7 @@ import { ChanParticipant } from 'src/chan-participants/entities/chan-participant
 import { channel } from 'diagnostics_channel';
 import { Console } from 'console';
 import { ContactsService } from 'src/contacts/contacts.service';
+import {elementAt} from "rxjs";
 
 
 @Injectable()
@@ -52,7 +53,7 @@ export class MessagesService {
     msg.forEach(element => {
       if (element.chan.name == name)
       {
-          if (!this.contactsService.block_bool(login, element.author.login))
+   //       if (!this.contactsService.block_bool(login, element.author.login))
             arr.push(element);
       }
     });
@@ -63,7 +64,11 @@ export class MessagesService {
   {
     const chan = await myDataSource.getRepository(Channel).findOne({where : {name:name}})
     const usr = await myDataSource.getRepository(User).findOne({where : {login:login}})
-    console.log(chan.participants[usr.id]);
+    const arr = await myDataSource.getRepository(ChanParticipant).find({relations : ['participants']});
+  arr.forEach(element => {
+    if (element.participant.login == login && element.chan.name == name)
+      return ;
+  })
     const chanPart : ChanParticipant = new ChanParticipant;
     chanPart.participant = usr;
     chanPart.chan = chan;
