@@ -8,6 +8,7 @@ import { Channel } from 'src/channels/entities/channel.entity';
 import { ChanParticipant } from 'src/chan-participants/entities/chan-participant.entity';
 import { channel } from 'diagnostics_channel';
 import { Console } from 'console';
+import { ContactsService } from 'src/contacts/contacts.service';
 
 
 @Injectable()
@@ -15,6 +16,7 @@ export class MessagesService {
  
   constructor (
     private msgRepo : Repository<Messages>,
+    private contactsService: ContactsService
   )
   {
     this.msgRepo = myDataSource.getRepository(Messages);
@@ -43,14 +45,16 @@ export class MessagesService {
     return msg
   }
 
-  async findMsg(name: string)
+  async findMsg(name: string, login: string )
   {
     const msg = await this.msgRepo.find({ relations: [ 'chan'] })
     let arr : any = [];
     msg.forEach(element => {
       if (element.chan.name == name)
-        arr.push(element);
-
+      {
+          if (!this.contactsService.block_bool(login, element.author.login))
+            arr.push(element);
+      }
     });
     return arr;
   }
@@ -59,7 +63,7 @@ export class MessagesService {
   {
     const chan = await myDataSource.getRepository(Channel).findOne({where : {name:name}})
     const usr = await myDataSource.getRepository(User).findOne({where : {login:login}})
-    console.log(chan);
+    console.log(chan.participants[usr.id]);
     const chanPart : ChanParticipant = new ChanParticipant;
     chanPart.participant = usr;
     chanPart.chan = chan;

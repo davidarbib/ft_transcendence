@@ -31,9 +31,9 @@ export class MessagesGateway
   }
 
   @SubscribeMessage('findMessageFromChan')
-  async findMsg(@MessageBody('name') name:string)
+  async findMsg(@MessageBody('name') name:string, @MessageBody('login') login:string)
   {
-    return this.messageService.findMsg(name);
+    return this.messageService.findMsg(name, login);
   }
 
   @SubscribeMessage('joinchan')
