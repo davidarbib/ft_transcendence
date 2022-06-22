@@ -13,6 +13,7 @@ import { channel } from 'diagnostics_channel';
 @Injectable()
 export class ChannelsService {
   async create(createChannel: CreateChannelDto, usr :User) {
+    console.log("lol");
     const chanPart : ChanParticipant = new ChanParticipant;
     chanPart.participant = usr;
     chanPart.chan = createChannel;

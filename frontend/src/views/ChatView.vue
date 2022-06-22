@@ -13,7 +13,7 @@ import {computed} from "@vue/reactivity";
 
 const userStore = useUserStore();
 const socket = io('http://localhost:8090');
-let messages : any = reactive([]);
+let messages : any = ref([]);
 const messageText = ref('');
 const joined = ref(false);
 const myInput = ref('');
@@ -43,6 +43,13 @@ function sendMessage() {
   });
 };
 
+const showMessages = computed(() => {
+   socket.emit ('findMessageFromChan', {name : getName.value } , (response) => {
+     messages.value = response;
+   });
+   return messages.value;
+  })
+
 </script>
 
 <template>
@@ -61,9 +68,8 @@ function sendMessage() {
       <p class="text-2xl"> {{ getName}} </p>
       <div
         class="message bg-black bg-opacity-20 w-3/4 mx-2 rounded p-2"
-          @msg=' (msgo) => messages.push(msgo) '
-         v-for="message in messages">
-            {{ userStore.user.login}} :
+         v-for="message in showMessages">
+            {{message.login}} :
            {{message.time}}
         <p>{{ message.content }}</p>
       </div>
