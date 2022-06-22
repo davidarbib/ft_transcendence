@@ -29,11 +29,11 @@ export class GamesGateway {
   userStopWaiting(@MessageBody('user') usr:User) {
     return this.gamesService.userStopWaiting(usr);
   }
-
+/*
   @SubscribeMessage('findAllGames')
   findAll() {
     return this.gamesService.findAll();
-  }
+  }*/
   @SubscribeMessage('matchmaking')
   async matchmaking() {
     return  await this.gamesService.matchmaking()
@@ -42,15 +42,5 @@ export class GamesGateway {
   @SubscribeMessage('findOneGame') // return the matches
   async findOne(@MessageBody() id: string) {
     return await this.gamesService.findOne(id);
-  }
-
-  @SubscribeMessage('updateGame')
-  update(@MessageBody() updateGameDto: UpdateGameDto) {
-    return this.gamesService.update(updateGameDto.id, updateGameDto);
-  }
-
-  @SubscribeMessage('removeGame')
-  remove(@MessageBody() id: number) {
-    return this.gamesService.remove(id);
   }
 }

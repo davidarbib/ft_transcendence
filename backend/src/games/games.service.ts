@@ -45,23 +45,12 @@ export class GamesService {
       }
   }
 
-  findAll() {
-    return `This action returns all games`;
-  }
-
   async findOne(id: string) {
     const arr = await myDataSource.getRepository(Player).find({relations: ['userRef']});
       arr.forEach(element  => {
         if (element.userRef.id == id)
           return element.matchRef;
       })
-    return `This action returns all games`;
-  }
-  update(id: number, updateGameDto: UpdateGameDto) {
-    return `This action updates a #${id} game`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} game`;
-  }
 }
