@@ -7,12 +7,15 @@ import { computed } from "@vue/reactivity";
 import { apiStore } from "@/stores/api";
 import { useUserStore } from "@/stores/auth";
 import axios from "axios";
+import { io } from "socket.io-client";
+const  socket = io('http://localhost:8090');
 
 let game_mode = ref("default");
 let popupTriggers = ref(false);
 let elapsedTimeS = ref(0);
 let elapsedTimeM = ref(0);
 let timer = ref();
+const bool_match = ref(0);
 const api = apiStore();
 const userStore = useUserStore();
 
@@ -30,6 +33,14 @@ const formattedElapsedTime = computed(() => {
   return minute + ":" + second;
 });
 
+function matchMAKING() {
+  console.log("ok");
+  socket.emit('matchMakingList', {user :userStore.user},()  => {})
+  socket.emit('matchmaking'), {}, (response) =>{
+    if (response == true)
+      console.log("yes c ok");
+  }
+}
 const TogglePopup = (): void => {
   if (!popupTriggers.value) {
     clearInterval(timer.value);
@@ -38,6 +49,7 @@ const TogglePopup = (): void => {
     timer.value = setInterval(() => {
       elapsedTimeS.value += 1;
     }, 1000);
+    matchMAKING();
   }
   popupTriggers.value = !popupTriggers.value;
 };

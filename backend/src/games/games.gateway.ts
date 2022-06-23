@@ -25,7 +25,7 @@ export class GamesGateway {
   userWaiting(@MessageBody('user') usr:User) {
     return this.gamesService.userWaiting(usr);
   }
-  @SubscribeMessage('matchMakingList')
+  @SubscribeMessage('stopmatchMakingList')
   userStopWaiting(@MessageBody('user') usr:User) {
     return this.gamesService.userStopWaiting(usr);
   }
