@@ -33,9 +33,8 @@ function  joinchan(name: string)
 
 const allchanpriv = computed(() => {
   axios.defaults.withCredentials = true;
-  const addr = `http://localhost:8090/channels/chanpriv/${userStore.user.login}`;
   axios
-    .get(addr)
+    .get(`http://localhost:8090/channels/chanpriv/${userStore.user.login}`)
     .then((response) => {
       chanpriv.value = response.data;
     })
@@ -45,8 +44,6 @@ const allchanpriv = computed(() => {
     return chanpriv.value
 });
 
-
-
 const emit = defineEmits(['name']);
 </script>
 
@@ -54,7 +51,6 @@ const emit = defineEmits(['name']);
   <div class="pub-chan-section">
     <div class="pub-chan-menu">
       <ChatModal> <p>Create Channel</p></ChatModal>
-      <ChatModal> <p>OUI Channel</p></ChatModal>
     </div>
     <h1>Public :</h1>
     <div

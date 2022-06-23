@@ -38,7 +38,6 @@ function selectChannel(name: string) {
   channelName.value = name;
   console.log('selectChannel :' + channelName.value);
   emit('name', channelName.value);
-
 }
 const emit = defineEmits(['name', 'msg']);
 

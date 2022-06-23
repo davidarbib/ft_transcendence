@@ -1,7 +1,4 @@
 <script setup lang="ts">
-const getName = ref('');
-let message: { value: any; };
-
 import NavbarItem from "@/components/NavbarItem.vue";
 import Channel from "@/components/Channel.vue";
 import PubChannel from "@/components/PubChannel.vue";
@@ -9,19 +6,35 @@ import {ref, reactive} from "vue";
 import {io} from "socket.io-client";
 import {useUserStore} from "@/stores/auth"
 import {computed} from "@vue/reactivity";
+import axios from "axios";
 
+const getName = ref('');
+let message: { value: any; };
 const userStore = useUserStore();
 const socket = io('http://localhost:8090');
 let messages : any = reactive([]);
 const messageText = ref('');
 const joined = ref(false);
 const myInput = ref('');
+let userIn = ref([]);
 
 socket.on('message', (message) => {
-  console.log(message);
   messages.push({name: message.name.value});
-  console.log(messages);
 });
+
+const getUserInChan = computed(() => {
+  axios.defaults.withCredentials = true;
+  axios
+      .get(`http://localhost:8090/channels/${getName.value}`)
+      .then((response) => {
+        userIn.value = response.data;
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  return userIn.value
+});
+
 
 function sendMessage() {
   socket.emit('createMessage', {name: getName.value, login: userStore.user.login, content: myInput.value}, () => {
@@ -41,7 +54,6 @@ const showMessages = computed(() => {
 
 <template>
   <div class="chat-section">
-
     <div class="navbar-item">
       <NavbarItem />
     </div>
@@ -50,6 +62,10 @@ const showMessages = computed(() => {
     </div>
       <div class="channel-pub">
         <PubChannel @name='(msgs) => getName = msgs'/>
+      </div>
+      <div class="channel-parti"
+        v-for="login in getUserInChan">
+        <p> {{login.name}} pouet </p>
       </div>
     <div class="messages text-gray-300">
       <p class="text-2xl"> {{ getName}} </p>
@@ -80,7 +96,7 @@ const showMessages = computed(() => {
   height: 100vh;
   display: grid;
   grid-template-columns: 20% 60% 20%;
-  grid-template-rows: 10% 80% 10%;
+  grid-template-rows: 10% repeat(2, 40%) 10%;
   grid-column-gap: 0px;
   grid-row-gap: 0px;
 
@@ -89,15 +105,15 @@ const showMessages = computed(() => {
   }
 
   .channel-list {
-    grid-area: 2 / 1 / 4 / 2;
+    grid-area: 2 / 1 / 3 / 2;
   }
 
   .channel-pub {
-    grid-area: 2 / 3 / 4 / 4;
+    grid-area: 2 / 3 / 5 / 4;
   }
 
   .messages {
-    grid-area: 2 / 2 / 3 / 2;
+    grid-area: 2 / 2 / 4 / 3;
     overflow: scroll;
     border: none;
     overflow-y: hidden;
@@ -109,13 +125,18 @@ const showMessages = computed(() => {
     }
   }
 
+  .channel-parti {
+    background-color: aqua;
+    grid-area: 3 / 1 / 5 / 2;
+  }
+
   .message-input {
     display: flex;
     flex-flow: row nowrap;
     align-items: center;
     margin-left: 0.5rem;
     font-size: 1.5rem;
-    grid-area: 3 / 2 / 4 / 2;
+    grid-area: 4 / 2 / 5 / 3;
     input {
       width: 90%;
     }
