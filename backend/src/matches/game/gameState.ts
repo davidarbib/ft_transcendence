@@ -1,3 +1,5 @@
+import { Vector2D } from './vector.utils'
+
 export enum PowerUp
 {
     'NONE',

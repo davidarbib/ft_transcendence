@@ -1,4 +1,4 @@
-import { GameState, PowerUp, PlayerState } from "./gameState";
+import { GameState, PowerUp, PlayerState, BallState } from "./gameState";
 import { Vector2D, getAngle, normalize, getReflectedVector } from "./vector.utils"
 import * as param from "./constants";
 import { initialize } from "passport";
@@ -147,6 +147,7 @@ export class Game
             normal = new Vector2D(0, -1);
         
         this.state.ball.direction = getReflectedVector(this.state.ball.direction, normal);
+        this.state.ball.direction = normalize(this.state.ball.direction);
     }
 
     /*
@@ -157,8 +158,29 @@ export class Game
 
     private padBounce(pad: PlayerState)
     {
-        let 
-        let boundaries = { }                
+        let normal: Vector2D;
+        let quarterPad = pad.size / 4;
+        let boundaries = {
+            up: pad.yPos - quarterPad,
+            down: pad.yPos + quarterPad
+        }                
+
+        if (this.state.ball.direction.x > 0)
+            normal = new Vector2D(-1, 0);
+        else
+            normal = new Vector2D(1, 0);
+
+        if (this.state.ball.yPos > boundaries.up
+            && this.state.ball.yPos < boundaries.down)
+            this.state.ball.direction = getReflectedVector(this.state.ball.direction, normal);
+        else
+        {
+            if (this.state.ball.yPos <= boundaries.up)    
+                this.state.ball.direction = new Vector2D(normal.x, 2);
+            else
+                this.state.ball.direction = new Vector2D(normal.x, -2);
+        }
+        this.state.ball.direction = normalize(this.state.ball.direction);
     }
 
     private notifyScore(playerId: string)
