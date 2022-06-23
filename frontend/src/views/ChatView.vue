@@ -32,7 +32,7 @@ const getUserInChan = computed(() => {
       .catch((error) => {
         console.log(error);
       });
-  return userIn.value
+  return userIn.value;
 });
 
 
@@ -65,7 +65,7 @@ const showMessages = computed(() => {
       </div>
       <div class="channel-parti"
         v-for="login in getUserInChan">
-        <p> {{login.name}} pouet </p>
+        <p> {{login.login}}  </p>
       </div>
     <div class="messages text-gray-300">
       <p class="text-2xl"> {{ getName}} </p>
