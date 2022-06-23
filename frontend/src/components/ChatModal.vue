@@ -10,9 +10,6 @@ const chan_setting = ref("private");
 function createChannel() {
   open.value = false;
   axios.defaults.withCredentials = true;
-  console.log(createChanName.value);
-  console.log(createChanPass.value);
-  console.log(chan_setting.value);
   axios
     .post("http://localhost:8090/channels", {
       name: createChanName.value,

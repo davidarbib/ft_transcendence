@@ -65,10 +65,11 @@ export class MessagesService {
     const chan = await myDataSource.getRepository(Channel).findOne({where : {name:name}})
     const usr = await myDataSource.getRepository(User).findOne({where : {login:login}})
     const arr = await myDataSource.getRepository(ChanParticipant).find({relations : ['participants']});
-  arr.forEach(element => {
-    if (element.participant.login == login && element.chan.name == name)
-      return ;
-  })
+    console.log(arr);
+    //arr.forEach(element => {
+    //if (element.participant.login == login && element.chan.name == name)
+     // return ;
+  //})
     const chanPart : ChanParticipant = new ChanParticipant;
     chanPart.participant = usr;
     chanPart.chan = chan;
