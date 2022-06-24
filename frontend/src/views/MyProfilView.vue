@@ -19,8 +19,36 @@ let auth2FaCode = ref("");
 let error2fa = ref(false);
 let success2fa = ref(false);
 let closeNotification = ref();
-let success2faMessage = ref("Success");
+let notifyMessage = ref("Success");
 let is2faEnabled = ref(userStore.user.twoFactorEnabled);
+let pseudo = ref(userStore.user.username);
+
+const updatePseudo = () => {
+  axios
+    .patch(`${api.url}/users/${userStore.user.id}`, {
+      id: userStore.user.id,
+      login: userStore.user.id,
+      username: pseudo.value,
+      status: userStore.user.status,
+      authToken: userStore.user.authToken,
+      avatarRef: userStore.user.avatarRef,
+      lossCount: userStore.user.lossCount,
+      winCount: userStore.user.winCount,
+      twoFactorEnabled: userStore.user.twoFactorEnabled,
+      twoFactorSecret: userStore.user.twoFactorSecret,
+    })
+    .then(() => {
+      userStore.user.username = pseudo.value;
+      error2fa.value = true;
+      success2fa.value = false;
+      notifyMessage.value = "SuccessFully updated username";
+    })
+    .catch(() => {
+      error2fa.value = true;
+      success2fa.value = false;
+      notifyMessage.value = "This username is invalid try another one....";
+    });
+};
 
 const activate2fa = () => {
   axios
@@ -28,8 +56,10 @@ const activate2fa = () => {
     .then((response) => {
       qrCode.value = response.data;
     })
-    .catch((error) => {
-      console.log(error);
+    .catch(() => {
+      error2fa.value = true;
+      success2fa.value = false;
+      notifyMessage.value = "Unable to generate QR code";
     })
     .then(() => {
       openModal.value = !openModal.value;
@@ -48,19 +78,19 @@ const submit2faCode = () => {
     .then(() => {
       error2fa.value = false;
       success2fa.value = true;
-      success2faMessage.value = "You can log in with 2fa now";
+      notifyMessage.value = "You can log in with 2fa now";
       userStore.user.twoFactorEnabled = true;
       is2faEnabled.value = true;
       openModal.value = !openModal.value;
       logoutUser();
       router.push({ name: "home" });
     })
-    .catch((error) => {
+    .catch(() => {
       error2fa.value = true;
       success2fa.value = false;
       userStore.user.twoFactorEnabled = false;
       is2faEnabled.value = true;
-      console.log(error);
+      notifyMessage.value = "Please provide valid code";
     });
 };
 
@@ -72,12 +102,16 @@ const turnoff2fa = () => {
   axios
     .post(`${api.url}/2fa/turn-off`)
     .then(() => {
-      success2faMessage.value = "2fa turned off !";
+      notifyMessage.value = "2fa turned off !";
+      error2fa.value = false;
       success2fa.value = true;
       userStore.user.twoFactorEnabled = false;
       is2faEnabled.value = false;
     })
     .catch(() => {
+      error2fa.value = true;
+      success2fa.value = false;
+      notifyMessage.value = "Failure when trying to turn off 2fa";
       userStore.user.twoFactorEnabled = false;
       is2faEnabled.value = false;
     });
@@ -104,10 +138,10 @@ onMounted(() => {
       <NavbarItem />
     </div>
     <notification-message type="success-2fa" header="Success" v-if="success2fa"
-      ><p>{{ success2faMessage }}</p></notification-message
+      ><p>{{ notifyMessage }}</p></notification-message
     >
     <notification-message type="error-2fa" header="Error" v-if="error2fa"
-      ><p>Please provide a valid code</p></notification-message
+      ><p>{{ notifyMessage }}</p></notification-message
     >
     <div class="historic">
       <Historic />
@@ -120,8 +154,8 @@ onMounted(() => {
         <div class="profile-picture h-36 w-36">
           <img src="@/assets/sphere_mini.png" alt="user profile picture" />
         </div>
-        <div class="secondary-button">
-          <router-link to="/"> Edit username </router-link>
+        <div class="secondary-button" @click="updatePseudo">
+          <p>Edit username</p>
         </div>
       </header>
       <div class="stats">
@@ -145,9 +179,8 @@ onMounted(() => {
           <input
             id="pseudo"
             name="pseudo"
-            v-model="userStore.user.username"
+            v-model="pseudo"
             type="text"
-            autocomplete="current-password"
             class="h-1/3 focus:outline-none border border-gray-300 px-1"
           />
         </div>
