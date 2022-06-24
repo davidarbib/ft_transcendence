@@ -27,10 +27,18 @@ export enum PadCmd
     DOWN
 }
 
+export enum Pad
+{
+    P1,
+    P2,
+    NONE
+}
+
 export enum Wall
 {
     UP,
-    DOWN
+    DOWN,
+    NONE
 }
 
 export class Game
@@ -61,6 +69,40 @@ export class Game
 
     public loop()
     {
+        let wall: Wall;
+        let pad: Pad;
+
+        wall = this.touchWall();
+        if (wall != Wall.NONE)
+            this.wallBounce(wall);
+
+        pad = this.touchPad();
+        if (pad != Pad.NONE)
+            this.padBounce(pad);
+
+        this.moveBall();
+        
+        let p1Win: boolean = false;
+        let p2Win: boolean = false;
+
+        pad = this.goal();
+        if (pad == Pad.P1)
+            p1Win = this.scorePoint(this.state.player2);
+        if (pad == Pad.P2)
+            p2Win = this.scorePoint(this.state.player1);
+
+        if (p1Win)
+        {
+            this.notifyGameFinished(this.state.player1.id);
+            return false;
+        }
+        if (p2Win)
+        {
+            this.notifyGameFinished(this.state.player2.id);
+            return false;
+        }
+        
+        return true;
     }
     
     public movePad(playerId: string, cmd: PadCmd)
@@ -127,6 +169,40 @@ export class Game
         }
     }
     
+    private moveBall()
+    {
+        //let vel = this.state.ball.velocity;
+        this.state.ball.xPos += this.state.ball.direction.x;
+        this.state.ball.yPos += this.state.ball.direction.y;
+    }
+
+    private touchWall() : Wall
+    {
+        if (this.state.ball.yPos >= this.state.height)
+            return Wall.DOWN;
+        if (this.state.ball.yPos <= 0)
+            return Wall.UP;
+        return Wall.NONE;
+    }
+
+    private touchPad() : Pad
+    {
+        if (this.state.ball.xPos <= this.state.player1.xPos)
+            return Pad.P1;
+        if (this.state.ball.xPos >= this.state.player2.xPos)
+            return Pad.P2;
+        return Pad.NONE;
+    }
+
+    private goal() : Pad
+    {
+        if (this.state.ball.xPos < this.state.player1.xPos)
+            return Pad.P1;
+        if (this.state.ball.xPos > this.state.player2.xPos)
+            return Pad.P2;
+        return Pad.NONE;
+    }
+
     /*
     ** pick a side for ball service
     */
@@ -156,19 +232,27 @@ export class Game
     ** - edges : bounce up for up edge, bounce down for down edge
     */
 
-    private padBounce(pad: PlayerState)
+    private padBounce(pad: Pad)
     {
+        let padState: PlayerState;
         let normal: Vector2D;
-        let quarterPad = pad.size / 4;
-        let boundaries = {
-            up: pad.yPos - quarterPad,
-            down: pad.yPos + quarterPad
-        }                
 
-        if (this.state.ball.direction.x > 0)
-            normal = new Vector2D(-1, 0);
-        else
+        if (pad == Pad.P1)
+        {
+            padState = this.state.player1;
             normal = new Vector2D(1, 0);
+        }
+        else
+        {
+            padState = this.state.player2;
+            normal = new Vector2D(-1, 0);
+        }
+
+        let quarterPad = padState.size / 4;
+        let boundaries = {
+            up: padState.yPos - quarterPad,
+            down: padState.yPos + quarterPad
+        }                
 
         if (this.state.ball.yPos > boundaries.up
             && this.state.ball.yPos < boundaries.down)
@@ -191,11 +275,11 @@ export class Game
         );
     }
 
-    private notifyGameFinished()
+    private notifyGameFinished(winnerId: string)
     {
         this.emitter.emit(
             'game_finished',
-            new GameFinishEvent(this.state.id, {}),
+            new GameFinishEvent(this.state.id, { winnerId }),
         );
     }
 
