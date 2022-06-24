@@ -22,6 +22,27 @@ let closeNotification = ref();
 let notifyMessage = ref("Success");
 let is2faEnabled = ref(userStore.user.twoFactorEnabled);
 let pseudo = ref(userStore.user.username);
+const file = ref<File | null>();
+const form = ref<HTMLFormElement>();
+
+function onFileChanged($event: Event) {
+  const target = $event.target as HTMLInputElement;
+  if (target && target.files) {
+    file.value = target.files[0];
+  }
+}
+
+async function saveImage() {
+  if (file.value) {
+    try {
+      // save file.value
+    } catch (error) {
+      console.error(error);
+      form.value?.reset();
+      file.value = null;
+    }
+  }
+}
 
 const updatePseudo = () => {
   axios
@@ -149,7 +170,7 @@ onMounted(() => {
     <div class="profile-card bg-black bg-opacity-10">
       <header>
         <div class="secondary-button">
-          <router-link to="/"> Update profile picture </router-link>
+          <p @click="saveImage">Update profile picture</p>
         </div>
         <div class="profile-picture h-36 w-36">
           <img src="@/assets/sphere_mini.png" alt="user profile picture" />
@@ -183,6 +204,9 @@ onMounted(() => {
             type="text"
             class="h-1/3 focus:outline-none border border-gray-300 px-1"
           />
+        </div>
+        <div class="w-3/5 mx-auto my-4">
+          <input type="file" @change="onFileChanged($event)" accept="image/*" />
         </div>
         <div class="toggle-2fa">
           <button
