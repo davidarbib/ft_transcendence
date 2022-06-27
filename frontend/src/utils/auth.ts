@@ -15,9 +15,15 @@ interface jwt_data {
 
 export function logoutUser() {
   axios.defaults.withCredentials = true;
-  axios.post(`${API_URL}/auth/logout`).then(() => {
-    //Lol
-  });
+  axios
+    .post(`${API_URL}/auth/logout`)
+    .then(() => {
+      // do nothing
+    })
+    .catch(() => {
+      console.log("error when deco");
+    });
+  localStorage.removeItem("user");
   clearAuthToken();
 }
 
