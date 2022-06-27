@@ -6,7 +6,6 @@ import NotificationMessage from "@/components/NotificationMessageComponent.vue";
 import axios from "axios";
 import { useUserStore } from "@/stores/auth";
 import { apiStore } from "@/stores/api";
-import { onMounted } from "vue";
 import { ref } from "vue";
 import router from "@/router";
 import { logoutUser } from "@/utils/auth";
@@ -137,20 +136,6 @@ const turnoff2fa = () => {
       is2faEnabled.value = false;
     });
 };
-
-onMounted(() => {
-  axios.defaults.withCredentials = true;
-  if (userStore.user.id === "default") {
-    axios
-      .get(`${api.url}/auth/current`)
-      .then((response) => {
-        userStore.user = response.data;
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }
-});
 </script>
 
 <template>
