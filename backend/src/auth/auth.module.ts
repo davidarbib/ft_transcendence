@@ -12,8 +12,11 @@ import { SessionSerializer } from './utils/Serializer';
 import { LocalStrategy } from './strategies/local.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { JwtTwoFaStrategy } from './strategies/jwtTwoFa.strategy';
 import { ConfigService } from '@nestjs/config';
 import { JwtGuard } from './guards/jwt.guard';
+import { TwoFactorAuthController } from './twoFactorAuth.controller';
+import { TwoFactorAuthService } from './services/twoFactorAuth.service';
 
 @Module({
   imports: [
@@ -31,19 +34,24 @@ import { JwtGuard } from './guards/jwt.guard';
       inject: [ConfigService],
     }),
   ],
-  controllers: [AuthController],
+  controllers: [
+    AuthController,
+    TwoFactorAuthController
+  ],
   providers: [
     Api42Strategy,
     DiscordStrategy,
     LocalStrategy,
     JwtStrategy,
+    JwtTwoFaStrategy,
     SessionSerializer,
     {
       provide: 'AUTH_SERVICE',
       useClass: AuthService,
     },
     Repository,
-    AuthService
+    AuthService,
+    TwoFactorAuthService,
   ],
   //exports: []
 })

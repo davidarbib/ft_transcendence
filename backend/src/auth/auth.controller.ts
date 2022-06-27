@@ -1,17 +1,21 @@
-import { Body, Controller, Get, Post, Res, Req, UseGuards} from '@nestjs/common';
+import { Body, Controller, Get, Post, Res, Req, UseGuards, HttpCode} from '@nestjs/common';
 import { Response } from 'express'
 import { Request } from 'express'
 import { User } from 'src/users/entities/user.entity';
 import { Api42Guard } from './guards/api42.guard';
 import { LocalGuard } from './guards/local.guard';
 import { JwtGuard } from './guards/jwt.guard';
+import { JwtTwoFaGuard } from './guards/jwtTwoFa.guard';
 import { AuthService } from './services/auth.service';
-import { JwtStrategy } from './strategies/jwt.strategy';
+import { UsersService } from 'src/users/users.service';
 import { DiscordGuard } from './guards/discord.guard';
 
 @Controller('auth')
 export class AuthController {
-    constructor(private readonly authService: AuthService) {}
+    constructor
+    (
+        private readonly authService: AuthService,
+        private readonly usersService: UsersService) {}
     
     @Get('login')
     @UseGuards(Api42Guard)
@@ -24,17 +28,9 @@ export class AuthController {
     @UseGuards(Api42Guard)
     async redirect(@Req() req: Request, @Res({ passthrough: true }) response: Response)
     {
-        console.log("redirection")
-        const { accessToken } = await this.authService.login(req.user);
-        response.cookie(
-            process.env.JWT_COOKIE_KEY,
-            accessToken,
-            {
-                httpOnly: false, //toggle to true on prod
-                expires: new Date(Date.now() + process.env.JWT_EXPIRATION_MS),
-                sameSite: "lax",
-            }
-        );
+        const user : User = await this.usersService.findOne(req.user.id);
+        const { accessToken } = await this.authService.login(req.user, user.twoFactorEnabled);
+        this.authService.generateCookie(response, accessToken);
         //return req.user;
         //return accessToken; //uncomment to obtain bearer token for curl/postman tests
         return response.redirect('http://localhost:8000');
@@ -59,17 +55,9 @@ export class AuthController {
     @UseGuards(DiscordGuard)
     async discordRedirect(@Req() req: Request, @Res({ passthrough: true }) response: Response)
     {
-        const { accessToken } = await this.authService.login(req.user);
-        const jwtMs = parseInt(process.env.JWT_EXPIRATION_MS);
-        response.cookie(
-            process.env.JWT_COOKIE_KEY,
-            accessToken,
-            {
-                httpOnly: false, //toggle to true on prod
-                expires: new Date(Date.now() + jwtMs),
-                sameSite: "lax",
-            }
-        );
+        const user : User = await this.usersService.findOne(req.user.id);
+        const { accessToken } = await this.authService.login(req.user, user.twoFactorEnabled);
+        this.authService.generateCookie(response, accessToken);
         //return req.user;
         //return accessToken; //uncomment to obtain bearer token for curl/postman tests
         return response.redirect('http://localhost:8000');
@@ -77,17 +65,23 @@ export class AuthController {
     }
 
     @Get('current')
-    @UseGuards(JwtGuard)
+    @UseGuards(JwtTwoFaGuard)
     getHello(@Req() request: Request): any
     {
         return request.user;
     }
 
-    @Get('logout')
+    @HttpCode(200)
+    @Post('logout')
     @UseGuards(JwtGuard)
-    logout(@Req() request: Request): any
+    logout
+    (
+        @Req() request: Request,
+        @Res({ passthrough: true }) response: Response
+    ): string
     {
         //update user status
+        this.authService.generateCookie(response, "xxxxxxxxxxx");
         return "Logout successful";
     }
 

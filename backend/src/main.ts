@@ -1,8 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import * as session from 'express-session'
-import * as passport from 'passport'
 import * as cookieParser from 'cookie-parser';
 
 import { ValidationPipe } from '@nestjs/common';
@@ -14,7 +12,7 @@ async function bootstrap()
 
   app.use(cookieParser());
 
-  app.useGlobalPipes(new ValidationPipe()) 
+  app.useGlobalPipes(new ValidationPipe());
 
   const config = new DocumentBuilder()
     .setTitle('API example')
@@ -26,26 +24,11 @@ async function bootstrap()
   const doc = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('/', app, doc);
 
-  //----session
-  //app.use(
-  //  session({
-  //    cookie: {
-  //      maxAge: 86400000, //1 day
-  //    },
-  //    secret: process.env.COOKIE_SECRET,
-  //    resave: false,
-  //    saveUninitialized: false,
-  //  }),
-  //);
-  //app.use(passport.initialize());
-  //app.use(passport.session());
-  //----session
-
   app.enableCors({
-    credentials:true,
-    origin:true
-  }) // pour connecter le back et le front !!!
-
+    credentials: true,
+    origin: true,
+    methods: "PUT, POST, GET, HEAD, DELETE, PATCH",
+  });
 
   await app.listen(PORT, () => console.log(`Running on Port : ${PORT}`));
 }

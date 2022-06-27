@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import LockClosedIcon from "@heroicons/vue/solid";
-import Title from "@/components/Title.vue";
 import { ref } from "vue";
 
 const volumeButton = ref(true);
@@ -19,15 +17,15 @@ const toggleMusic = () => {
     <p v-else><i class="fa-solid fa-volume-xmark"></i></p>
   </div>
   <div v-if="volumeButton">
-    <audio controls id="myVideo" autoplay loop hidden>
+    <audio id="myVideo" autoplay loop hidden>
       <source src="@/assets/homepage_music.mp3" type="audio/mpeg" />
-      ser does not support the audio element.
+      This browser does not support the audio element.
     </audio>
   </div>
   <div v-else>
-    <audio controls id="myVideo" autoplay loop hidden muted>
+    <audio id="myVideo" autoplay loop hidden muted>
       <source src="@/assets/homepage_music.mp3" type="audio/mpeg" />
-      ser does not support the audio element.
+      This browser does not support the audio element.
     </audio>
   </div>
 </template>

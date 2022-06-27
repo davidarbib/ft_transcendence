@@ -55,7 +55,6 @@
     hsl(212, 92%, 76%) 85%
   );
   color: transparent;
-  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-stroke: 2px hsl(200, 65%, 80%);
 }

@@ -26,9 +26,9 @@ const visibleToggle = () => {
             >Chat</router-link
           >
           <router-link
-            to="/myprofile"
+            to="/my_profile"
             class="py-4 px-2 text-gray-300 font-semibold hover:text-[#e63380] transition duration-700"
-            >Profil</router-link
+            >Profile</router-link
           >
         </div>
       </div>
@@ -46,7 +46,6 @@ const visibleToggle = () => {
         <button class="outline-none mobile-menu-button" @click="visibleToggle">
           <svg
             class="w-6 h-6 text-gray-500 hover:text-[#e63380]"
-            x-show="!showMenu"
             fill="none"
             stroke-linecap="round"
             stroke-linejoin="round"
@@ -79,16 +78,16 @@ const visibleToggle = () => {
       </li>
       <li>
         <router-link
-          to="/tuto"
+          to="/"
           class="block text-sm px-2 py-4 text-gray-300 hover:bg-[#e63380] transition duration-700"
           >Tutorial</router-link
         >
       </li>
       <li>
         <router-link
-          to="/profil"
+          to="/profile"
           class="block text-sm px-2 py-4 text-gray-300 hover:bg-[#e63380] transition duration-700"
-          >Profil</router-link
+          >Profile</router-link
         >
       </li>
     </ul>

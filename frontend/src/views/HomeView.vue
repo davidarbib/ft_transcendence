@@ -1,19 +1,18 @@
 <script setup lang="ts">
-import LockClosedIcon from "@heroicons/vue/solid";
-import Title from "@/components/TitleMax.vue";
-import MusicLoop from "../components/MusicLoop.vue";
+import Title from "@/components/TitleMaxComponent.vue";
+import MusicLoop from "../components/MusicLoopComponent.vue";
 </script>
 
 <template>
   <div class="login-section">
     <div class="logo"><Title /></div>
     <div class="sound"><MusicLoop /></div>
-    <div class="connect-with-discord" @click="tryLogin">
+    <div class="connect-with-discord">
       <a href="http://localhost:8090/auth/discordLogin" class="primary-button">
         Connect with Discord
       </a>
     </div>
-    <div class="connect-with-42" @click="tryLogin">
+    <div class="connect-with-42">
       <a href="http://localhost:8090/auth/login" class="b42-submit">
         Connect with 42
       </a>

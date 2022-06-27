@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import NavbarItem from "@/components/NavbarItem.vue";
-import Channel from "@/components/Channel.vue";
-import PubChannel from "@/components/PubChannel.vue";
+import NavbarItem from "@/components/NavbarItemComponent.vue";
+import Channel from "@/components/ChannelComponent.vue";
+import PubChannel from "@/components/PubChannelComponent.vue";
 import messages from "@/assets/msg_body_test.json";
 </script>
 
@@ -17,6 +17,7 @@ import messages from "@/assets/msg_body_test.json";
       <div
         class="message bg-black bg-opacity-20 w-3/4 mx-2 rounded p-2"
         v-for="message in messages"
+        :key="message.id"
       >
         <p class="underline-offset-auto">
           <span class="sender text-[#e63380] font-bold">
@@ -47,8 +48,8 @@ import messages from "@/assets/msg_body_test.json";
   display: grid;
   grid-template-columns: 20% 60% 20%;
   grid-template-rows: 10% 80% 10%;
-  grid-column-gap: 0px;
-  grid-row-gap: 0px;
+  grid-column-gap: 0;
+  grid-row-gap: 0;
 
   .navbar-item {
     grid-area: 1 / 1 / 2 / 4;
