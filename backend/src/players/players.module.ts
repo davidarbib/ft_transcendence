@@ -8,7 +8,6 @@ import { MatchesModule } from 'src/matches/matches.module';
 @Module({
   imports: [
     UsersModule,
-    MatchesModule,
   ],
   controllers: [PlayersController],
   providers: [

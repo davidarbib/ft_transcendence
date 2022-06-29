@@ -93,12 +93,12 @@ export class Game
 
         if (p1Win)
         {
-            this.notifyGameFinished(this.state.player1.id);
+            this.notifyGameFinished(this.state.player1.id, this.state.player2.id);
             return false;
         }
         if (p2Win)
         {
-            this.notifyGameFinished(this.state.player2.id);
+            this.notifyGameFinished(this.state.player2.id, this.state.player2.id);
             return false;
         }
         
@@ -282,11 +282,11 @@ export class Game
         );
     }
 
-    private notifyGameFinished(winnerId: string)
+    private notifyGameFinished(winnerId: string, loserId: string)
     {
         this.emitter.emit(
             'game_finished',
-            new GameFinishEvent(this.state.id, { winnerId }),
+            new GameFinishEvent(this.state.id, { winnerId, loserId }),
         );
     }
 
