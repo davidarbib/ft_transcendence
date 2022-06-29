@@ -23,6 +23,7 @@ let is2faEnabled = ref(userStore.user.twoFactorEnabled);
 let pseudo = ref(userStore.user.username);
 const file = ref<File | null>();
 const form = ref<HTMLFormElement>();
+axios.defaults.withCredentials = true;
 
 function onFileChanged($event: Event) {
   const target = $event.target as HTMLInputElement;
@@ -76,7 +77,8 @@ const activate2fa = () => {
     .then((response) => {
       qrCode.value = response.data;
     })
-    .catch(() => {
+    .catch((error) => {
+      console.log(error);
       error2fa.value = true;
       success2fa.value = false;
       notifyMessage.value = "Unable to generate QR code";
