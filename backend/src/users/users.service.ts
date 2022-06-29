@@ -3,7 +3,6 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User, UserStatus } from './entities/user.entity';
 import { myDataSource } from 'src/app-data-source';
-import { Repository } from 'typeorm';
 
 @Injectable()
 export class UsersService {

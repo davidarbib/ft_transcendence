@@ -10,14 +10,25 @@ export class Vector2D
     { }
 }
 
-function getMatrix(v: Vector2D): Matrix
+export function getMatrix(v: Vector2D): Matrix
 {
     return new Matrix([[v.x, v.y]]);
 }
 
-function getVector(m: Matrix): Vector2D
+export function getVector(m: Matrix): Vector2D
 {
     return new Vector2D(m[0][0], m[0][1]);
+}
+
+export function scale(v: Vector2D, scalar: number): Vector2D
+{
+    return new Vector2D(v.x * scalar, v.y * scalar);
+}
+
+export function rounded(v: Vector2D, precision: number): Vector2D
+{
+    let factor = Math.pow(10, precision);
+    return new Vector2D(Math.round(v.x * factor), Math.round(v.y * factor));
 }
 
 export function getMagnitude(v: Vector2D) : number
@@ -34,8 +45,8 @@ export function getMagnitude(v: Vector2D) : number
 */
 export function normalize(v: Vector2D) : Vector2D
 {
-    let normalizedV: Vector2D;
-    let magnitude: number = this.getMagnitude(v);
+    let normalizedV: Vector2D = new Vector2D(0, 0);
+    let magnitude: number = getMagnitude(v);
     normalizedV.x = v.x / magnitude;
     normalizedV.y = v.y / magnitude;
     return normalizedV;
@@ -57,7 +68,7 @@ export function rotate(v: Vector2D, angle: number): Vector2D
         [[Math.cos(angle), -Math.sin(angle)],
         [Math.sin(angle), Math.cos(angle)]]
     )
-    let resM = getMatrix(v).multiply(rotM); 
+    let resM = getMatrix(v).multiply(rotM);
     return getVector(resM);
 }
 
@@ -70,7 +81,7 @@ export function getReflectedVector(v: Vector2D, normal: Vector2D): Vector2D
 {
     let reflect: Vector2D;
 
-    let incidentAngle = getAngle(this.invert(v), normal);
+    let incidentAngle = getAngle(invert(v), normal);
     reflect = rotate(v, -incidentAngle);
     return reflect;
 }

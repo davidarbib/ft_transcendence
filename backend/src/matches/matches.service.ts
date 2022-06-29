@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { myDataSource } from 'src/app-data-source';
 import { Repository } from 'typeorm';
 import { Match } from 'src/matches/entities/match.entity';
 import { Player } from 'src/players/entities/player.entity';
@@ -6,7 +7,9 @@ import { Player } from 'src/players/entities/player.entity';
 @Injectable()
 export class MatchesService {
   constructor (private matchRepo : Repository<Match>)
-  {}
+  {
+    this.matchRepo = myDataSource.getRepository(Match);
+  }
 
   create() : Promise<Match>
   {

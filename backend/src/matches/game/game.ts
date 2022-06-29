@@ -1,5 +1,5 @@
 import { GameState, PowerUp, PlayerState, BallState } from "./gameState";
-import { Vector2D, getAngle, normalize, getReflectedVector } from "./vector.utils"
+import { Vector2D, normalize, getReflectedVector, invert } from "./vector.utils"
 import * as param from "./constants";
 import { initialize } from "passport";
 import { EventEmitter2 } from "@nestjs/event-emitter";
@@ -133,9 +133,12 @@ export class Game
         this.state.id = ids.gameId;
 
         //TODO four-angle random direction 
+        
+        this.state.serviceSide = this.randomSide();
+
         const ballVector : Vector2D = {
-            x : 0,
-            y : 0
+            x : this.state.serviceSide,
+            y : this.randomSide(),
         }
 
         this.state.ball = {
@@ -215,6 +218,8 @@ export class Game
 
     private wallBounce(wall: Wall)
     {
+        this.state.ball.direction = invert(this.state.ball.direction);
+        /*
         let normal: Vector2D;
 
         if (wall == Wall.UP)
@@ -224,6 +229,7 @@ export class Game
         
         this.state.ball.direction = getReflectedVector(this.state.ball.direction, normal);
         this.state.ball.direction = normalize(this.state.ball.direction);
+        */
     }
 
     /*
@@ -256,7 +262,8 @@ export class Game
 
         if (this.state.ball.yPos > boundaries.up
             && this.state.ball.yPos < boundaries.down)
-            this.state.ball.direction = getReflectedVector(this.state.ball.direction, normal);
+            //this.state.ball.direction = getReflectedVector(this.state.ball.direction, normal);
+            this.state.ball.direction = invert(this.state.ball.direction);
         else
         {
             if (this.state.ball.yPos <= boundaries.up)    

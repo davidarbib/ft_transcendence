@@ -3,12 +3,15 @@ import { Repository } from 'typeorm';
 import { Player } from './entities/player.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Match } from 'src/matches/entities/match.entity';
+import { myDataSource } from 'src/app-data-source';
 
 @Injectable()
 export class PlayersService
 {
   constructor (private playerRepo: Repository<Player>)
-  { }
+  {
+    this.playerRepo = myDataSource.getRepository(Player);
+  }
 
   create(user: User, match: Match) : Promise<Player>
   {
