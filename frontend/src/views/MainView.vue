@@ -38,7 +38,7 @@ function matchMAKING() {
   socket.emit('matchMakingList', {user :userStore.user},()  => {})
   socket.emit('matchmaking'), {}, (response) =>{
     if (response == true)
-      console.log("yes c ok");
+      console.log("yes c ok"); // lancer jeu pour les deux user
   }
 }
 const TogglePopup = (): void => {
@@ -52,6 +52,9 @@ const TogglePopup = (): void => {
     matchMAKING();
   }
   popupTriggers.value = !popupTriggers.value;
+  if ( !popupTriggers.value) 
+  socket.emit('stopmatchMakingList', {user : userStore.user}, () => {})
+
 };
 
 onMounted(() => {
@@ -81,7 +84,7 @@ onMounted(() => {
           <h1>Searching for a game...</h1>
           <h2 class="text-center">{{ formattedElapsedTime }}</h2>
           <button class="popup-close secondary-button" @click="TogglePopup()">
-            CANCEL QUEUE
+            CANCEL QUEUE 
           </button>
         </div>
       </div>

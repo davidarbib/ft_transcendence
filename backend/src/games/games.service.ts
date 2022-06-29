@@ -27,14 +27,19 @@ export class GamesService {
   }
   userStopWaiting(user:User)
   {
-    const index =this.userWhoWaitMatch.findIndex(this.userWhoWaitMatch[user.id]);
-    this.userWhoWaitMatch.splice(index);
+    console.log(this.userWhoWaitMatch.length);
+    console.log("lol");
+    let index:number = 0;
+    this.userWhoWaitMatch.forEach(element => {
+      if (element.id == user.id) {
+        this.userWhoWaitMatch.splice(index);
+        return;
+      }
+      index++;   
+    } )
   }
   async matchmaking()
   {
-    //setInterval 
-      while (1)
-      {
         if (this.userWhoWaitMatch.length >= 2)
         {
           this.create(this.userWhoWaitMatch[0], this.userWhoWaitMatch[1]);
@@ -42,7 +47,6 @@ export class GamesService {
           this.userWhoWaitMatch.splice(0);
           return true; 
         }
-      }
   }
 
   async findOne(id: string) {
