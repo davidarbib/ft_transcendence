@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import { ref, watch } from "vue";
+import axios from "axios";
 
 export const useUserStore = defineStore("user", () => {
   const user = ref({
@@ -19,6 +20,16 @@ export const useUserStore = defineStore("user", () => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     user.value = JSON.parse(localStorage.getItem("user"));
+  } else {
+    axios.defaults.withCredentials = true;
+    axios
+      .get("http://localhost:8090/auth/current")
+      .then((response) => {
+        user.value = response.data;
+      })
+      .catch(() => {
+        console.log("Error");
+      });
   }
 
   watch(
