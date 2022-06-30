@@ -1,18 +1,21 @@
 <script setup lang="ts">
-import NavbarItem from "@/components/NavbarItem.vue";
-import Contact from "@/components/Contact.vue";
-import Title from "@/components/Title.vue";
+import NavbarItem from "@/components/NavbarItemComponent.vue";
+import Contact from "@/components/ContactComponent.vue";
+import Title from "@/components/TitleComponent.vue";
 import { ref, onMounted } from "vue";
 import { computed } from "@vue/reactivity";
 import { apiStore } from "@/stores/api";
 import { useUserStore } from "@/stores/auth";
 import axios from "axios";
+import { io } from "socket.io-client";
+const  socket = io('http://localhost:8090');
 
 let game_mode = ref("default");
 let popupTriggers = ref(false);
 let elapsedTimeS = ref(0);
 let elapsedTimeM = ref(0);
 let timer = ref();
+const bool_match = ref(0);
 const api = apiStore();
 const userStore = useUserStore();
 
@@ -21,8 +24,8 @@ const formattedElapsedTime = computed(() => {
     elapsedTimeS.value = 0;
     elapsedTimeM.value++;
   }
-  let second = elapsedTimeS.value.toString();
-  let minute = elapsedTimeM.value.toString();
+  let second: string;
+  let minute: string;
   if (elapsedTimeS.value < 10) second = "0" + elapsedTimeS.value.toString();
   else second = elapsedTimeS.value.toString();
   if (elapsedTimeM.value < 10) minute = "0" + elapsedTimeM.value.toString();
@@ -30,6 +33,14 @@ const formattedElapsedTime = computed(() => {
   return minute + ":" + second;
 });
 
+function matchMAKING() {
+  console.log("ok");
+  socket.emit('matchMakingList', {user :userStore.user},()  => {})
+  socket.emit('matchmaking'), {}, (response) =>{
+    if (response == true)
+      console.log("yes c ok"); // lancer jeu pour les deux user
+  }
+}
 const TogglePopup = (): void => {
   if (!popupTriggers.value) {
     clearInterval(timer.value);
@@ -38,8 +49,12 @@ const TogglePopup = (): void => {
     timer.value = setInterval(() => {
       elapsedTimeS.value += 1;
     }, 1000);
+    matchMAKING();
   }
   popupTriggers.value = !popupTriggers.value;
+  if ( !popupTriggers.value) 
+  socket.emit('stopmatchMakingList', {user : userStore.user}, () => {})
+
 };
 
 onMounted(() => {
@@ -48,10 +63,11 @@ onMounted(() => {
     .get(`${api.url}/auth/current`)
     .then((response) => {
       userStore.user = response.data;
+      console.log(response.data);
       console.log(userStore.user);
     })
-    .catch((error) => {
-      console.log(error);
+    .catch(() => {
+      console.log("Error");
     });
 });
 </script>
@@ -68,12 +84,12 @@ onMounted(() => {
           <h1>Searching for a game...</h1>
           <h2 class="text-center">{{ formattedElapsedTime }}</h2>
           <button class="popup-close secondary-button" @click="TogglePopup()">
-            CANCEL QUEUE
+            CANCEL QUEUE 
           </button>
         </div>
       </div>
       <select v-model="game_mode" id="b2" class="secondary-button">
-        <option value="plage">Plage</option>
+        <option value="beach">Beach</option>
         <option value="vice">Vice</option>
         <option value="monkey">Monkey</option>
         <option value="mario">Mario</option>
@@ -91,7 +107,7 @@ onMounted(() => {
   display: grid;
   grid-template-columns: 80% 20%;
   grid-template-rows: 10% 90%;
-  gap: 0% 0px;
+  gap: 0 0;
   grid-auto-flow: row;
   grid-template-areas:
     "navbar navbar"

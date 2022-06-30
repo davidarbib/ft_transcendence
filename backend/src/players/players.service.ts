@@ -13,13 +13,13 @@ export class PlayersService
     this.playerRepo = myDataSource.getRepository(Player);
   }
 
-  create(user: User, match: Match) : Promise<Player>
+  async create(user: User, match: Match)
   {
     let player: Player = new Player();
     
     player.userRef = user;
     player.matchRef = match;
-    return this.playerRepo.save(player);
+    return await myDataSource.getRepository(Player).save(player);
   }
 
   findAll() : Promise<Player[]>
@@ -34,17 +34,17 @@ export class PlayersService
     })
   }
 
-  incrementScore(player: Player) : string
+  async incrementScore(player: Player) 
   {
     player.score++;
-    this.playerRepo.save(player);
-    return 'this action increment score';
+    await myDataSource.getRepository(Player).save(player);
+    return  player.score;
   }
 
-  setWinner(player: Player) : string
+  async setWinner(player: Player) 
   {
     player.winner = true;
-    this.playerRepo.save(player);
-    return 'this action set the player as winner';
+    await myDataSource.getRepository(Player).save(player);
+    return player;
   }
 }

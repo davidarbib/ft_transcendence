@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
-import { isLoggedIn } from "@/utils/auth";
+import { is2faAuthenticated, is2faEnabled, isLoggedIn } from "@/utils/auth";
 
 import ChatView from "@/views/ChatView.vue";
 import ErrorView from "@/views/ErrorView.vue";
@@ -7,8 +7,9 @@ import GameModeView from "@/views/GameModeView.vue";
 import HomeView from "@/views/HomeView.vue";
 import MainView from "@/views/MainView.vue";
 import PongView from "@/views/PongView.vue";
-import ProfilView from "@/views/ProfilView.vue";
-import MyProfilView from "@/views/MyProfilView.vue";
+import ProfileView from "@/views/ProfilView.vue";
+import MyProfileView from "@/views/MyProfilView.vue";
+import Auth2faView from "@/views/Auth2faView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -18,8 +19,8 @@ const router = createRouter({
       name: "home",
       component: HomeView,
       meta: {
-        allowAnonymous: true
-      }
+        allowAnonymous: true,
+      },
     },
     {
       path: "/main",
@@ -37,15 +38,15 @@ const router = createRouter({
       component: PongView,
     },
     {
-      path: "/myprofile",
-      name: "myprofile",
-      component: MyProfilView,
+      path: "/my_profile",
+      name: "my_profile",
+      component: MyProfileView,
     },
     {
-      path: "/profil/:pseudo",
-      name: "profil",
-      component: ProfilView,
-      props: true
+      path: "/profile/:pseudo",
+      name: "profile",
+      component: ProfileView,
+      props: true,
     },
     {
       path: "/mode",
@@ -53,28 +54,33 @@ const router = createRouter({
       component: GameModeView,
     },
     {
+      path: "/auth2fa",
+      name: "auth2fa",
+      component: Auth2faView,
+      meta: {
+        allowAnonymous: true,
+      },
+    },
+    {
       path: "/:catchAll(.*)",
       name: "error",
       component: ErrorView,
       meta: {
-        allowAnonymous: true
-      }
-    }
-  ]
-})
+        allowAnonymous: true,
+      },
+    },
+  ],
+});
 
 router.beforeEach((to, from, next) => {
-  if (to.name == 'home' && isLoggedIn()) {
-    next({ path: '/main' })
-  }
-  else if (!to.meta.allowAnonymous && !isLoggedIn()) {
-    next({
-      path: '/',
-    })
-  }
-  else {
-    next()
-  }
-})
+  is2faEnabled();
+  is2faAuthenticated();
+  if (to.name == "home" && isLoggedIn()) {
+    if (is2faEnabled() && !is2faAuthenticated()) next({ path: "auth2fa" });
+    else next({ path: "/main" });
+  } else if (!to.meta.allowAnonymous && !isLoggedIn()) {
+    next({ path: "/" });
+  } else next();
+});
 
 export default router;

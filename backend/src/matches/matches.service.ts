@@ -3,6 +3,7 @@ import { myDataSource } from 'src/app-data-source';
 import { Repository } from 'typeorm';
 import { Match } from 'src/matches/entities/match.entity';
 import { Player } from 'src/players/entities/player.entity';
+import { myDataSource } from 'src/app-data-source';
 
 @Injectable()
 export class MatchesService {
@@ -11,20 +12,18 @@ export class MatchesService {
     this.matchRepo = myDataSource.getRepository(Match);
   }
 
-  create() : Promise<Match>
+  async create()
   {
     let match : Match = new Match();
-    return this.matchRepo.save(match);
+    return await myDataSource.getRepository(Match).save(match);
   }
 
-  init(match: Match, player1 : Player, player2: Player) : string
+  async init(match: Match, player1 : Player, player2: Player)
   {
-    match.players.push(player1);
-    match.players.push(player2);
+    //match.players.push(player1);
+    //match.players.push(player2);
     match.active = true;
-    this.matchRepo.save(match);
-
-    return 'This action adds a new match';
+    return await myDataSource.getRepository(Match).save(match);
   }
 
   findAllFinished() : Promise<Match[]>
@@ -41,10 +40,11 @@ export class MatchesService {
     });
   }
 
-  finish(match: Match) : string
+
+
+  async finish(match: Match) 
   {
     match.active = false;
-    this.matchRepo.save(match);
-    return 'this action set the match as finished';
+    return await myDataSource.getRepository(Match).save(match);
   }
 }

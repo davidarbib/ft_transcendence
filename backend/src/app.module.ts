@@ -14,6 +14,8 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { GamesModule } from './games/games.module';
+
 
 let envPath = 'src/.env';
 
