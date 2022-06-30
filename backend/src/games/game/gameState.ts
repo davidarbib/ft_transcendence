@@ -17,6 +17,7 @@ export class BallState
 export class PlayerState
 {
     public id: string;
+    public isP1: boolean;
     public xPos: number;
     public yPos: number;
     public size: number;

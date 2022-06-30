@@ -151,6 +151,7 @@ export class Game
 
         this.state.player1 = {
             id: ids.playerOneId, 
+            isP1: true,
             xPos: param.P1PADX,
             yPos: param.PADY,
             size: param.PADSIZE,
@@ -162,6 +163,7 @@ export class Game
 
         this.state.player2 = {
             id: ids.playerTwoId, 
+            isP1: false,
             xPos: param.P2PADX,
             yPos: param.PADY,
             size: param.PADSIZE,
@@ -274,11 +276,11 @@ export class Game
         this.state.ball.direction = normalize(this.state.ball.direction);
     }
 
-    private notifyScore(playerId: string)
+    private notifyScore(playerId: string, isP1: boolean)
     {
         this.emitter.emit(
             'score',
-            new ScoreEvent(playerId, {}),
+            new ScoreEvent(playerId, isP1),
         );
     }
 
@@ -286,7 +288,7 @@ export class Game
     {
         this.emitter.emit(
             'game_finished',
-            new GameFinishEvent(this.state.id, { winnerId, loserId }),
+            new GameFinishEvent(this.state.id, winnerId, loserId),
         );
     }
 
@@ -310,7 +312,7 @@ export class Game
 
         player.score++;
 
-        this.notifyScore(player.id);
+        this.notifyScore(player.id, player.isP1);
         if (this.didPlayerWins(player))
             return true;
 

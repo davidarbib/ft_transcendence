@@ -40,8 +40,6 @@ export class MatchesService {
     });
   }
 
-
-
   async finish(match: Match) 
   {
     match.active = false;
