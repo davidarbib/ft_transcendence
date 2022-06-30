@@ -4,16 +4,14 @@ import Contact from "@/components/ContactComponent.vue";
 import Title from "@/components/TitleComponent.vue";
 import { ref } from "vue";
 import { computed } from "@vue/reactivity";
-import { apiStore } from "@/stores/api";
-import { io } from "socket.io-client";
+import { useUserStore } from "@/stores/auth";
 
 let game_mode = ref("default");
 let popupTriggers = ref(false);
 let elapsedTimeS = ref(0);
 let elapsedTimeM = ref(0);
 let timer = ref();
-const api = apiStore();
-const socket = io(api.url);
+const userStore = useUserStore();
 
 const formattedElapsedTime = computed(() => {
   if (elapsedTimeS.value > 59) {
@@ -43,7 +41,7 @@ const TogglePopup = (): void => {
 
 const startMatchmaking = () => {
   console.log("Matchmaking starting...");
-  socket.emit("Matchmaking");
+  userStore.gameSocket.emit("Matchmaking");
   TogglePopup();
 };
 </script>

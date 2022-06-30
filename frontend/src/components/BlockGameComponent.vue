@@ -16,16 +16,16 @@
 import { ref, onMounted } from "vue";
 
 let canvasRef = ref<HTMLCanvasElement | null>(null);
-let width = ref(500);
-let height = ref(500);
-let ballPosX = ref(width.value / 2 - 10);
-let ballPosY = ref(height.value / 2 - 10);
-let timestamp = Date.now();
-let dir = ref(4);
-let padAx = ref(30);
-let padAy = ref(height.value / 2 - 30);
-let padBx = ref(width.value - 40);
-let padBy = ref(height.value / 2 - 30);
+let width = ref<number>(500);
+let height = ref<number>(500);
+let ballPosX = ref<number>(width.value / 2 - 10);
+let ballPosY = ref<number>(height.value / 2 - 10);
+let timestamp: number = Date.now();
+let dir = ref<number>(4);
+let padAx = ref<number>(30);
+let padAy = ref<number>(height.value / 2 - 30);
+let padBx = ref<number>(width.value - 40);
+let padBy = ref<number>(height.value / 2 - 30);
 
 function draw_shape(x: number, y: number, width: number, height: number): void {
   const ctx = ref(canvasRef.value?.getContext("2d"));
