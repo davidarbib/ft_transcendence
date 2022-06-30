@@ -1,8 +1,8 @@
 <template>
-  <div class="game-section">
+  <div class="w-full text-center">
     <canvas
       tabindex="0"
-      id="pong"
+      class="inline"
       ref="canvasRef"
       :width="width"
       :height="height"
@@ -64,14 +64,3 @@ onMounted(() => {
   draw();
 });
 </script>
-
-<style scoped lang="scss">
-.game-section {
-  width: 100%;
-  text-align: center;
-
-  #pong {
-    display: inline;
-  }
-}
-</style>
