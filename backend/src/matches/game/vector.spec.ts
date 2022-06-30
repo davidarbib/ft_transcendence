@@ -4,7 +4,6 @@ import {
     rounded,
     getAngle,
     invert,
-    rotate,
 } from './vector.utils';
 
 function zoom(r: number, p: number)
@@ -72,14 +71,4 @@ test('invert (0, 1)', () => {
 
 test('invert (1, 1)', () => {
     expect(invert(vecToInvert3)).toEqual(vecInverted3);
-})
-
-/*
-** rotate
-*/
-let vecToRotate : Vector2D = new Vector2D(1, 0);
-let rotAngle : number = Math.PI / 2;
-let vecRotated : Vector2D = new Vector2D(0, 1);
-test('rotate (1, 0)', () => {
-    expect(rotate(vecToRotate, rotAngle)).toEqual(vecRotated);
 })
