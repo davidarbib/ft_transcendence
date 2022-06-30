@@ -2,11 +2,10 @@
 import NavbarItem from "@/components/NavbarItemComponent.vue";
 import Contact from "@/components/ContactComponent.vue";
 import Title from "@/components/TitleComponent.vue";
-import { ref, onMounted } from "vue";
+import { ref } from "vue";
 import { computed } from "@vue/reactivity";
 import { apiStore } from "@/stores/api";
-import { useUserStore } from "@/stores/auth";
-import axios from "axios";
+import { io } from "socket.io-client";
 
 let game_mode = ref("default");
 let popupTriggers = ref(false);
@@ -14,7 +13,7 @@ let elapsedTimeS = ref(0);
 let elapsedTimeM = ref(0);
 let timer = ref();
 const api = apiStore();
-const userStore = useUserStore();
+const socket = io(api.url);
 
 const formattedElapsedTime = computed(() => {
   if (elapsedTimeS.value > 59) {
@@ -41,13 +40,19 @@ const TogglePopup = (): void => {
   }
   popupTriggers.value = !popupTriggers.value;
 };
+
+const startMatchmaking = () => {
+  console.log("Matchmaking starting...");
+  socket.emit("Matchmaking");
+  TogglePopup();
+};
 </script>
 
 <template>
   <div class="main-section">
     <div class="game">
       <div id="title"><Title /></div>
-      <div class="secondary-button" id="b1" @click="TogglePopup()">
+      <div class="secondary-button" id="b1" @click="startMatchmaking">
         Quick game
       </div>
       <div class="popup" v-if="popupTriggers">
