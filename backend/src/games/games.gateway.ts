@@ -11,6 +11,7 @@ import { User } from 'src/users/entities/user.entity';
 import { Player } from 'src/players/entities/player.entity';
 import { PlayersService } from 'src/players/players.service';
 import { ScoreEvent, GameFinishEvent} from 'src/games/game/game.event';
+import { UsersService } from 'src/users/users.service';
 
 @WebSocketGateway()
 export class GamesGateway {
@@ -18,35 +19,44 @@ export class GamesGateway {
   constructor
   (
     private readonly gamesService: GamesService,
-    public readonly playerService : PlayersService,
-    public readonly matchesService : MatchesService,
+    private readonly playerService : PlayersService,
+    private readonly matchesService : MatchesService,
   )
   { }
 
   @SubscribeMessage('createGame')
-  async create(@MessageBody('player1') user: User, @MessageBody('player2') user1: User) {
-  
-   return this.gamesService.create( user, user1);
+  async create
+  (
+    @MessageBody('player1') user: User,
+    @MessageBody('player2') user1: User
+  )
+  {
+   return this.gamesService.create(user, user1);
   }
 
   @SubscribeMessage('matchMakingList')
   userWaiting(@MessageBody('user') usr:User) {
-    return this.gamesService.userWaiting(usr);
+    this.gamesService.userWaiting(usr);
+    return this.gamesService.matchmaking();
   }
 
   @SubscribeMessage('stopmatchMakingList')
   userStopWaiting(@MessageBody('user') usr:User) {
     return this.gamesService.userStopWaiting(usr);
   }
-/*
+
+  /*
   @SubscribeMessage('findAllGames')
   findAll() {
     return this.gamesService.findAll();
   }*/
+
+  /*
   @SubscribeMessage('matchmaking')
   async matchmaking() {
     return  await this.gamesService.matchmaking()
   }
+  */
 
   @SubscribeMessage('ready')
   async ready(@MessageBody('playerId') user: User, @MessageBody('player2') user1: User) {
@@ -58,6 +68,7 @@ export class GamesGateway {
   async findOne(@MessageBody() id: string) {
     return await this.gamesService.findOne(id);
   }
+
 /*
   private notifyScore(playerId: string)
     {
@@ -74,9 +85,9 @@ export class GamesGateway {
             new GameFinishEvent(this.state.id, { winnerId }),
         );
     }
-    */
+*/
 
-  @OnEvent('score' , {async :true})
+  @OnEvent('score' , {async: true})
   async handlePoint(payload: ScoreEvent)
   {
     const player = await myDataSource.getRepository(Player).findOne({where : { id : payload.playerId}})
@@ -84,12 +95,12 @@ export class GamesGateway {
     //socket.emit('score', payload.p1);
   }
 
-  @OnEvent('game_finished' , {async :true} )
+  @OnEvent('game_finished' , {async: true} )
   async handlefinishGame(payload: GameFinishEvent, @ConnectedSocket() socket: Socket)
   {
-    const match = await myDataSource.getRepository(Match).findOne({ where :{ id:payload.}});
+    const match = await this.matchesService.findOne(payload.gameId);
     this.matchesService.finish(match);
-    const player = await myDataSource.getRepository(Player).findOne({where :{ id: payload.winnerId}});
+    const player = await this.playerService.findOne(payload.winnerId);
     this.playerService.setWinner(player);
     const usr:User = player.userRef;
     usr.winCount++;

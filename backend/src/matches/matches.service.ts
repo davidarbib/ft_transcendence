@@ -3,7 +3,6 @@ import { myDataSource } from 'src/app-data-source';
 import { Repository } from 'typeorm';
 import { Match } from 'src/matches/entities/match.entity';
 import { Player } from 'src/players/entities/player.entity';
-import { myDataSource } from 'src/app-data-source';
 
 @Injectable()
 export class MatchesService {
@@ -20,8 +19,8 @@ export class MatchesService {
 
   async init(match: Match, player1 : Player, player2: Player)
   {
-    //match.players.push(player1);
-    //match.players.push(player2);
+    match.players.push(player1);
+    match.players.push(player2);
     match.active = true;
     return await myDataSource.getRepository(Match).save(match);
   }
