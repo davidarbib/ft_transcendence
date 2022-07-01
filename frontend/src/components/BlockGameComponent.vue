@@ -4,8 +4,8 @@ import { ref, onMounted } from "vue";
 
 // const userStore = useUserStore();
 let canvasRef = ref<HTMLCanvasElement | null>(null);
-let width = ref<number>(500);
-let height = ref<number>(500);
+let width = ref<number>((window.innerWidth * 80) / 100);
+let height = ref<number>((window.innerHeight * 80) / 100);
 let ballPosX = ref<number>(width.value / 2 - 10);
 let ballPosY = ref<number>(height.value / 2 - 10);
 let padAx = ref<number>(30);
@@ -34,8 +34,15 @@ function draw(): void {
   }
 }
 
+const init_field = () => {
+  width.value = (window.innerWidth * 80) / 100;
+  height.value = (window.innerHeight * 80) / 100;
+  // draw(); need socket to work
+};
+
 onMounted(() => {
   // userStore.gameSocket.on("gameBegin", { gameId, playerId });
+  window.addEventListener("resize", init_field);
   draw();
 });
 </script>
