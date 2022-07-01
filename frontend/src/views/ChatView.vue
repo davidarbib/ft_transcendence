@@ -16,10 +16,10 @@ let messages: any = reactive([]);
 const messageText = ref("");
 const myInput = ref("");
 let userIn = ref([]);
-
+/*
 socket.on("message", (message) => {
   messages.push({ name: message.name.value });
-});
+});*/
 
 const getUserInChan = computed(() => {
   axios.defaults.withCredentials = true;
@@ -49,8 +49,8 @@ function sendMessage() {
   );
 }
 
-const showMessages = computed(() => {
-  socket.emit(
+function showMessages() {
+  socket.on(
     "findMessageFromChan",
     { name: getName.value },
     (response: any) => {
@@ -58,7 +58,7 @@ const showMessages = computed(() => {
     }
   );
   return messages.value;
-});
+};
 </script>
 
 <template>

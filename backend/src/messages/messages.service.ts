@@ -10,6 +10,7 @@ import { channel } from 'diagnostics_channel';
 import { Console } from 'console';
 import { ContactsService } from 'src/contacts/contacts.service';
 import {elementAt} from "rxjs";
+import socket from "@nestjs/platform-socket.io"
 
 
 @Injectable()
@@ -24,6 +25,7 @@ export class MessagesService {
   }
   async create(login:string ,name: string, createMessageDto: CreateMessageDto) {
 
+    console.log(name);
     const chan  = await myDataSource.getRepository(Channel).findOne({where : {name : name}})
     const usr  = await myDataSource.getRepository(User).findOne({where : {login : login}})
     //  if (!usr)
@@ -32,10 +34,8 @@ export class MessagesService {
     createMessageDto.time = new Date();
     createMessageDto.chan = chan; 
     createMessageDto.login = login; 
-    console.log(name);
    await myDataSource.getRepository(Channel).save(chan);
     const msg = await this.msgRepo.save(createMessageDto)
-    //  chan.messages.push(msg);
       await myDataSource.getRepository(Channel).save(chan);
 
     return msg;
@@ -57,6 +57,9 @@ export class MessagesService {
             arr.push(element);
       }
     });
+    socket.emit(
+
+    )
     return arr;
   }
 
@@ -64,12 +67,11 @@ export class MessagesService {
   {
     const chan = await myDataSource.getRepository(Channel).findOne({where : {name:name}})
     const usr = await myDataSource.getRepository(User).findOne({where : {login:login}})
-    const arr = await myDataSource.getRepository(ChanParticipant).find({relations : ['participants']});
-    console.log(arr);
-    //arr.forEach(element => {
-    //if (element.participant.login == login && element.chan.name == name)
-     // return ;
-  //})
+    const arr = await myDataSource.getRepository(ChanParticipant).find({relations : ['participant']});
+    arr.forEach(element => {
+  if (element.participant.login == login && element.chan.name == name)
+      return ;
+  })
     const chanPart : ChanParticipant = new ChanParticipant;
     chanPart.participant = usr;
     chanPart.chan = chan;
