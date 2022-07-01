@@ -1,15 +1,46 @@
 <script setup lang="ts">
 import channels from "@/assets/msg_test.json";
-import { ref } from "vue";
+import { io } from 'socket.io-client'
+import { ref, computed } from "vue";
+import axios from "axios";
+import socket from "@/views/ChatView.vue"
+import showMessages from "@/views/ChatView.vue"
+import {useUserStore} from "@/stores/auth";
 
+const userStore = useUserStore();
 const searched = ref("");
+const chan = ref([]);
+const messages = ref([]);
 const channelOptions = ref(false);
 const channelSelected = ref(-1);
+const channelName = ref('');
 
 function toggleChannelMenu(id: number) {
   channelSelected.value = id;
   channelOptions.value = !channelOptions.value;
 }
+
+const ourchan = computed(() => {
+ axios.defaults.withCredentials = true;
+  // eslint-disable-next-line vue/no-async-in-computed-properties
+  axios
+    .get(`http://localhost:8090/channels/chan/${userStore.user.login}`)
+    .then((response) => {
+      chan.value = response.data;
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+    return chan.value
+});
+
+function selectChannel(name: string) {
+  channelName.value = name;
+  console.log('selectChannel :' + channelName.value);
+  emit('name', channelName.value);
+}
+const emit = defineEmits(['name', 'msg']);
+
 </script>
 
 <template>
@@ -18,13 +49,14 @@ function toggleChannelMenu(id: number) {
     <br />
     <br />
     <div
+      @click="selectChannel(channel.name)"
       class="user-card rounded my-2 bg-black bg-opacity-10 font-medium hover:bg-opacity-30 transition duration-300"
-      v-for="channel in channels"
+      v-for="channel in ourchan"
       :key="channel.id"
     >
-      <div class="user-pseudo py-2">
+      <div class="user-pseudo py-2" >
         <p>{{ channel.name }}</p>
-        <p class="icon" @click="toggleChannelMenu(channel.id)">
+        <p class="icon" @click="toggleChannelMenu(channel.id, channel.name)">
           <i class="fa-solid fa-gear"></i>
         </p>
       </div>
@@ -32,7 +64,6 @@ function toggleChannelMenu(id: number) {
         <div v-if="channelOptions && channelSelected === channel.id">
           <ul class="list">
             <li><router-link to="/chat">leave</router-link></li>
-            <li><router-link to="/">rename</router-link></li>
           </ul>
         </div>
       </Transition>

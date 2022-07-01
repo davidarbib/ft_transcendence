@@ -48,7 +48,7 @@ const updatePseudo = () => {
   axios
     .patch(`${api.url}/users/${userStore.user.id}`, {
       id: userStore.user.id,
-      login: userStore.user.id,
+      login: userStore.user.login,
       username: pseudo.value,
       status: userStore.user.status,
       authToken: userStore.user.authToken,
@@ -241,17 +241,14 @@ const turnoff2fa = () => {
   display: grid;
   grid-template-columns: 25% 50% 25%;
   grid-template-rows: 10% 80% 10%;
-
   .contact-bar {
     grid-column-start: 3;
     margin-left: 1rem;
   }
-
   .navbar {
     grid-column: 1/4;
     grid-row-start: 1;
   }
-
   .historic {
     grid-column-start: 1;
     margin-right: 1rem;
@@ -268,7 +265,6 @@ const turnoff2fa = () => {
       display: flex;
       flex-direction: row;
       justify-content: space-around;
-
       .secondary-button {
         width: 20%;
         height: 40%;
@@ -284,7 +280,6 @@ const turnoff2fa = () => {
         top: -2rem;
       }
     }
-
     .stats {
       margin-bottom: 4rem;
       ul {
@@ -292,7 +287,6 @@ const turnoff2fa = () => {
         flex-direction: row;
         justify-content: center;
         text-align: center;
-
         .stats-value {
           color: rgb(161, 161, 161);
           font-size: 0.7rem;
@@ -304,12 +298,10 @@ const turnoff2fa = () => {
       flex-direction: row;
       justify-content: space-around;
       margin-bottom: 2rem;
-
       input {
         width: 80%;
         border-radius: 0.375rem;
       }
-
       p {
         cursor: pointer;
       }
@@ -358,3 +350,4 @@ const turnoff2fa = () => {
   }
 }
 </style>
+

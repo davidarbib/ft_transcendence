@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
+import * as express from 'express';
 
 import { ValidationPipe } from '@nestjs/common';
 
@@ -30,6 +31,7 @@ async function bootstrap()
     methods: "PUT, POST, GET, HEAD, DELETE, PATCH",
   });
 
+  app.use(express.static('public'));
   await app.listen(PORT, () => console.log(`Running on Port : ${PORT}`));
 }
 

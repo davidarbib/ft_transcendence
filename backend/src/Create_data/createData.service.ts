@@ -1,11 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { myDataSource } from 'src/app-data-source';
-import { Message } from 'src/messages/entities/message.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Channel, ChanType } from 'src/channels/entities/channel.entity';
 import { UserStatus } from 'src/users/entities/user.entity';
 import { Contact } from 'src/contacts/entities/contact.entity';
-import { ChanParticipant } from 'src/chan-participants/entities/chan-participant.entity';
+import { ChanParticipant, ChanPartStatus } from 'src/chan-participants/entities/chan-participant.entity';
 import { Match } from 'src/matches/entities/match.entity';
 import { Player } from 'src/players/entities/player.entity';
 
@@ -23,11 +22,7 @@ contact1.followedLogin = "faker"
 /*
 *   MSG
 */
-const msg : Message = new Message;
-msg.content =  'Message de base, afin de remplir la base de donnees';
-msg.time = new Date();
-await myDataSource.getRepository(Message).save(msg);
-console.log("my msg is created");
+
 /*
 *   USER
 */
@@ -71,7 +66,7 @@ console.log("users are created");
     const chanPart : ChanParticipant = new ChanParticipant;
     chanPart.participant = user;
     chanPart.chan = channel;
-    chanPart.admin = false;
+    chanPart.privilege = ChanPartStatus.NORMAL;
     chanPart.mute = true;
     chanPart.ban = false;
     await myDataSource.getRepository(ChanParticipant).save(chanPart);
@@ -79,7 +74,7 @@ console.log("users are created");
     const chanPart1 : ChanParticipant = new ChanParticipant;
     chanPart1.participant = faker;
     chanPart1.chan = channel;
-    chanPart1.admin = false;
+    chanPart1.privilege = ChanPartStatus.ADMIN;
     chanPart1.mute = false;
     chanPart1.ban = false;
     await myDataSource.getRepository(ChanParticipant).save(chanPart1);
@@ -106,11 +101,11 @@ console.log("users are created");
     contact.followedLogin = user1.login;
     await myDataSource.getRepository(Contact).save(contact);
 
-    const contact2 : Contact = new Contact;
+  /*  const contact2 : Contact = new Contact;
 
     contact.userLogin = faker.login;
     contact.followedLogin = user.login;
-    await myDataSource.getRepository(Contact).save(contact);
+    await myDataSource.getRepository(Contact).save(contact);*/
         return "data insert";
    }
 }
