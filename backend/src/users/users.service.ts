@@ -32,7 +32,6 @@ export class UsersService {
      } });
   }
 
-<<<<<<< HEAD
   async update(usr: User, updateUserDto: UpdateUserDto) {
     const {username} = updateUserDto;
     usr.username = username;
@@ -43,13 +42,6 @@ export class UsersService {
     const {doubleFA} = updatedto;
     usr.doubleFA = doubleFA;
     return  myDataSource.getRepository(User).save(usr);
-=======
-  async update(id:string, updateUserDto: UpdateUserDto) {
-    const usrToUpdate= await this.userRepo.findOneBy({id});
-    const {login} = updateUserDto;
-    usrToUpdate.login = login;
-    myDataSource.getRepository(User).save(usrToUpdate);
->>>>>>> master
   }
 
   async remove(id: string) {

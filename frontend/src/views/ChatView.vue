@@ -1,8 +1,7 @@
 <script setup lang="ts">
-<<<<<<< HEAD
-import NavbarItem from "@/components/NavbarItem.vue";
-import Channel from "@/components/Channel.vue";
-import PubChannel from "@/components/PubChannel.vue";
+import NavbarItem from "@/components/NavbarItemComponent.vue";
+import Channel from "@/components/ChannelComponent.vue";
+import PubChannel from "@/components/PubChannelComponent.vue";
 import { ref, reactive } from "vue";
 import { io } from "socket.io-client";
 import { useUserStore } from "@/stores/auth";
@@ -61,12 +60,6 @@ const showMessages = computed(() => {
   );
   return messages.value;
 });
-=======
-import NavbarItem from "@/components/NavbarItemComponent.vue";
-import Channel from "@/components/ChannelComponent.vue";
-import PubChannel from "@/components/PubChannelComponent.vue";
-import messages from "@/assets/msg_body_test.json";
->>>>>>> master
 </script>
 
 <template>
@@ -87,13 +80,8 @@ import messages from "@/assets/msg_body_test.json";
       <p class="text-2xl">{{ getName }}</p>
       <div
         class="message bg-black bg-opacity-20 w-3/4 mx-2 rounded p-2"
-<<<<<<< HEAD
         v-for="message in showMessages"
         :key="message"
-=======
-        v-for="message in messages"
-        :key="message.id"
->>>>>>> master
       >
         {{ message.login }} :
         {{ message.time }}
@@ -117,11 +105,7 @@ import messages from "@/assets/msg_body_test.json";
   height: 100vh;
   display: grid;
   grid-template-columns: 20% 60% 20%;
-<<<<<<< HEAD
   grid-template-rows: 10% repeat(2, 40%) 10%;
-=======
-  grid-template-rows: 10% 80% 10%;
->>>>>>> master
   grid-column-gap: 0;
   grid-row-gap: 0;
 

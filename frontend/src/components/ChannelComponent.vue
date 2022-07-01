@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import channels from "@/assets/msg_test.json";
 import { io } from 'socket.io-client'
 import { ref, computed } from "vue";
 import axios from "axios";
@@ -22,7 +21,6 @@ function toggleChannelMenu(id: number) {
 
 const ourchan = computed(() => {
  axios.defaults.withCredentials = true;
-  // eslint-disable-next-line vue/no-async-in-computed-properties
   axios
     .get(`http://localhost:8090/channels/chan/${userStore.user.login}`)
     .then((response) => {
@@ -54,15 +52,9 @@ const emit = defineEmits(['name', 'msg']);
       v-for="channel in ourchan"
       :key="channel.id"
     >
-<<<<<<< HEAD:frontend/src/components/Channel.vue
       <div class="user-pseudo py-2" >
         <p>{{ channel.name }}</p>
         <p class="icon" @click="toggleChannelMenu(channel.id, channel.name)">
-=======
-      <div class="user-pseudo py-2">
-        <p>{{ channel.name }}</p>
-        <p class="icon" @click="toggleChannelMenu(channel.id)">
->>>>>>> master:frontend/src/components/ChannelComponent.vue
           <i class="fa-solid fa-gear"></i>
         </p>
       </div>
@@ -70,10 +62,6 @@ const emit = defineEmits(['name', 'msg']);
         <div v-if="channelOptions && channelSelected === channel.id">
           <ul class="list">
             <li><router-link to="/chat">leave</router-link></li>
-<<<<<<< HEAD:frontend/src/components/Channel.vue
-=======
-            <li><router-link to="/">rename</router-link></li>
->>>>>>> master:frontend/src/components/ChannelComponent.vue
           </ul>
         </div>
       </Transition>

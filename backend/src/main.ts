@@ -26,19 +26,11 @@ async function bootstrap()
   SwaggerModule.setup('/', app, doc);
 
   app.enableCors({
-<<<<<<< HEAD
-    credentials:true,
-    origin:true
-  }) // pour connecter le back et le front !!!
-
-  app.use(express.static('public'));
-=======
     credentials: true,
     origin: true,
     methods: "PUT, POST, GET, HEAD, DELETE, PATCH",
   });
 
->>>>>>> master
   await app.listen(PORT, () => console.log(`Running on Port : ${PORT}`));
 }
 

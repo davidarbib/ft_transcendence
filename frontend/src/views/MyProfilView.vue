@@ -7,23 +7,6 @@ import axios from "axios";
 import { useUserStore } from "@/stores/auth";
 import { apiStore } from "@/stores/api";
 import { ref } from "vue";
-<<<<<<< HEAD
-const api = apiStore();
-const userStore = useUserStore();
-
-const router = useRouter();
-onMounted(() => {
-  if (userStore.user.id === "default") {
-    axios.defaults.withCredentials = true;
-    axios
-      .get(`${api.url}/auth/current`)
-      .then((response) => {
-        userStore.user = response.data;
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-=======
 import router from "@/router";
 import { logoutUser } from "@/utils/auth";
 
@@ -45,7 +28,6 @@ function onFileChanged($event: Event) {
   const target = $event.target as HTMLInputElement;
   if (target && target.files) {
     file.value = target.files[0];
->>>>>>> master
   }
 }
 
@@ -252,12 +234,8 @@ const turnoff2fa = () => {
 
 <style scoped lang="scss">
 @use "../assets/variables.scss" as v;
-<<<<<<< HEAD
-.profil-section {
-=======
 
 .profile-section {
->>>>>>> master
   display: grid;
   grid-template-columns: 25% 50% 25%;
   grid-template-rows: 10% 80% 10%;
@@ -273,23 +251,14 @@ const turnoff2fa = () => {
     grid-column-start: 1;
     margin-right: 1rem;
   }
-<<<<<<< HEAD
-  .profil-card {
-=======
 
   .profile-card {
->>>>>>> master
     grid-column-start: 2;
     grid-row: 2/4;
     border-radius: 0.375rem;
     margin-top: 3rem;
     display: flex;
     flex-direction: column;
-<<<<<<< HEAD
-    align-items: space-around;
-    // justify-content: baseline;
-=======
->>>>>>> master
     header {
       display: flex;
       flex-direction: row;
@@ -303,12 +272,8 @@ const turnoff2fa = () => {
         justify-content: center;
         align-items: center;
       }
-<<<<<<< HEAD
-      .profil-picture {
-=======
 
       .profile-picture {
->>>>>>> master
         position: relative;
         top: -2rem;
       }
