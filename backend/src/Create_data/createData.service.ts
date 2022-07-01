@@ -17,7 +17,7 @@ export class createDataService{
 
 const contact1 : Contact = new Contact;
 contact1.userLogin = "Whaou";
-contact1.followedLogin = "Faker"
+contact1.followedLogin = "faker"
 
 /*
 *   MSG

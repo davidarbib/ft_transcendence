@@ -1,14 +1,13 @@
 <script setup lang="ts">
-import NavbarItem from "@/components/NavbarItem.vue";
-import Contact from "../components/Contact.vue";
-import Historic from "@/components/Historic.vue";
+import NavbarItem from "@/components/NavbarItemComponent.vue";
+import Contact from "../components/ContactComponent.vue";
+import Historic from "@/components/HistoricComponent.vue";
+import NotificationMessage from "@/components/NotificationMessageComponent.vue";
 import axios from "axios";
 import { useUserStore } from "@/stores/auth";
 import { apiStore } from "@/stores/api";
-import { onMounted } from "vue";
-import type User from "@/stores/auth";
-import { useRouter } from "vue-router";
 import { ref } from "vue";
+<<<<<<< HEAD
 const api = apiStore();
 const userStore = useUserStore();
 
@@ -24,28 +23,163 @@ onMounted(() => {
       .catch((error) => {
         console.log(error);
       });
+=======
+import router from "@/router";
+import { logoutUser } from "@/utils/auth";
+
+const api = apiStore();
+const userStore = useUserStore();
+let openModal = ref(false);
+let qrCode = ref("");
+let auth2FaCode = ref("");
+let error2fa = ref(false);
+let success2fa = ref(false);
+let closeNotification = ref();
+let notifyMessage = ref("Success");
+let is2faEnabled = ref(userStore.user.twoFactorEnabled);
+let pseudo = ref(userStore.user.username);
+const file = ref<File | null>();
+const form = ref<HTMLFormElement>();
+
+function onFileChanged($event: Event) {
+  const target = $event.target as HTMLInputElement;
+  if (target && target.files) {
+    file.value = target.files[0];
+>>>>>>> master
   }
-});
+}
+
+async function saveImage() {
+  if (file.value) {
+    try {
+      // save file.value
+    } catch (error) {
+      console.error(error);
+      form.value?.reset();
+      file.value = null;
+    }
+  }
+}
+
+const updatePseudo = () => {
+  axios
+    .patch(`${api.url}/users/${userStore.user.id}`, {
+      id: userStore.user.id,
+      login: userStore.user.id,
+      username: pseudo.value,
+      status: userStore.user.status,
+      authToken: userStore.user.authToken,
+      avatarRef: userStore.user.avatarRef,
+      lossCount: userStore.user.lossCount,
+      winCount: userStore.user.winCount,
+      twoFactorEnabled: userStore.user.twoFactorEnabled,
+      twoFactorSecret: userStore.user.twoFactorSecret,
+    })
+    .then(() => {
+      userStore.user.username = pseudo.value;
+      error2fa.value = true;
+      success2fa.value = false;
+      notifyMessage.value = "SuccessFully updated username";
+    })
+    .catch(() => {
+      error2fa.value = true;
+      success2fa.value = false;
+      notifyMessage.value = "This username is invalid try another one....";
+    });
+};
+
+const activate2fa = () => {
+  axios
+    .post(`${api.url}/2fa/generate`)
+    .then((response) => {
+      qrCode.value = response.data;
+    })
+    .catch(() => {
+      error2fa.value = true;
+      success2fa.value = false;
+      notifyMessage.value = "Unable to generate QR code";
+    })
+    .then(() => {
+      openModal.value = !openModal.value;
+    });
+};
+
+const submit2faCode = () => {
+  closeNotification.value = setInterval(() => {
+    if (success2fa.value === true) success2fa.value = false;
+    else if (error2fa.value === true) error2fa.value = false;
+  }, 5000);
+  axios
+    .post(`${api.url}/2fa/turn-on`, {
+      code: auth2FaCode.value,
+    })
+    .then(() => {
+      error2fa.value = false;
+      success2fa.value = true;
+      notifyMessage.value = "You can log in with 2fa now";
+      userStore.user.twoFactorEnabled = true;
+      is2faEnabled.value = true;
+      openModal.value = !openModal.value;
+      logoutUser();
+      router.push({ name: "home" });
+    })
+    .catch(() => {
+      error2fa.value = true;
+      success2fa.value = false;
+      userStore.user.twoFactorEnabled = false;
+      is2faEnabled.value = true;
+      notifyMessage.value = "Please provide valid code";
+    });
+};
+
+const turnoff2fa = () => {
+  closeNotification.value = setInterval(() => {
+    if (success2fa.value === true) success2fa.value = false;
+    else if (error2fa.value === true) error2fa.value = false;
+  }, 5000);
+  axios
+    .post(`${api.url}/2fa/turn-off`)
+    .then(() => {
+      notifyMessage.value = "2fa turned off !";
+      error2fa.value = false;
+      success2fa.value = true;
+      userStore.user.twoFactorEnabled = false;
+      is2faEnabled.value = false;
+    })
+    .catch(() => {
+      error2fa.value = true;
+      success2fa.value = false;
+      notifyMessage.value = "Failure when trying to turn off 2fa";
+      userStore.user.twoFactorEnabled = false;
+      is2faEnabled.value = false;
+    });
+};
 </script>
 
 <template>
-  <div class="profil-section">
+  <div class="profile-section">
     <div class="navbar">
       <NavbarItem />
     </div>
+    <notification-message type="success-2fa" header="Success" v-if="success2fa"
+      ><p>{{ notifyMessage }}</p></notification-message
+    >
+    <notification-message type="error-2fa" header="Error" v-if="error2fa"
+      ><p>{{ notifyMessage }}</p></notification-message
+    >
     <div class="historic">
       <Historic />
     </div>
-    <div class="profil-card bg-black bg-opacity-10">
+    <div class="profile-card bg-black bg-opacity-10">
       <header>
         <div class="secondary-button">
-          <router-link to="/"> Update profile picture </router-link>
+          <p @click="saveImage">Update profile picture</p>
         </div>
-        <div class="profil-picture h-36 w-36">
-          <img src="@/assets/sphere_mini.png" alt="user profil picture" />
+        <div class="profile-picture h-36 w-36">
+          <img src="@/assets/sphere_mini.png" alt="user profile picture" />
         </div>
-        <div class="secondary-button">
-          <router-link to="/"> Edit username </router-link>
+        <div class="secondary-button" @click="updatePseudo">
+          <p>Edit username</p>
         </div>
       </header>
       <div class="stats">
@@ -69,13 +203,45 @@ onMounted(() => {
           <input
             id="pseudo"
             name="pseudo"
-            v-model="userStore.user.username"
+            v-model="pseudo"
             type="text"
-            autocomplete="current-password"
-            required="true"
             class="h-1/3 focus:outline-none border border-gray-300 px-1"
           />
         </div>
+        <div class="w-3/5 mx-auto my-4">
+          <input type="file" @change="onFileChanged($event)" accept="image/*" />
+        </div>
+        <div class="toggle-2fa">
+          <button
+            class="secondary-button"
+            @click="activate2fa"
+            v-if="!is2faEnabled"
+          >
+            Turn On 2fa
+          </button>
+          <button class="secondary-button" @click="turnoff2fa" v-else>
+            Turn Off 2fa
+          </button>
+        </div>
+        <Teleport to="body">
+          <div v-if="openModal" class="modal">
+            <div class="modal-inner p-32 rounded-md">
+              <img :src="qrCode" alt="Qr Code" />
+              <input
+                type="text"
+                placeholder="Type your code here"
+                v-model="auth2FaCode"
+                class="w-full text-center rounded-md my-6 py-4"
+              />
+              <p class="text-rose-500 mb-5" v-if="error2fa">
+                Error Wrong 2fa code
+              </p>
+              <button @click="submit2faCode" class="secondary-button w-full">
+                Submit
+              </button>
+            </div>
+          </div>
+        </Teleport>
       </div>
     </div>
     <div class="contact-bar">
@@ -86,7 +252,12 @@ onMounted(() => {
 
 <style scoped lang="scss">
 @use "../assets/variables.scss" as v;
+<<<<<<< HEAD
 .profil-section {
+=======
+
+.profile-section {
+>>>>>>> master
   display: grid;
   grid-template-columns: 25% 50% 25%;
   grid-template-rows: 10% 80% 10%;
@@ -102,15 +273,23 @@ onMounted(() => {
     grid-column-start: 1;
     margin-right: 1rem;
   }
+<<<<<<< HEAD
   .profil-card {
+=======
+
+  .profile-card {
+>>>>>>> master
     grid-column-start: 2;
     grid-row: 2/4;
     border-radius: 0.375rem;
     margin-top: 3rem;
     display: flex;
     flex-direction: column;
+<<<<<<< HEAD
     align-items: space-around;
     // justify-content: baseline;
+=======
+>>>>>>> master
     header {
       display: flex;
       flex-direction: row;
@@ -124,7 +303,12 @@ onMounted(() => {
         justify-content: center;
         align-items: center;
       }
+<<<<<<< HEAD
       .profil-picture {
+=======
+
+      .profile-picture {
+>>>>>>> master
         position: relative;
         top: -2rem;
       }
@@ -155,14 +339,47 @@ onMounted(() => {
         cursor: pointer;
       }
     }
+
+    .toggle-2fa {
+      width: 100%;
+      margin-top: 3rem;
+      button {
+        margin: auto;
+        width: 80%;
+      }
+    }
+
     .update-user-infos {
       width: 60%;
-      margin: auto;
-      margin-bottom: 1rem;
+      margin: auto auto 1rem;
     }
   }
   .hidden {
     opacity: 0;
+  }
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 999;
+  background-color: rgba(0, 0, 0, 0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .modal-inner {
+    background: linear-gradient(v.$primary, v.$dark-blue) fixed;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    input:focus {
+      outline: none;
+    }
   }
 }
 </style>

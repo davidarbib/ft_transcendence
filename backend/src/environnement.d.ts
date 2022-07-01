@@ -13,5 +13,7 @@ declare namespace NodeJS
         DISCORD_UID?: string;
         DISCORD_SECRET?: string;
         DISCORD_REDIRECT?: string;
+        TWOFA_KEY?: string;
+        TWOFA_IV?: string;
     }
 }

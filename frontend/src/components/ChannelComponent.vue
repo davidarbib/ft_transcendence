@@ -54,9 +54,15 @@ const emit = defineEmits(['name', 'msg']);
       v-for="channel in ourchan"
       :key="channel.id"
     >
+<<<<<<< HEAD:frontend/src/components/Channel.vue
       <div class="user-pseudo py-2" >
         <p>{{ channel.name }}</p>
         <p class="icon" @click="toggleChannelMenu(channel.id, channel.name)">
+=======
+      <div class="user-pseudo py-2">
+        <p>{{ channel.name }}</p>
+        <p class="icon" @click="toggleChannelMenu(channel.id)">
+>>>>>>> master:frontend/src/components/ChannelComponent.vue
           <i class="fa-solid fa-gear"></i>
         </p>
       </div>
@@ -64,6 +70,10 @@ const emit = defineEmits(['name', 'msg']);
         <div v-if="channelOptions && channelSelected === channel.id">
           <ul class="list">
             <li><router-link to="/chat">leave</router-link></li>
+<<<<<<< HEAD:frontend/src/components/Channel.vue
+=======
+            <li><router-link to="/">rename</router-link></li>
+>>>>>>> master:frontend/src/components/ChannelComponent.vue
           </ul>
         </div>
       </Transition>
@@ -83,7 +93,6 @@ const emit = defineEmits(['name', 'msg']);
     display: grid;
     -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none; /* Safari */
-    -khtml-user-select: none; /* Konqueror HTML */
     -moz-user-select: none; /* Old versions of Firefox */
     -ms-user-select: none; /* Internet Explorer/Edge */
     user-select: none; /* Non-prefixed version, currently */

@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import NavbarItem from "@/components/NavbarItem.vue";
-import Contact from "@/components/Contact.vue";
-import Title from "@/components/Title.vue";
+import NavbarItem from "@/components/NavbarItemComponent.vue";
+import Contact from "@/components/ContactComponent.vue";
+import Title from "@/components/TitleComponent.vue";
 import { ref, onMounted } from "vue";
 import { computed } from "@vue/reactivity";
 import { apiStore } from "@/stores/api";
@@ -21,8 +21,8 @@ const formattedElapsedTime = computed(() => {
     elapsedTimeS.value = 0;
     elapsedTimeM.value++;
   }
-  let second = elapsedTimeS.value.toString();
-  let minute = elapsedTimeM.value.toString();
+  let second: string;
+  let minute: string;
   if (elapsedTimeS.value < 10) second = "0" + elapsedTimeS.value.toString();
   else second = elapsedTimeS.value.toString();
   if (elapsedTimeM.value < 10) minute = "0" + elapsedTimeM.value.toString();
@@ -48,10 +48,11 @@ onMounted(() => {
     .get(`${api.url}/auth/current`)
     .then((response) => {
       userStore.user = response.data;
+      console.log(response.data);
       console.log(userStore.user);
     })
-    .catch((error) => {
-      console.log(error);
+    .catch(() => {
+      console.log("Error");
     });
 });
 </script>
@@ -65,7 +66,7 @@ onMounted(() => {
       </div>
       <div class="popup" v-if="popupTriggers">
         <div class="popup-inner bg-black bg-opacity-100">
-          <h1>Searching for a game...</h1>
+          <h1>In queue...</h1>
           <h2 class="text-center">{{ formattedElapsedTime }}</h2>
           <button class="popup-close secondary-button" @click="TogglePopup()">
             CANCEL QUEUE
@@ -73,7 +74,7 @@ onMounted(() => {
         </div>
       </div>
       <select v-model="game_mode" id="b2" class="secondary-button">
-        <option value="plage">Plage</option>
+        <option value="beach">Beach</option>
         <option value="vice">Vice</option>
         <option value="monkey">Monkey</option>
         <option value="mario">Mario</option>
@@ -91,7 +92,7 @@ onMounted(() => {
   display: grid;
   grid-template-columns: 80% 20%;
   grid-template-rows: 10% 90%;
-  gap: 0% 0px;
+  gap: 0 0;
   grid-auto-flow: row;
   grid-template-areas:
     "navbar navbar"

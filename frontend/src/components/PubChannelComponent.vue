@@ -1,4 +1,5 @@
 <script setup lang="ts">
+<<<<<<< HEAD:frontend/src/components/PubChannel.vue
 import ChatModal from '@/components/ChatModal.vue';
 import axios from "axios";
 import { io } from 'socket.io-client'
@@ -45,6 +46,10 @@ const allchanpriv = computed(() => {
 });
 
 const emit = defineEmits(['name']);
+=======
+import ChatModal from "@/components/ChatModalComponent.vue";
+import channels from "@/assets/msg_test.json";
+>>>>>>> master:frontend/src/components/PubChannelComponent.vue
 </script>
 
 <template>
@@ -120,7 +125,6 @@ const emit = defineEmits(['name']);
     display: grid;
     -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none; /* Safari */
-    -khtml-user-select: none; /* Konqueror HTML */
     -moz-user-select: none; /* Old versions of Firefox */
     -ms-user-select: none; /* Internet Explorer/Edge */
     user-select: none; /* Non-prefixed version, currently */

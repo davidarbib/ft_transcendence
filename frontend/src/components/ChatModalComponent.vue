@@ -27,6 +27,7 @@ function createChannel() {
   <Teleport to="body">
     <div v-if="open" class="modal">
       <div class="modal-inner">
+<<<<<<< HEAD:frontend/src/components/ChatModal.vue
         <div class=""><slot /></div>
         <input
           v-model="createChanName"
@@ -56,6 +57,29 @@ function createChannel() {
         <button @click="createChannel" class="valid primary-button">
           Create
         </button>
+=======
+        <slot />
+        <div class="input">
+          <input
+            id="email-address"
+            name="email"
+            type="email"
+            autocomplete="email"
+            class="w-full h-1/2 rounded-t-md focus:outline-none border border-gray-300"
+            placeholder="Email address"
+          />
+          <br />
+          <input
+            id="password"
+            name="password"
+            type="password"
+            autocomplete="current-password"
+            class="w-full h-1/2 rounded-b-md focus:outline-none border border-gray-300"
+            placeholder="Password"
+          />
+        </div>
+        <button @click="open = false" class="primary-button"><slot /></button>
+>>>>>>> master:frontend/src/components/ChatModalComponent.vue
       </div>
     </div>
   </Teleport>
