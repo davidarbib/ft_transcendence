@@ -11,14 +11,15 @@ import { Game } from 'src/games/game/game';
 
 @Injectable()
 export class GamesService {
-
   constructor
   (
     private readonly matchesService : MatchesService,
     private readonly playersService : PlayersService,
-    public games: {},
+    public games: Map<string, Game>,
   )
-  { }
+  {
+    games = new Map();
+  }
 
   userWhoWaitMatch : User[] = [];
 
@@ -44,18 +45,19 @@ export class GamesService {
         this.userWhoWaitMatch.splice(index);
         return;
       }
-      index++;   
+      index++;
     });
   }
 
-  async matchmaking()
+  async matchmaking() : Promise<Match | null>
   {
     if (this.userWhoWaitMatch.length >= 2) {
-      this.create(this.userWhoWaitMatch[0], this.userWhoWaitMatch[1]);
+      const match : Match = await this.create(this.userWhoWaitMatch[0], this.userWhoWaitMatch[1]);
       this.userWhoWaitMatch.splice(1);
       this.userWhoWaitMatch.splice(0);
-      return true;
+      return match;
     }
+    return null;
   }
 
   async findOne(id: string) {
@@ -66,4 +68,27 @@ export class GamesService {
       })
   }
 
+  gameExist(gameId: string) : boolean
+  {
+    return this.games.has(gameId);
+  }
+
+  getGame(gameId: string) : Game
+  {
+    return this.games[gameId];
+  }
+
+  createMMGame(gameId: string, playerOneId: string, playerTwoId: string)
+  {
+    let game : Game = new Game(
+      gameId,
+      playerOneId,
+      playerTwoId,
+      undefined,
+      undefined,
+      undefined,
+      undefined
+    );
+    this.games[gameId] = game;
+  }
 }

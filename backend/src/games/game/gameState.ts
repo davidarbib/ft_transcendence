@@ -25,6 +25,7 @@ export class PlayerState
     public powerUp: PowerUp;
     public handicap: number;
     public velocity: number;
+    public ready: boolean;
 }
 
 export class GameState

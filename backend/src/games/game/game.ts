@@ -62,6 +62,18 @@ export class Game
         );
     }
 
+    public setReady(playerId: string)
+    {
+        this.playerSelector(playerId).ready = true;
+    }
+
+    public arePlayersReady()
+    {
+        if (this.state.player1.ready && this.state.player2.ready)
+            return true;
+        return false;
+    }
+
     public getState()
     {
         return this.state;
@@ -93,16 +105,22 @@ export class Game
 
         if (p1Win)
         {
-            this.notifyGameFinished(this.state.player1.id, this.state.player2.id);
-            return false;
+            this.notifyGameFinished(
+                this.state.player1.id,
+                this.state.player2.id,
+                true);
+            return true;
         }
         if (p2Win)
         {
-            this.notifyGameFinished(this.state.player2.id, this.state.player2.id);
-            return false;
+            this.notifyGameFinished(
+                this.state.player2.id,
+                this.state.player1.id,
+                false);
+            return true;
         }
         
-        return true;
+        return false;
     }
     
     public movePad(playerId: string, cmd: PadCmd)
@@ -159,6 +177,7 @@ export class Game
             powerUp: PowerUp.NONE,
             handicap: options.p1Handicap,
             velocity: param.PADVELOCITY,
+            ready: false
         }
 
         this.state.player2 = {
@@ -171,6 +190,7 @@ export class Game
             powerUp: PowerUp.NONE,
             handicap: options.p2Handicap,
             velocity: param.PADVELOCITY,
+            ready: false
         }
     }
     
@@ -280,15 +300,15 @@ export class Game
     {
         this.emitter.emit(
             'score',
-            new ScoreEvent(playerId, isP1),
+            new ScoreEvent(this.state.id, playerId, isP1),
         );
     }
 
-    private notifyGameFinished(winnerId: string, loserId: string)
+    private notifyGameFinished(winnerId: string, loserId: string, playerOneWins: boolean)
     {
         this.emitter.emit(
             'game_finished',
-            new GameFinishEvent(this.state.id, winnerId, loserId),
+            new GameFinishEvent(this.state.id, winnerId, loserId, playerOneWins),
         );
     }
 
