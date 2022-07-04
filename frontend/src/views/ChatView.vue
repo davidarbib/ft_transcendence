@@ -9,7 +9,6 @@ import { computed } from "@vue/reactivity";
 import axios from "axios";
 
 const getName = ref("");
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 let message: { value: any };
 const userStore = useUserStore();
 const socket = io("http://localhost:8090");
@@ -22,7 +21,7 @@ socket.on("message", (message) => {
   messages.push({ name: message.name.value });
 });
 
-const getUserInChan = computed(() => {
+const getUserInChan = (() => {
   axios.defaults.withCredentials = true;
   axios
     .get(`http://localhost:8090/channels/${getName.value}`)
@@ -50,7 +49,7 @@ function sendMessage() {
   );
 }
 
-const showMessages = computed(() => {
+const showMessages = (() => {
   socket.emit(
     "findMessageFromChan",
     { name: getName.value },
@@ -60,6 +59,7 @@ const showMessages = computed(() => {
   );
   return messages.value;
 });
+
 </script>
 
 <template>

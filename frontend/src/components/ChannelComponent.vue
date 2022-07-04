@@ -1,9 +1,6 @@
 <script setup lang="ts">
-import { io } from "socket.io-client";
 import { ref, computed } from "vue";
 import axios from "axios";
-import socket from "@/views/ChatView.vue";
-import showMessages from "@/views/ChatView.vue";
 import { useUserStore } from "@/stores/auth";
 
 const userStore = useUserStore();
@@ -19,7 +16,7 @@ function toggleChannelMenu(id: number) {
   channelOptions.value = !channelOptions.value;
 }
 
-const ourChan = computed(() => {
+const ourChan = (() => {
   axios.defaults.withCredentials = true;
   axios
     .get(`http://localhost:8090/channels/chan/${userStore.user.login}`)
@@ -37,6 +34,14 @@ function selectChannel(name: string) {
   console.log("selectChannel :" + channelName.value);
   emit("name", channelName.value);
 }
+
+function leaveChan ()
+{
+  axios.defaults.withCredentials = true;
+  axios
+      .delete(`http://localhost:8090`)
+}
+
 const emit = defineEmits(["name", "msg"]);
 </script>
 
@@ -60,7 +65,7 @@ const emit = defineEmits(["name", "msg"]);
       <Transition name="slide-fade">
         <div v-if="channelOptions && channelSelected === channel.id">
           <ul class="list">
-            <li><router-link to="/chat">leave</router-link></li>
+            <li class="leave" @click="leaveChan">leave</li>
           </ul>
         </div>
       </Transition>
