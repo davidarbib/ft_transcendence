@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User, UserStatus } from './entities/user.entity';
-import { myDataSource } from 'src/app-data-source';
 import { Repository } from 'typeorm';
+import { myDataSource } from 'src/app-data-source';
 
 @Injectable()
 export class UsersService {
@@ -32,11 +32,17 @@ export class UsersService {
      } });
   }
 
-  async update(id:string, updateUserDto: UpdateUserDto) {
-    const usrToUpdate= await this.userRepo.findOneBy({id});
-    const {login} = updateUserDto;
-    usrToUpdate.login = login;
-    myDataSource.getRepository(User).save(usrToUpdate);
+  async update(usr: User, updateUserDto: UpdateUserDto) {
+    const {username} = updateUserDto;
+    usr.username = username;
+   return  myDataSource.getRepository(User).save(usr);
+  }
+
+  async dfa_update(usr:User, updatedto : UpdateUserDto)
+  {
+    const {doubleFA} = updatedto;
+    usr.doubleFA = doubleFA;
+    return  myDataSource.getRepository(User).save(usr);
   }
 
   async remove(id: string) {

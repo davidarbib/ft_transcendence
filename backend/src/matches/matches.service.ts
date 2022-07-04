@@ -1,26 +1,47 @@
 import { Injectable } from '@nestjs/common';
-import { CreateMatchDto } from './dto/create-match.dto';
-import { UpdateMatchDto } from './dto/update-match.dto';
+import { myDataSource } from 'src/app-data-source';
+import { Repository } from 'typeorm';
+import { Match } from 'src/matches/entities/match.entity';
+import { Player } from 'src/players/entities/player.entity';
 
 @Injectable()
 export class MatchesService {
-  create(createMatchDto: CreateMatchDto) {
-    return 'This action adds a new match';
+  constructor (private matchRepo : Repository<Match>)
+  {
+    this.matchRepo = myDataSource.getRepository(Match);
   }
 
-  findAll() {
-    return `This action returns all matches`;
+  async create()
+  {
+    let match : Match = new Match();
+    return await myDataSource.getRepository(Match).save(match);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} match`;
+  async init(match: Match, player1 : Player, player2: Player) : Promise <Match>
+  {
+    match.players.push(player1);
+    match.players.push(player2);
+    match.active = true;
+    return await myDataSource.getRepository(Match).save(match);
   }
 
-  update(id: number, updateMatchDto: UpdateMatchDto) {
-    return `This action updates a #${id} match`;
+  findAllFinished() : Promise<Match[]>
+  {
+    return this.matchRepo.find({
+      where: { active: true }
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} match`;
+  findOne(id: string) : Promise<Match> 
+  {
+    return this.matchRepo.findOne({
+      where: { id: id }
+    });
+  }
+
+  async finish(match: Match) 
+  {
+    match.active = false;
+    return await myDataSource.getRepository(Match).save(match);
   }
 }

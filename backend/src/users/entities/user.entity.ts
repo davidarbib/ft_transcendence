@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { Message } from "src/messages/entities/message.entity";
+import { Messages } from "src/messages/entities/message.entity";
 import { Player } from "src/players/entities/player.entity";
 import { ChanParticipant } from "src/chan-participants/entities/chan-participant.entity";
 import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
@@ -31,7 +31,8 @@ export class User extends BaseEntity
     @ApiProperty()
     @Column({
         type: "varchar",
-        nullable: false
+        nullable: false,
+        unique: true
     })
     username: string;
 
@@ -50,6 +51,13 @@ export class User extends BaseEntity
     })
     authToken: string;
 
+    @ApiProperty()
+    @Column({
+        type: "boolean",
+        default: false
+    })
+    doubleFA: boolean;
+    
     @ApiProperty()
     @Column({
         type : "varchar",
@@ -92,8 +100,8 @@ export class User extends BaseEntity
     })
     friend:User[];*/
 
-    @OneToMany(() => Message, message => message.author)
-    messages : Message[]
+    @OneToMany(() => Messages, message => message.author)
+    messages : Messages[]
 
     @OneToMany(() => Player, (player : Player) => player.userRef)
     games : Player[]

@@ -11,9 +11,10 @@ export class ContactsService {
     const newContact = new Contact;
     newContact.userLogin = contact.userLogin;
     newContact.followedLogin = contact.followedlogin; 
-    myDataSource.getRepository(Contact).save(newContact);
+    newContact.block = contact.block;
+    return myDataSource.getRepository(Contact).save(newContact);
   }
-
+  
   findAll() {
     return myDataSource.getRepository(Contact).find();
   }
@@ -23,22 +24,17 @@ export class ContactsService {
     return myDataSource.getRepository(Contact).findOneBy({id});
   }
 
-  async update(login:string, loginfollowed:string, block:boolean) {
+  async update(login:string, loginfollowed:string, blocked: UpdateContactDto) {
 
-    const usr = await myDataSource.getRepository(User).findOneBy({login});
-    const usrfollowed =await  myDataSource.getRepository(User).findOneBy({login:loginfollowed});
-    const test =await  Contact.findOne({where : {userLogin: usr.login, followedLogin: usrfollowed.login}})
-    test.block = block;
-    console.log(test);
-    myDataSource.getRepository(Contact).save(test);
-   // return `This action updates a #${id} contact`;
+    const test =await  Contact.findOne({where : {userLogin: login, followedLogin: loginfollowed}})
+    const {block} = blocked;
+    test.block= block;
+    return  myDataSource.getRepository(Contact).save(test);
   }
   
-  async block_bool(login:string, id:string)
+  async block_bool(login:string, followedlogin:string)
   {
-    const usr = await myDataSource.getRepository(User).findOne({where : {login}});
-    const followed = await myDataSource.getRepository(User).findOne({where : {login:id}});
-    const test =await  Contact.findOne({where : {userLogin: usr.login, followedLogin: followed.login}})
+    const test =await  Contact.findOne({where : {userLogin: login, followedLogin: followedlogin}})
     if (test.block == false)
       return false;
     return true;
@@ -47,11 +43,10 @@ export class ContactsService {
   async all_friend(login:string)
   {
     const lol = [];
-    const usr = await myDataSource.getRepository(User).findOne({where : {login}});
-    const test = await Contact.find({where : {userLogin: usr.login}});
+    const test = await Contact.find({where : {userLogin: login}});
     for( let elem of test)
     {
-      let lole =  await myDataSource.getRepository(User).findOne({where :{id: elem.followedLogin}});
+      const lole =  await myDataSource.getRepository(User).findOne({where :{login: elem.followedLogin}});
       lol.push(lole);
     }
     return lol;  
@@ -65,9 +60,7 @@ export class ContactsService {
 
   async removeByLogin(login:string, loginfollowed:string)
   {
-    const usr = await myDataSource.getRepository(User).findOne({where : {login:login}});
-    const friendToDelete = await myDataSource.getRepository(User).findOne({where : {login:loginfollowed}});
-    const frienshipToDelete = await Contact.findOne({where : {userLogin: usr.login, followedLogin: friendToDelete.login}})
-      friendToDelete.remove();  
+    const frienshipToDelete = await Contact.findOne({where : {userLogin: login, followedLogin: loginfollowed}})
+      frienshipToDelete.remove();  
     }
   }

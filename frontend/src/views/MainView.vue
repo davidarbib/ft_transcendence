@@ -5,13 +5,19 @@ import Title from "@/components/TitleComponent.vue";
 import { ref } from "vue";
 import { computed } from "@vue/reactivity";
 import { useUserStore } from "@/stores/auth";
+// import axios from "axios";
+import { io } from "socket.io-client";
+import { apiStore } from "@/stores/api";
 
 let game_mode = ref("default");
 let popupTriggers = ref(false);
 let elapsedTimeS = ref(0);
 let elapsedTimeM = ref(0);
 let timer = ref();
+// const bool_match = ref(0);
+const api = apiStore();
 const userStore = useUserStore();
+const socket = io(api.url);
 
 const formattedElapsedTime = computed(() => {
   if (elapsedTimeS.value > 59) {
@@ -27,6 +33,15 @@ const formattedElapsedTime = computed(() => {
   return minute + ":" + second;
 });
 
+function matchMAKING() {
+  console.log("ok");
+  socket.emit("matchMakingList", { user: userStore.user }, () => {});
+  socket.emit("matchmaking"),
+    {},
+    (response: never) => {
+      if (response == true) console.log("yes c ok"); // lancer jeu pour les deux user
+    };
+}
 const TogglePopup = (): void => {
   if (!popupTriggers.value) {
     clearInterval(timer.value);
@@ -35,8 +50,11 @@ const TogglePopup = (): void => {
     timer.value = setInterval(() => {
       elapsedTimeS.value += 1;
     }, 1000);
+    matchMAKING();
   }
   popupTriggers.value = !popupTriggers.value;
+  if (!popupTriggers.value)
+    socket.emit("stopmatchMakingList", { user: userStore.user }, () => {});
 };
 
 const startMatchmaking = () => {
