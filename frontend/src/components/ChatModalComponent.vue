@@ -6,12 +6,9 @@ const open = ref(false);
 const createChanName = ref("");
 const createChanPass = ref("");
 const chan_setting = ref("private");
-const emit = defineEmits(['response']);
+const emit = defineEmits(["response"]);
 
 function createChannel() {
-
-  emit('response', createChanName.value);
-  console.log('Toto');
   open.value = false;
   axios.defaults.withCredentials = true;
   axios
@@ -20,10 +17,11 @@ function createChannel() {
       type: chan_setting.value,
       password: createChanPass.value,
     })
+    .then(() => {
+      emit("response", createChanName.value);
+    })
     .catch((error) => console.log(error));
 }
-
-
 </script>
 
 <template>

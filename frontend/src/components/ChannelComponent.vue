@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { io } from 'socket.io-client'
+import { io } from "socket.io-client";
 import { ref, computed } from "vue";
 import axios from "axios";
-import socket from "@/views/ChatView.vue"
-import showMessages from "@/views/ChatView.vue"
-import {useUserStore} from "@/stores/auth";
+import socket from "@/views/ChatView.vue";
+import showMessages from "@/views/ChatView.vue";
+import { useUserStore } from "@/stores/auth";
 
 const userStore = useUserStore();
 const searched = ref("");
@@ -12,15 +12,15 @@ const chan = ref([]);
 const messages = ref([]);
 const channelOptions = ref(false);
 const channelSelected = ref(-1);
-const channelName = ref('');
+const channelName = ref("");
 
 function toggleChannelMenu(id: number) {
   channelSelected.value = id;
   channelOptions.value = !channelOptions.value;
 }
 
-const ourchan = computed(() => {
- axios.defaults.withCredentials = true;
+const ourChan = computed(() => {
+  axios.defaults.withCredentials = true;
   axios
     .get(`http://localhost:8090/channels/chan/${userStore.user.login}`)
     .then((response) => {
@@ -29,16 +29,15 @@ const ourchan = computed(() => {
     .catch((error) => {
       console.log(error);
     });
-    return chan.value
+  return chan.value;
 });
 
 function selectChannel(name: string) {
   channelName.value = name;
-  console.log('selectChannel :' + channelName.value);
-  emit('name', channelName.value);
+  console.log("selectChannel :" + channelName.value);
+  emit("name", channelName.value);
 }
-const emit = defineEmits(['name', 'msg']);
-
+const emit = defineEmits(["name", "msg"]);
 </script>
 
 <template>
@@ -49,10 +48,10 @@ const emit = defineEmits(['name', 'msg']);
     <div
       @click="selectChannel(channel.name)"
       class="user-card rounded my-2 bg-black bg-opacity-10 font-medium hover:bg-opacity-30 transition duration-300"
-      v-for="channel in ourchan"
+      v-for="channel in ourChan"
       :key="channel.id"
     >
-      <div class="user-pseudo py-2" >
+      <div class="user-pseudo py-2">
         <p>{{ channel.name }}</p>
         <p class="icon" @click="toggleChannelMenu(channel.id, channel.name)">
           <i class="fa-solid fa-gear"></i>

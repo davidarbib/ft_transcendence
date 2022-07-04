@@ -12,7 +12,6 @@ const userStore = useUserStore();
 const socket = io("http://localhost:8090");
 
 watch(childMsg, () => {
-  console.log("change");
   axios.defaults.withCredentials = true;
   axios
     .get(`http://localhost:8090/channels/chanpublic/${userStore.user.login}`)
