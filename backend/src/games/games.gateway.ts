@@ -77,7 +77,7 @@ export class GamesGateway {
    return this.gamesService.create(user, user1);
   }
 
-  @SubscribeMessage('matchMakingList')
+  @SubscribeMessage('joinMM')
   async userWaiting
   (
     @MessageBody('user') usr:User,
@@ -106,7 +106,7 @@ export class GamesGateway {
     };
   }
 
-  @SubscribeMessage('stopmatchMakingList')
+  @SubscribeMessage('quitMM')
   userStopWaiting(@MessageBody('user') usr:User) {
     return this.gamesService.userStopWaiting(usr);
   }
