@@ -33,9 +33,11 @@ const formattedElapsedTime = computed(() => {
   return minute + ":" + second;
 });
 
-function matchMAKING() {
+function matchMaking() {
   console.log("ok");
-  socket.emit("matchMakingList", { user: userStore.user }, () => {});
+  socket.emit("matchMakingList", { user: userStore.user }, () => {
+    console.log("DEBUG");
+  });
   socket.emit("matchmaking"),
     {},
     (response: never) => {
@@ -50,11 +52,13 @@ const TogglePopup = (): void => {
     timer.value = setInterval(() => {
       elapsedTimeS.value += 1;
     }, 1000);
-    matchMAKING();
+    matchMaking();
   }
   popupTriggers.value = !popupTriggers.value;
   if (!popupTriggers.value)
-    socket.emit("stopmatchMakingList", { user: userStore.user }, () => {});
+    socket.emit("stopmatchMakingList", { user: userStore.user }, () => {
+      console.log("FIX FOR TS ERRORS");
+    });
 };
 
 const startMatchmaking = () => {
