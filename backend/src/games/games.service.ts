@@ -8,6 +8,13 @@ import { PlayersService } from 'src/players/players.service';
 import { myDataSource } from 'src/app-data-source';
 import { Player } from 'src/players/entities/player.entity';
 import { Game } from 'src/games/game/game';
+import { Socket } from 'socket.io';
+
+export interface UserSocket
+{
+  user: User,
+  socket: Socket, 
+}
 
 @Injectable()
 export class GamesService {
@@ -21,7 +28,7 @@ export class GamesService {
     games = new Map();
   }
 
-  userWhoWaitMatch : User[] = [];
+  userWhoWaitMatch : UserSocket[] = [];
 
   async create(user: User, user1 :User) {
     const match = await this.matchesService.create();
@@ -30,18 +37,18 @@ export class GamesService {
     return await this.matchesService.init(match, player, player1);
   }
 
-  userWaiting(user:User)
+  userWaiting(user:User, socket: Socket)
   {
-    this.userWhoWaitMatch.push(user);
+    this.userWhoWaitMatch.push({ user: user, socket: socket });
   }
 
   userStopWaiting(user:User)
   {
-    console.log(this.userWhoWaitMatch.length);
-    console.log("lol");
+    //console.log(this.userWhoWaitMatch.length);
+    //console.log("lol");
     let index:number = 0;
     this.userWhoWaitMatch.forEach(element => {
-      if (element.id == user.id) {
+      if (element.user.id == user.id) {
         this.userWhoWaitMatch.splice(index);
         return;
       }
@@ -49,15 +56,19 @@ export class GamesService {
     });
   }
 
-  async matchmaking() : Promise<Match | null>
+  async matchmaking()
   {
     if (this.userWhoWaitMatch.length >= 2) {
-      const match : Match = await this.create(this.userWhoWaitMatch[0], this.userWhoWaitMatch[1]);
+      const match : Match = await this.create(this.userWhoWaitMatch[0].user, this.userWhoWaitMatch[1].user);
+      const clients = {
+        clientOne: this.userWhoWaitMatch[0].socket,
+        clientTwo: this.userWhoWaitMatch[1].socket,
+      }
       this.userWhoWaitMatch.splice(1);
       this.userWhoWaitMatch.splice(0);
-      return match;
+      return { match, clients };
     }
-    return null;
+    return { match: null, clients: null };
   }
 
   async findOne(id: string) {
@@ -78,12 +89,19 @@ export class GamesService {
     return this.games[gameId];
   }
 
-  createMMGame(gameId: string, playerOneId: string, playerTwoId: string)
+  createMMGame
+  (
+    gameId: string,
+    playerOneId: string,
+    playerTwoId: string,
+  )
   {
     let game : Game = new Game(
       gameId,
       playerOneId,
       playerTwoId,
+      undefined,
+      undefined,
       undefined,
       undefined,
       undefined,

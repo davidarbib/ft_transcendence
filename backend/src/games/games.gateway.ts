@@ -12,15 +12,17 @@ import { Player } from 'src/players/entities/player.entity';
 import { PlayersService } from 'src/players/players.service';
 import { ScoreEvent, GameFinishEvent} from 'src/games/game/game.event';
 import { UsersService } from 'src/users/users.service';
+import { PadCmd } from './game/game';
 
 interface GameReadyPayload
 {
   gameId: string,
-  playerOneId: string,
-  playerTwoId: string,
+  playerId: string,
+  isP1: boolean,
+    
 }
 
-interface GameLoopPayload
+interface GameStatePayload
 {
   gameId: string,
   playerOneY: number,
@@ -54,6 +56,17 @@ export class GamesGateway {
   )
   { }
 
+  @SubscribeMessage('findOneGame') // return the matches
+  async findOne(@MessageBody() id: string) {
+    return await this.gamesService.findOne(id);
+  }
+
+  /*
+  @SubscribeMessage('findAllGames')
+  findAll() {
+    return this.gamesService.findAll();
+  }*/
+
   @SubscribeMessage('createGame')
   async create
   (
@@ -71,21 +84,25 @@ export class GamesGateway {
     @ConnectedSocket() client: Socket
   )
   {
-    client.join("mm");
-    this.gamesService.userWaiting(usr);
-    const matchCreated = await this.gamesService.matchmaking()
-    if (matchCreated)
+    this.gamesService.userWaiting(usr, client);
+    const { match, clients } = await this.gamesService.matchmaking()
+    if (match)
     {
       this.gamesService.createMMGame(
-        matchCreated.id,
-        matchCreated.players[0].id,
-        matchCreated.players[1].id
+        match.id,
+        match.players[0].id,
+        match.players[1].id
       )
+
       let payload : GameReadyPayload;
-      payload.gameId = matchCreated.id;
-      payload.playerOneId = matchCreated.players[0].id;
-      payload.playerTwoId = matchCreated.players[1].id;
-      this.server.to("mm").emit("gameReady", payload);
+
+      payload.gameId = match.id;
+      payload.playerId = match.players[0].id;
+      payload.isP1 = true;
+      clients[0].emit("gameReady", payload);
+      payload.playerId = match.players[1].id;
+      payload.isP1 = false;
+      clients[1].emit("gameReady", payload);
     };
   }
 
@@ -93,12 +110,6 @@ export class GamesGateway {
   userStopWaiting(@MessageBody('user') usr:User) {
     return this.gamesService.userStopWaiting(usr);
   }
-
-  /*
-  @SubscribeMessage('findAllGames')
-  findAll() {
-    return this.gamesService.findAll();
-  }*/
 
   @SubscribeMessage('leaveGame')
   async leave
@@ -120,16 +131,41 @@ export class GamesGateway {
   )
   {
     //TODO security
-    client.leave("mm");
     client.join(gameId);
     this.gamesService.games[gameId].setReady(playerId);
     if (this.gamesService.games[gameId].arePlayersReady())
       this.gameLoop(gameId);
   }
 
-  @SubscribeMessage('findOneGame') // return the matches
-  async findOne(@MessageBody() id: string) {
-    return await this.gamesService.findOne(id);
+  @SubscribeMessage('spectate')
+  async spectate
+  (
+    @MessageBody('gameId') gameId: string,
+    @ConnectedSocket() client: Socket,
+  )
+  {
+    client.join(gameId);
+  }
+
+  @SubscribeMessage('endSpectate')
+  async endSpectate 
+  (
+    @MessageBody('gameId') gameId: string,
+    @ConnectedSocket() client: Socket,
+  )
+  {
+    client.leave(gameId);
+  }
+
+  @SubscribeMessage('movePad')
+  async movePad
+  (
+    @MessageBody('gameId') gameId: string,
+    @MessageBody('playerId') playerId: string,
+    @MessageBody('cmd') cmd: PadCmd,
+  )
+  {
+    this.gamesService.getGame(gameId).movePad(playerId, cmd);
   }
 
   @OnEvent('score' , {async: true})
@@ -167,7 +203,7 @@ export class GamesGateway {
       let ret = this.gamesService.games[gameId].loop();
       if (!ret)
       {
-        let loopPayload: GameLoopPayload;
+        let loopPayload: GameStatePayload;
         const gameState = this.gamesService.getGame(gameId).getState();
         loopPayload.gameId = gameId;
         loopPayload.playerOneY = gameState.player1.yPos;

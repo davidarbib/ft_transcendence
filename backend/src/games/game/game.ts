@@ -6,6 +6,7 @@ import { EventEmitter2 } from "@nestjs/event-emitter";
 import { GameFinishEvent, ScoreEvent } from "./game.event";
 import { Player } from "src/players/entities/player.entity";
 import { InternalServerErrorException } from "@nestjs/common";
+import { Socket } from "socket.io";
 
 interface GameOptions
 {
@@ -19,6 +20,8 @@ interface Ids
     gameId: string,
     playerOneId: string,
     playerTwoId: string,
+    playerOneSocket: Socket,
+    playerTwoSocket: Socket,
 }
 
 export enum PadCmd
@@ -50,6 +53,8 @@ export class Game
         gameId : string,
         playerOneId : string,
         playerTwoId : string,
+        playerOneSocket: Socket,
+        playerTwoSocket: Socket,
         winThresh : number = param.WINTHRESH,
         p1Handicap : number = param.HANDICAP,
         p2Handicap : number = param.HANDICAP,
@@ -57,7 +62,7 @@ export class Game
     )
     {
         this.init(
-            { gameId, playerOneId, playerTwoId },
+            { gameId, playerOneId, playerTwoId, playerOneSocket, playerTwoSocket },
             { winThresh, p1Handicap, p2Handicap },
         );
     }
@@ -169,6 +174,7 @@ export class Game
 
         this.state.player1 = {
             id: ids.playerOneId, 
+            socket: ids.playerOneSocket,
             isP1: true,
             xPos: param.P1PADX,
             yPos: param.PADY,
@@ -182,6 +188,7 @@ export class Game
 
         this.state.player2 = {
             id: ids.playerTwoId, 
+            socket: ids.playerTwoSocket,
             isP1: false,
             xPos: param.P2PADX,
             yPos: param.PADY,

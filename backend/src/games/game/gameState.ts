@@ -1,4 +1,5 @@
-import { Vector2D } from './vector.utils'
+import { Vector2D } from './vector.utils';
+import { Socket } from 'socket.io';
 
 export enum PowerUp
 {
@@ -17,7 +18,9 @@ export class BallState
 export class PlayerState
 {
     public id: string;
+    public socket: Socket;
     public isP1: boolean;
+    public ready: boolean;
     public xPos: number;
     public yPos: number;
     public size: number;
@@ -25,7 +28,6 @@ export class PlayerState
     public powerUp: PowerUp;
     public handicap: number;
     public velocity: number;
-    public ready: boolean;
 }
 
 export class GameState
