@@ -5,7 +5,9 @@ import Title from "@/components/TitleComponent.vue";
 import { ref } from "vue";
 import { computed } from "@vue/reactivity";
 import { useUserStore } from "@/stores/auth";
+import { useRouter } from "vue-router";
 
+const router = useRouter();
 let game_mode = ref("default");
 let popupTriggers = ref(false);
 let elapsedTimeS = ref(0);
@@ -28,17 +30,17 @@ const formattedElapsedTime = computed(() => {
   return minute + ":" + second;
 });
 
-function matchMaking() {
-  console.log("ok");
-  userStore.gameSocket.emit("matchMakingList", { user: userStore.user }, () => {
-    console.log("DEBUG");
-  });
-  userStore.gameSocket.emit("matchmaking"),
-    {},
-    (response: never) => {
-      if (response == true) console.log("yes c ok"); // lancer jeu pour les deux user
-    };
-}
+// function matchMaking() {
+//   console.log("ok");
+//   userStore.gameSocket.emit("matchMakingList", { user: userStore.user }, () => {
+//     console.log("DEBUG");
+//   });
+//   userStore.gameSocket.emit("matchmaking"),
+//     {},
+//     (response: never) => {
+//       if (response == true) console.log("yes c ok"); // lancer jeu pour les deux user
+//     };
+// }
 const TogglePopup = (): void => {
   if (!popupTriggers.value) {
     clearInterval(timer.value);
@@ -47,17 +49,17 @@ const TogglePopup = (): void => {
     timer.value = setInterval(() => {
       elapsedTimeS.value += 1;
     }, 1000);
-    matchMaking();
+    // matchMaking();
   }
   popupTriggers.value = !popupTriggers.value;
-  if (!popupTriggers.value)
-    userStore.gameSocket.emit(
-      "stopmatchMakingList",
-      { user: userStore.user },
-      () => {
-        console.log("FIX FOR TS ERRORS");
-      }
-    );
+  // if (!popupTriggers.value)
+  //   userStore.gameSocket.emit(
+  //     "stopwatchMakingList",
+  //     { user: userStore.user },
+  //     () => {
+  //       console.log("FIX FOR TS ERRORS");
+  //     }
+  //   );
 };
 
 const startMatchmaking = () => {
@@ -71,6 +73,10 @@ const leaveMatchmaking = () => {
   userStore.gameSocket.emit("quitMM");
   TogglePopup();
 };
+
+userStore.gameSocket.on("gameReady", function () {
+  router.push("pong");
+});
 </script>
 
 <template>
@@ -84,7 +90,10 @@ const leaveMatchmaking = () => {
         <div class="popup-inner bg-black bg-opacity-100">
           <h1>In queue...</h1>
           <h2 class="text-center">{{ formattedElapsedTime }}</h2>
-          <button class="popup-close secondary-button" @click="leaveMatchmaking">
+          <button
+            class="popup-close secondary-button"
+            @click="leaveMatchmaking"
+          >
             CANCEL QUEUE
           </button>
         </div>
