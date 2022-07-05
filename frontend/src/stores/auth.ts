@@ -19,6 +19,12 @@ export const useUserStore = defineStore("user", () => {
 
   const gameSocket = io("http://localhost:8090");
 
+  const gameInfos = ref({
+    gameId: "",
+    playerId: "",
+    isP1: false,
+  });
+
   if (localStorage.getItem("user")) {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
@@ -43,12 +49,6 @@ export const useUserStore = defineStore("user", () => {
     { deep: true }
   );
 
-  return { user, gameSocket };
+  return { user, gameSocket, gameInfos };
 });
 
-export const useChanStore = defineStore({
-  id: 'channel',
-  state: () => ({
-    channel: {id: "default", name: "", type: "", password: ""}
-  })
-})
