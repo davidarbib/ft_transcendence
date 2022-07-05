@@ -15,13 +15,20 @@ interface GameOptions
     p2Handicap: number,
 }
 
+//interface Ids
+//{
+//    gameId: string,
+//    playerOneId: string,
+//    playerTwoId: string,
+//    playerOneSocket: Socket,
+//    playerTwoSocket: Socket,
+//}
+
 interface Ids
 {
     gameId: string,
     playerOneId: string,
     playerTwoId: string,
-    playerOneSocket: Socket,
-    playerTwoSocket: Socket,
 }
 
 export enum PadCmd
@@ -47,22 +54,29 @@ export enum Wall
 export class Game
 {
     private state : GameState;
+    private emitter: EventEmitter2;
 
     constructor
     (
         gameId : string,
         playerOneId : string,
         playerTwoId : string,
-        playerOneSocket: Socket,
-        playerTwoSocket: Socket,
+        //playerOneSocket: Socket,
+        //playerTwoSocket: Socket,
         winThresh : number = param.WINTHRESH,
         p1Handicap : number = param.HANDICAP,
         p2Handicap : number = param.HANDICAP,
-        private emitter: EventEmitter2,
     )
     {
+        this.state = new GameState();
+        this.state.player1 = new PlayerState();
+        this.state.player2 = new PlayerState();
+        this.state.ball = new BallState();
+        this.emitter = new EventEmitter2();
+
         this.init(
-            { gameId, playerOneId, playerTwoId, playerOneSocket, playerTwoSocket },
+            { gameId, playerOneId, playerTwoId },
+            //{ gameId, playerOneId, playerTwoId, playerOneSocket, playerTwoSocket },
             { winThresh, p1Handicap, p2Handicap },
         );
     }
@@ -153,7 +167,7 @@ export class Game
         options: GameOptions,
     )
     {
-        this.state.id = ids.gameId;
+        //this.state.id = ids.gameId;
 
         //TODO four-angle random direction 
         
@@ -174,7 +188,7 @@ export class Game
 
         this.state.player1 = {
             id: ids.playerOneId, 
-            socket: ids.playerOneSocket,
+            //socket: ids.playerOneSocket,
             isP1: true,
             xPos: param.P1PADX,
             yPos: param.PADY,
@@ -188,7 +202,7 @@ export class Game
 
         this.state.player2 = {
             id: ids.playerTwoId, 
-            socket: ids.playerTwoSocket,
+            //socket: ids.playerTwoSocket,
             isP1: false,
             xPos: param.P2PADX,
             yPos: param.PADY,

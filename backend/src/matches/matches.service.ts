@@ -19,8 +19,6 @@ export class MatchesService {
 
   async init(match: Match, player1 : Player, player2: Player) : Promise <Match>
   {
-    //match.players.push(player1);
-    //match.players.push(player2);
     match.active = true;
     return await myDataSource.getRepository(Match).save(match);
   }

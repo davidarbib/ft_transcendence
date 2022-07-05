@@ -87,25 +87,30 @@ export class GamesGateway {
     console.log('try to join');
 
     this.gamesService.userWaiting(usr, client);
-    const { match, clients } = await this.gamesService.matchmaking()
+    const { match, clients, playerOneId, playerTwoId } =
+      await this.gamesService.matchmaking()
     if (match)
     {
       console.log("match created");
       this.gamesService.createMMGame(
         match.id,
-        match.players[0].id,
-        match.players[1].id
+        playerOneId,
+        playerTwoId,
       )
 
-      let payload : GameReadyPayload;
-
-      payload.gameId = match.id;
-      payload.playerId = match.players[0].id;
-      payload.isP1 = true;
-      clients[0].emit("gameReady", payload);
-      payload.playerId = match.players[1].id;
-      payload.isP1 = false;
-      clients[1].emit("gameReady", payload);
+      let payload : GameReadyPayload = {
+        gameId: match.id,
+        playerId: playerOneId,
+        isP1: true,
+      };
+      clients.clientOne.emit("gameReady", payload);
+      
+      payload = {
+        gameId: match.id,
+        playerId: playerTwoId,
+        isP1: false,
+      }
+      clients.clientTwo.emit("gameReady", payload);
     };
   }
 

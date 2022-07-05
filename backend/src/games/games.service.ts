@@ -31,11 +31,17 @@ export class GamesService {
   games : Map<string, Game> = new Map();
   userWhoWaitMatch : UserSocket[] = [];
 
-  async create(user: User, user1 :User) {
+  async create(user1: User, user2 :User) {
+    console.log("user1 : ");
+    console.log(user1);
+    console.log("user2 : ");
+    console.log(user2);
     const match = await this.matchesService.create();
-    const player = await this.playersService.create(user, match);
     const player1 = await this.playersService.create(user1, match);
-    return await this.matchesService.init(match, player, player1);
+    const player2 = await this.playersService.create(user2, match);
+
+    await this.matchesService.init(match, player1, player2);
+    return {match: match, playerOneId: player1.id, playerTwoId: player2.id};
   }
 
   userWaiting(user:User, socket: Socket)
@@ -61,16 +67,17 @@ export class GamesService {
   async matchmaking()
   {
     if (this.userWhoWaitMatch.length >= 2) {
-      const match : Match = await this.create(this.userWhoWaitMatch[0].user, this.userWhoWaitMatch[1].user);
+      const { match, playerOneId, playerTwoId } =
+        await this.create(this.userWhoWaitMatch[0].user, this.userWhoWaitMatch[1].user);
       const clients = {
         clientOne: this.userWhoWaitMatch[0].socket,
         clientTwo: this.userWhoWaitMatch[1].socket,
       }
       this.userWhoWaitMatch.splice(1);
       this.userWhoWaitMatch.splice(0);
-      return { match, clients };
+      return { match, clients, playerOneId, playerTwoId };
     }
-    return { match: null, clients: null };
+    return { match: null, clients: null, playerOneId: null, playerTwoId: null };
   }
 
   async findOne(id: string) {
@@ -105,9 +112,6 @@ export class GamesService {
       undefined,
       undefined,
       undefined,
-      undefined,
-      undefined,
-      undefined
     );
     this.games[gameId] = game;
   }
