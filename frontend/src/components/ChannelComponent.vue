@@ -40,7 +40,7 @@ function selectChannel(name: string) {
   console.log('selectChannel :' + channelName.value);
   emit('name', channelName.value);
 }
-const emit = defineEmits(['name', 'msg']);
+const emit = defineEmits(['name']);
 
 </script>
 

@@ -2,26 +2,37 @@
 import NavbarItem from "@/components/NavbarItemComponent.vue";
 import Channel from "@/components/ChannelComponent.vue";
 import PubChannel from "@/components/PubChannelComponent.vue";
-import { ref, reactive } from "vue";
-import { io } from "socket.io-client";
+import { ref, reactive , onBeforeMount, watch} from "vue";
 import { useUserStore } from "@/stores/auth";
+import { io } from "socket.io-client";
 import { computed } from "@vue/reactivity";
 import axios from "axios";
-
+const chatsocket = io("http://localhost:8090");
 const getName = ref("");
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const userStore = useUserStore();
-const socket = io("http://localhost:8090");
-let messages: any = reactive([]);
+let messages: any = {};
 const messageText = ref("");
 const myInput = ref("");
 let userIn = ref([]);
+let test = ref([]);
+
+  chatsocket.on("connection", (socket) => {
+  });
+  chatsocket.on("message", (message) => {
+    messages[getName].value.push(message) ;
+  });
+
 /*
-socket.on("message", (message) => {
-  messages.push({ name: message.name.value });
+onBeforeMount(() =>{
+   userStore.chatsocket.emit('findMessageFromChan', {name:getName.value, login :userStore.user}, (response) => {
+     messages.value = response
+  });
+        console.log("qhddhwdjhd")
 });*/
 
-const getUserInChan = computed(() => {
+
+function getUserInChan() {
   axios.defaults.withCredentials = true;
   axios
     .get(`http://localhost:8090/channels/${getName.value}`)
@@ -32,10 +43,11 @@ const getUserInChan = computed(() => {
       console.log(error);
     });
   return userIn.value;
-});
+};
+
 
 function sendMessage() {
-  socket.emit(
+  chatsocket.emit(
     "createMessage",
     {
       name: getName.value,
@@ -48,17 +60,6 @@ function sendMessage() {
     }
   );
 }
-
-function showMessages() {
-  socket.on(
-    "findMessageFromChan",
-    { name: getName.value },
-    (response: any) => {
-      messages.value = response;
-    }
-  );
-  return messages.value;
-};
 </script>
 
 <template>
@@ -79,10 +80,10 @@ function showMessages() {
       <p class="text-2xl">{{ getName }}</p>
       <div
         class="message bg-black bg-opacity-20 w-3/4 mx-2 rounded p-2"
-        v-for="message in showMessages"
+        v-for="message in messages"
         :key="message"
       >
-        {{ message.login }} :
+        {{ message.login }}{{ message.name }} :
         {{ message.time }}
         <p>{{ message.content }}</p>
       </div>

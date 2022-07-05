@@ -9,9 +9,8 @@ const chanpu = ref([]);
 const chanpriv = ref([]);
 const channelName = ref('');
 const userStore = useUserStore();
-const  socket = io('http://localhost:8090');
 
-const allchanpublic = computed(() => {
+function allchanpublic()  {
   axios.defaults.withCredentials = true;
   const addr = `http://localhost:8090/channels/chanpublic/${userStore.user.login}`;
   axios
@@ -23,15 +22,15 @@ const allchanpublic = computed(() => {
       console.log(error);
     });
     return chanpu.value
-});
+};
 
 function  joinchan(name: string)
 {
-   socket.emit('joinchan', {login: userStore.user.login, name : name})
+   userStore.chatsocket.emit('joinchan', {login: userStore.user.login, name : name})
 }
 
 
-const allchanpriv = computed(() => {
+function allchanpriv() {
   axios.defaults.withCredentials = true;
   axios
     .get(`http://localhost:8090/channels/chanpriv/${userStore.user.login}`)
@@ -42,7 +41,7 @@ const allchanpriv = computed(() => {
       console.log(error);
     });
     return chanpriv.value
-});
+};
 
 const emit = defineEmits(['name']);
 </script>

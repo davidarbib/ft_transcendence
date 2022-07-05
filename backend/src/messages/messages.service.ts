@@ -10,7 +10,8 @@ import { channel } from 'diagnostics_channel';
 import { Console } from 'console';
 import { ContactsService } from 'src/contacts/contacts.service';
 import {elementAt} from "rxjs";
-import socket from "@nestjs/platform-socket.io"
+import { Server, Socket } from 'socket.io';
+
 
 
 @Injectable()
@@ -25,7 +26,6 @@ export class MessagesService {
   }
   async create(login:string ,name: string, createMessageDto: CreateMessageDto) {
 
-    console.log(name);
     const chan  = await myDataSource.getRepository(Channel).findOne({where : {name : name}})
     const usr  = await myDataSource.getRepository(User).findOne({where : {login : login}})
     //  if (!usr)
@@ -34,10 +34,7 @@ export class MessagesService {
     createMessageDto.time = new Date();
     createMessageDto.chan = chan; 
     createMessageDto.login = login; 
-   await myDataSource.getRepository(Channel).save(chan);
     const msg = await this.msgRepo.save(createMessageDto)
-      await myDataSource.getRepository(Channel).save(chan);
-
     return msg;
   }
 
@@ -57,25 +54,24 @@ export class MessagesService {
             arr.push(element);
       }
     });
-    socket.emit(
-
-    )
     return arr;
   }
 
-  async identify(login: string, name:string)
+  async identify(login: string, name:string, client :Socket)
   {
     const chan = await myDataSource.getRepository(Channel).findOne({where : {name:name}})
     const usr = await myDataSource.getRepository(User).findOne({where : {login:login}})
     const arr = await myDataSource.getRepository(ChanParticipant).find({relations : ['participant']});
     arr.forEach(element => {
   if (element.participant.login == login && element.chan.name == name)
-      return ;
+      return  1;
   })
     const chanPart : ChanParticipant = new ChanParticipant;
     chanPart.participant = usr;
     chanPart.chan = chan;
   //  chan.participants.push(chanPart);
     await myDataSource.getRepository(ChanParticipant).save(chanPart);
+  
+    return  0;
   }
 }

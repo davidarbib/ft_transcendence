@@ -8,7 +8,6 @@ import { Messages } from "src/messages/entities/message.entity";
 export class CreateChannelDto extends Channel
 {
     @IsString()
-    @Length(1,10)
     name:string;
 
     type:ChanType;
