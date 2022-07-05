@@ -43,6 +43,13 @@ export class UsersService {
     const {doubleFA} = updatedto;
     usr.doubleFA = doubleFA;
     return  myDataSource.getRepository(User).save(usr);
+  } 
+
+  findByLogin(login:string)
+  {
+    return this.userRepo.findOne({
+      where: { login: login }
+    });
   }
 
   async remove(id: string) {
