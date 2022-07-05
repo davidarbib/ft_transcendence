@@ -44,15 +44,13 @@ const TogglePopup = (): void => {
 const startMatchmaking = () => {
   console.log("Matchmaking starting...");
   TogglePopup();
-  userStore.gameSocket.emit("joinMM", {
-    user: userStore.user,
-  });
+  userStore.gameSocket.emit("joinMM", { user: userStore.user });
 };
 
 const leaveMatchmaking = () => {
   console.log("Leaving MatchMaking...");
   TogglePopup();
-  userStore.gameSocket.emit("quitMM", { user: userStore });
+  userStore.gameSocket.emit("quitMM", { user: userStore.user });
 };
 
 userStore.gameSocket.on("gameReady", function (game) {
