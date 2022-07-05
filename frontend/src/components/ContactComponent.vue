@@ -5,36 +5,11 @@ import axios from "axios";
 import { useUserStore } from "@/stores/auth";
 import { ConstantTypes } from "@vue/compiler-core";
 
+/*
 const userStore = useUserStore();
 const friend = ref([]);
-const user = ref([]);
-
-const allfriend = computed(() => {
-  axios.defaults.withCredentials = true;
-  const addr = 'http://localhost:8090/contacts/m3L_dis/friend';
-  axios
-    .get(addr, {login : userStore.user.login})
-    .then((response) => {
-      friend.value = response.data;
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-    return friend.value
-});
-
-const  alluser = computed (() => {
-  axios.defaults.withCredentials = true;
-  axios
-    .get("http://localhost:8090/users")
-    .then((response) => {
-      user.value = response.data;
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-    return user.value
-});
+*/
+// const user = ref([]);
 
 const searched = ref("");
 const friendMenu = ref(false);

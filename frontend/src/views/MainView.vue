@@ -13,7 +13,6 @@ let popupTriggers = ref(false);
 let elapsedTimeS = ref(0);
 let elapsedTimeM = ref(0);
 let timer = ref();
-// const bool_match = ref(0);
 const userStore = useUserStore();
 
 const formattedElapsedTime = computed(() => {
@@ -30,17 +29,6 @@ const formattedElapsedTime = computed(() => {
   return minute + ":" + second;
 });
 
-// function matchMaking() {
-//   console.log("ok");
-//   userStore.gameSocket.emit("matchMakingList", { user: userStore.user }, () => {
-//     console.log("DEBUG");
-//   });
-//   userStore.gameSocket.emit("matchmaking"),
-//     {},
-//     (response: never) => {
-//       if (response == true) console.log("yes c ok"); // lancer jeu pour les deux user
-//     };
-// }
 const TogglePopup = (): void => {
   if (!popupTriggers.value) {
     clearInterval(timer.value);
@@ -49,29 +37,23 @@ const TogglePopup = (): void => {
     timer.value = setInterval(() => {
       elapsedTimeS.value += 1;
     }, 1000);
-    // matchMaking();
   }
   popupTriggers.value = !popupTriggers.value;
-  // if (!popupTriggers.value)
-  //   userStore.gameSocket.emit(
-  //     "stopwatchMakingList",
-  //     { user: userStore.user },
-  //     () => {
-  //       console.log("FIX FOR TS ERRORS");
-  //     }
-  //   );
 };
 
 const startMatchmaking = () => {
   console.log("Matchmaking starting...");
-  userStore.gameSocket.emit("joinMM");
   TogglePopup();
+  userStore.gameSocket.emit("joinMM", {
+    usr: userStore.user,
+    client: userStore.gameSocket,
+  });
 };
 
 const leaveMatchmaking = () => {
   console.log("Leaving MatchMaking...");
-  userStore.gameSocket.emit("quitMM");
   TogglePopup();
+  userStore.gameSocket.emit("quitMM", userStore.gameSocket);
 };
 
 userStore.gameSocket.on("gameReady", function () {
