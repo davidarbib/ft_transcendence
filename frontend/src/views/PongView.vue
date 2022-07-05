@@ -13,6 +13,7 @@ const gameInfos = ref({
 userStore.gameSocket.on("gameReady", function (game) {
   gameInfos.value.gameId = game.gameId;
   gameInfos.value.playerId = game.playerId;
+  gameInfos.value.isP1 = game.isP1;
   userStore.gameSocket.emit("canvasReady", gameInfos.value);
 });
 </script>
