@@ -9,6 +9,7 @@ import { myDataSource } from 'src/app-data-source';
 import { Player } from 'src/players/entities/player.entity';
 import { Game } from 'src/games/game/game';
 import { Socket } from 'socket.io';
+import { ESMap } from 'typescript';
 
 export interface UserSocket
 {
@@ -22,12 +23,12 @@ export class GamesService {
   (
     private readonly matchesService : MatchesService,
     private readonly playersService : PlayersService,
-    public games: Map<string, Game>,
   )
+
   {
-    games = new Map();
   }
 
+  games : Map<string, Game> = new Map();
   userWhoWaitMatch : UserSocket[] = [];
 
   async create(user: User, user1 :User) {
@@ -39,6 +40,7 @@ export class GamesService {
 
   userWaiting(user:User, socket: Socket)
   {
+    console.log("user wait");
     this.userWhoWaitMatch.push({ user: user, socket: socket });
   }
 

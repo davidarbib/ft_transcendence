@@ -15,6 +15,7 @@ import { ConfigModule } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { GamesModule } from './games/games.module';
+import { GamesGateway } from './games/games.gateway';
 
 
 let envPath = 'src/.env';
@@ -36,7 +37,10 @@ let envPath = 'src/.env';
       ContactsModule,
       createDataModule,
       AuthModule,
+      GamesModule,
     ],
+  providers: [
+  ]
 })
 export class AppModule {
   constructor()

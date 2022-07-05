@@ -13,6 +13,9 @@ import { MatchesModule } from 'src/matches/matches.module';
   providers: [
     PlayersService,
     Repository,
+  ],
+  exports: [
+    PlayersService
   ]
 })
 export class PlayersModule {}

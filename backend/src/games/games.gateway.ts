@@ -39,10 +39,10 @@ interface EndGamePayload
 
 @WebSocketGateway({
   cors: {
-    origin: '*',
+    origin: "http://localhost:8000",
+    methods: ["GET", "POST"],
   }
 })
-
 export class GamesGateway {
 
   @WebSocketServer()
@@ -84,10 +84,13 @@ export class GamesGateway {
     @ConnectedSocket() client: Socket
   )
   {
+    console.log('try to join');
+
     this.gamesService.userWaiting(usr, client);
     const { match, clients } = await this.gamesService.matchmaking()
     if (match)
     {
+      console.log("match created");
       this.gamesService.createMMGame(
         match.id,
         match.players[0].id,

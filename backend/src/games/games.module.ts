@@ -1,11 +1,22 @@
-import { Module, forwardRef } from '@nestjs/common';
-import { GamesService } from './games.service';
-import { GamesGateway } from './games.gateway';
-import { MatchesService } from 'src/matches/matches.service';
-import { PlayersService } from 'src/players/players.service';
+import { Module } from '@nestjs/common';
+import { MatchesModule } from 'src/matches/matches.module';
+import { PlayersModule } from 'src/players/players.module';
 import { Repository } from 'typeorm';
+import { GamesGateway } from './games.gateway';
+import { GamesService } from './games.service';
 
 @Module({
-  providers: [GamesGateway, GamesService, MatchesService,PlayersService, Repository],
+  imports: [
+    MatchesModule,
+    PlayersModule,
+  ],
+  providers: [
+    Repository,
+    GamesGateway,
+    GamesService],
+  exports: [
+    GamesGateway,
+    GamesService,
+  ]
 })
 export class GamesModule {}
