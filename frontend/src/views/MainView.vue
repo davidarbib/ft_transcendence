@@ -46,7 +46,6 @@ const startMatchmaking = () => {
   TogglePopup();
   userStore.gameSocket.emit("joinMM", {
     user: userStore.user,
-    client: userStore.gameSocket,
   });
 };
 
