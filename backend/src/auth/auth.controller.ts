@@ -44,6 +44,32 @@ export class AuthController {
         return this.authService.login(request.user);
     }
 
+    @Get('strawman')
+    async strawman(
+        @Req() request: Request,
+        @Res({ passthrough: true }) response: Response,
+    )
+    {
+        const details = { login: 'strawman', username: 'strawman'}
+        const user = await this.authService.validateUser(details);
+        const { accessToken } = await this.authService.login(user, false);
+        this.authService.generateCookie(response, accessToken);
+        return response.redirect('http://localhost:8000');
+    }
+
+    @Get('jack')
+    async jack(
+        @Req() request: Request,
+        @Res({ passthrough: true }) response: Response,
+    )
+    {
+        const details = { login: 'jack', username: 'jack'}
+        const user = this.authService.validateUser(details);
+        const { accessToken } = await this.authService.login(user, false);
+        this.authService.generateCookie(response, accessToken);
+        return response.redirect('http://localhost:8000');
+    }
+
     @Get('discordLogin')
     @UseGuards(DiscordGuard)
     discordLogin()
