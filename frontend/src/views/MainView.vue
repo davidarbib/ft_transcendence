@@ -41,20 +41,6 @@ const TogglePopup = (): void => {
   }
   popupTriggers.value = !popupTriggers.value;
 };
-
-onMounted(() => {
-  axios.defaults.withCredentials = true;
-  axios
-    .get(`${api.url}/auth/current`)
-    .then((response) => {
-      userStore.user = response.data;
-      console.log(response.data);
-      console.log(userStore.user);
-    })
-    .catch(() => {
-      console.log("Error");
-    });
-});
 </script>
 
 <template>

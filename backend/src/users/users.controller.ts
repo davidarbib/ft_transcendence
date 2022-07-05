@@ -91,8 +91,9 @@ uploadFile(@UploadedFile() file , @Request()  req) : any {
 *  PATCH
 *
 */
-  @Patch('update')
+  @Patch('/update/:id')
   update(@Request() req, @Body() updateUserDto: UpdateUserDto) {
+    console.log("bjr");
     const usr :User = req.user;
     return this.usersService.update(usr, updateUserDto);
   }

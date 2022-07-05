@@ -10,6 +10,8 @@ import { channel } from 'diagnostics_channel';
 import { Console } from 'console';
 import { ContactsService } from 'src/contacts/contacts.service';
 import {elementAt} from "rxjs";
+import { Server, Socket } from 'socket.io';
+
 
 
 @Injectable()
@@ -32,12 +34,7 @@ export class MessagesService {
     createMessageDto.time = new Date();
     createMessageDto.chan = chan; 
     createMessageDto.login = login; 
-    console.log(name);
-   await myDataSource.getRepository(Channel).save(chan);
     const msg = await this.msgRepo.save(createMessageDto)
-    //  chan.messages.push(msg);
-      await myDataSource.getRepository(Channel).save(chan);
-
     return msg;
   }
 
@@ -51,29 +48,33 @@ export class MessagesService {
     const msg = await this.msgRepo.find({ relations: [ 'chan'] })
     let arr : any = [];
     msg.forEach(element => {
-      if (element.chan.name == name)
+      if (element.chan)
       {
-   //       if (!this.contactsService.block_bool(login, element.author.login))
-            arr.push(element);
+     if (element.chan.name == name)
+      {
+        //      if (!this.contactsService.block_bool(login, element.author.login))
+        arr.push(element);
       }
+    }
     });
     return arr;
   }
 
-  async identify(login: string, name:string)
+  async identify(login: string, name:string, client :Socket)
   {
     const chan = await myDataSource.getRepository(Channel).findOne({where : {name:name}})
     const usr = await myDataSource.getRepository(User).findOne({where : {login:login}})
-    const arr = await myDataSource.getRepository(ChanParticipant).find({relations : ['participants']});
-    console.log(arr);
-    //arr.forEach(element => {
-    //if (element.participant.login == login && element.chan.name == name)
-     // return ;
-  //})
+    const arr = await myDataSource.getRepository(ChanParticipant).find({relations : ['participant']});
+    arr.forEach(element => {
+  if (element.participant.login == login && element.chan.name == name)
+      return  1;
+  })
     const chanPart : ChanParticipant = new ChanParticipant;
     chanPart.participant = usr;
     chanPart.chan = chan;
   //  chan.participants.push(chanPart);
     await myDataSource.getRepository(ChanParticipant).save(chanPart);
+  
+    return  0;
   }
 }

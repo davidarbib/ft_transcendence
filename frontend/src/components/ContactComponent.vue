@@ -8,7 +8,7 @@ import { ConstantTypes } from "@vue/compiler-core";
 const userStore = useUserStore();
 const friend = ref([]);
 const user = ref([]);
-
+/*
 const allfriend = computed(() => {
   axios.defaults.withCredentials = true;
   const addr = 'http://localhost:8090/contacts/m3L_dis/friend';
@@ -21,8 +21,8 @@ const allfriend = computed(() => {
       console.log(error);
     });
     return friend.value
-});
-
+});*/
+/*
 const  alluser = computed (() => {
   axios.defaults.withCredentials = true;
   axios
@@ -35,7 +35,7 @@ const  alluser = computed (() => {
     });
     return user.value
 });
-
+*/
 const searched = ref("");
 const friendMenu = ref(false);
 const friendSelected = ref(-1);

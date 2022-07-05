@@ -31,6 +31,7 @@ async function bootstrap()
     methods: "PUT, POST, GET, HEAD, DELETE, PATCH",
   });
 
+  app.use(express.static('public'));
   await app.listen(PORT, () => console.log(`Running on Port : ${PORT}`));
 }
 

@@ -53,7 +53,7 @@ const emit = defineEmits(["name", "msg"]);
     <div
       @click="selectChannel(channel.name)"
       class="user-card rounded my-2 bg-black bg-opacity-10 font-medium hover:bg-opacity-30 transition duration-300"
-      v-for="channel in ourChan"
+      v-for="channel in ourChan()"
       :key="channel.id"
     >
       <div class="user-pseudo py-2">
