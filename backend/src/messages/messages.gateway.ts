@@ -42,6 +42,15 @@ export class MessagesGateway
     return  msg;
   }
 
+  @SubscribeMessage('ourchan')
+  async findChan( @MessageBody('user') user:User)
+  {
+    const chan = await this.messageService.findChan(user);
+    console.log(chan);
+    this.server.emit('chan', chan);
+    return  chan ;
+  }
+
   @SubscribeMessage('createChannel')
   async createChan(@MessageBody('login') login: string, @MessageBody('name')name : string, @MessageBody('type')type : ChanType, @MessageBody('password')password : string,  @ConnectedSocket() client:Socket) 
   {

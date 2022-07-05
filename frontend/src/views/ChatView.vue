@@ -7,7 +7,6 @@ import { useUserStore } from "@/stores/auth";
 import { io } from "socket.io-client";
 import { computed } from "@vue/reactivity";
 import axios from "axios";
-const chatsocket = io("http://localhost:8090");
 const getName = ref("");
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const userStore = useUserStore();
@@ -26,9 +25,9 @@ interface Messages {
 };
 let test: Messages[] = [];
 
-  chatsocket.on("connection", (socket) => {
+  userStore.chatsocket.on("connection", (socket) => {
   });
-  chatsocket.on("message", (message :never) => {
+  userStore.chatsocket.on("message", (message :never) => {
     test.push({room : getName.value,stock_msg :message})
     messages.value.push(message);
   });
@@ -57,7 +56,7 @@ function getUserInChan() {
 
 
 function sendMessage() {
-  chatsocket.emit(
+  userStore.chatsocket.emit(
     "createMessage",
     {
       name: getName.value,
@@ -73,7 +72,7 @@ function sendMessage() {
 
 watch(getName, () =>{
   messages.value = [];
-  chatsocket.emit("findMessageFromChan", {name: getName.value, login: userStore.user.login} , (data:never) =>
+  userStore.chatsocket.emit("findMessageFromChan", {name: getName.value, login: userStore.user.login} , (data:never) =>
   {
     console.log(data);
     messages.value = (data);

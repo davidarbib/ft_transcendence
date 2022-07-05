@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import axios from "axios";
 import { useUserStore } from "@/stores/auth";
 
@@ -15,8 +15,7 @@ function toggleChannelMenu(id: number) {
   channelSelected.value = id;
   channelOptions.value = !channelOptions.value;
 }
-
-const ourChan = (() => {
+onMounted(() => {
   axios.defaults.withCredentials = true;
   axios
     .get(`http://localhost:8090/channels/chan/${userStore.user.login}`)
@@ -27,8 +26,7 @@ const ourChan = (() => {
       console.log(error);
     });
   return chan.value;
-});
-
+})
 function selectChannel(name: string) {
   channelName.value = name;
   console.log("selectChannel :" + channelName.value);
@@ -53,7 +51,7 @@ const emit = defineEmits(["name", "msg"]);
     <div
       @click="selectChannel(channel.name)"
       class="user-card rounded my-2 bg-black bg-opacity-10 font-medium hover:bg-opacity-30 transition duration-300"
-      v-for="channel in ourChan()"
+      v-for="channel in chan"
       :key="channel.id"
     >
       <div class="user-pseudo py-2">
