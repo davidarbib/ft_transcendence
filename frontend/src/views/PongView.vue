@@ -1,12 +1,19 @@
 <script setup lang="ts">
 import BlockGame from "@/components/BlockGameComponent.vue";
-import { onMounted } from "vue";
+import { ref } from "vue";
 import { useUserStore } from "@/stores/auth";
 
 const userStore = useUserStore();
+const gameInfos = ref({
+  gameId: "",
+  playerId: "",
+  isP1: false,
+});
 
-onMounted(() => {
-  userStore.gameSocket.emit("canvasReady");
+userStore.gameSocket.on("gameReady", function (game) {
+  gameInfos.value.gameId = game.gameId;
+  gameInfos.value.playerId = game.playerId;
+  userStore.gameSocket.emit("canvasReady", gameInfos.value);
 });
 </script>
 
