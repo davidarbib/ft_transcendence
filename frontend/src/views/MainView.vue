@@ -45,7 +45,7 @@ const startMatchmaking = () => {
   console.log("Matchmaking starting...");
   TogglePopup();
   userStore.gameSocket.emit("joinMM", {
-    usr: userStore.user,
+    user: userStore.user,
     client: userStore.gameSocket,
   });
 };
@@ -53,7 +53,7 @@ const startMatchmaking = () => {
 const leaveMatchmaking = () => {
   console.log("Leaving MatchMaking...");
   TogglePopup();
-  userStore.gameSocket.emit("quitMM", userStore.gameSocket);
+  userStore.gameSocket.emit("quitMM", { user: userStore });
 };
 
 userStore.gameSocket.on("gameReady", function () {
