@@ -5,9 +5,6 @@ import Title from "@/components/TitleComponent.vue";
 import { ref } from "vue";
 import { computed } from "@vue/reactivity";
 import { useUserStore } from "@/stores/auth";
-// import axios from "axios";
-import { io } from "socket.io-client";
-import { apiStore } from "@/stores/api";
 
 let game_mode = ref("default");
 let popupTriggers = ref(false);
@@ -15,9 +12,7 @@ let elapsedTimeS = ref(0);
 let elapsedTimeM = ref(0);
 let timer = ref();
 // const bool_match = ref(0);
-const api = apiStore();
 const userStore = useUserStore();
-const socket = io(api.url);
 
 const formattedElapsedTime = computed(() => {
   if (elapsedTimeS.value > 59) {
@@ -35,10 +30,10 @@ const formattedElapsedTime = computed(() => {
 
 function matchMaking() {
   console.log("ok");
-  socket.emit("matchMakingList", { user: userStore.user }, () => {
+  userStore.gameSocket.emit("matchMakingList", { user: userStore.user }, () => {
     console.log("DEBUG");
   });
-  socket.emit("matchmaking"),
+  userStore.gameSocket.emit("matchmaking"),
     {},
     (response: never) => {
       if (response == true) console.log("yes c ok"); // lancer jeu pour les deux user
@@ -56,14 +51,24 @@ const TogglePopup = (): void => {
   }
   popupTriggers.value = !popupTriggers.value;
   if (!popupTriggers.value)
-    socket.emit("stopmatchMakingList", { user: userStore.user }, () => {
-      console.log("FIX FOR TS ERRORS");
-    });
+    userStore.gameSocket.emit(
+      "stopmatchMakingList",
+      { user: userStore.user },
+      () => {
+        console.log("FIX FOR TS ERRORS");
+      }
+    );
 };
 
 const startMatchmaking = () => {
   console.log("Matchmaking starting...");
-  userStore.gameSocket.emit("Matchmaking");
+  userStore.gameSocket.emit("joinMM");
+  TogglePopup();
+};
+
+const leaveMatchmaking = () => {
+  console.log("Leaving MatchMaking...");
+  userStore.gameSocket.emit("quitMM");
   TogglePopup();
 };
 </script>
@@ -79,7 +84,7 @@ const startMatchmaking = () => {
         <div class="popup-inner bg-black bg-opacity-100">
           <h1>In queue...</h1>
           <h2 class="text-center">{{ formattedElapsedTime }}</h2>
-          <button class="popup-close secondary-button" @click="TogglePopup()">
+          <button class="popup-close secondary-button" @click="leaveMatchmaking">
             CANCEL QUEUE
           </button>
         </div>
