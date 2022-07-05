@@ -1,9 +1,5 @@
 <script setup lang="ts">
-import json from "@/assets/dataTest.json";
-import { ref, computed } from "vue";
-import axios from "axios";
-import { useUserStore } from "@/stores/auth";
-import { ConstantTypes } from "@vue/compiler-core";
+import { ref } from "vue";
 
 /*
 const userStore = useUserStore();
@@ -14,6 +10,7 @@ const friend = ref([]);
 const searched = ref("");
 const friendMenu = ref(false);
 const friendSelected = ref(-1);
+const tmp = ref([]);
 /*const userFriends = computed(() =>{
   
     allfriend();
@@ -34,12 +31,13 @@ function toggleFriendMenu(id: number) {
     <br />
     <div
       class="user-card rounded my-2 bg-black bg-opacity-10 font-medium hover:bg-opacity-30 transition duration-300"
-      v-for="user in allfriend" :key="user.id"
+      v-for="user in tmp"
+      :key="user.id"
       @click="toggleFriendMenu(user.id)"
     >
       {{ user.login }}
       <div ></div>
-     <div class="user-icon">
+      <div class="user-icon">
         <img src="@/assets/sphere.png" alt="" class="h-10 w-10" />
         <p v-if="user.status" class="online">
           <i class="fa-solid fa-circle status-dot outline-inherit"></i>

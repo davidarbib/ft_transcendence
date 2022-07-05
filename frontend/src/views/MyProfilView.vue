@@ -49,7 +49,7 @@ const updatePseudo = () => {
   axios
     .patch(`${api.url}/users/${userStore.user.id}`, {
       id: userStore.user.id,
-      login: userStore.user.id,
+      login: userStore.user.login,
       username: pseudo.value,
       status: userStore.user.status,
       authToken: userStore.user.authToken,
