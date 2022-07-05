@@ -35,6 +35,16 @@ function onFileChanged($event: Event) {
 async function saveImage() {
   if (file.value) {
     try {
+    axios
+    .post(`${api.url}/users/upload/`, {
+      file: file.value,
+    })
+    .then(() => {
+      console.log("SuccessFully updated username");
+    })
+    .catch(() => {
+      console.log( "This username is invalid try another one....");
+    });
       // save file.value
     } catch (error) {
       console.error(error);
@@ -46,17 +56,8 @@ async function saveImage() {
 
 const updatePseudo = () => {
   axios
-    .patch(`${api.url}/users/${userStore.user.id}`, {
-      id: userStore.user.id,
-      login: userStore.user.login,
+    .patch(`${api.url}/users/update/${userStore.user.id}`, {
       username: pseudo.value,
-      status: userStore.user.status,
-      authToken: userStore.user.authToken,
-      avatarRef: userStore.user.avatarRef,
-      lossCount: userStore.user.lossCount,
-      winCount: userStore.user.winCount,
-      twoFactorEnabled: userStore.user.twoFactorEnabled,
-      twoFactorSecret: userStore.user.twoFactorSecret,
     })
     .then(() => {
       userStore.user.username = pseudo.value;
