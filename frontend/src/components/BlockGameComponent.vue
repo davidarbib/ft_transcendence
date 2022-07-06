@@ -6,12 +6,14 @@ const userStore = useUserStore();
 let canvasRef = ref<HTMLCanvasElement | null>(null);
 let width = ref<number>((window.innerWidth * 80) / 100);
 let height = ref<number>((window.innerHeight * 80) / 100);
-let ballPosX = ref<number>(width.value / 2 - 10);
-let ballPosY = ref<number>(height.value / 2 - 10);
-let padAx = ref<number>(30);
-let padAy = ref<number>(height.value / 2 - 30);
-let padBx = ref<number>(width.value - 40);
-let padBy = ref<number>(height.value / 2 - 30);
+let ratioX = ref<number>(width.value / 100);
+let ratioY = ref<number>(height.value / 100);
+let ballPosX = ref<number>(0);
+let ballPosY = ref<number>(0);
+let padAx = ref<number>(30 * ratioX.value);
+let padAy = ref<number>(0);
+let padBx = ref<number>((width.value - 40) * ratioX.value);
+let padBy = ref<number>(0);
 let scoreA = ref<number>(0);
 let scoreB = ref<number>(0);
 
@@ -22,6 +24,8 @@ function draw_shape(x: number, y: number, width: number, height: number): void {
 }
 
 function draw(): void {
+  width.value = (window.innerWidth * 80) / 100;
+  height.value = (window.innerHeight * 80) / 100;
   const ctx = ref(canvasRef.value?.getContext("2d"));
   ctx.value?.clearRect(0, 0, width.value, height.value);
   draw_shape(ballPosX.value, ballPosY.value, 20, 20);
@@ -36,23 +40,15 @@ function draw(): void {
   }
 }
 
-//const init_field = () => {
-// width.value = (window.innerWidth * 80) / 100;
-//  height.value = (window.innerHeight * 80) / 100;
-// draw(); need socket to work
-//};
-
 userStore.gameSocket.on("gameState", (gameStatePayload) => {
-  padAy.value = gameStatePayload.playerOneY;
-  padAy.value = gameStatePayload.playerTwoY;
-  ballPosX.value = gameStatePayload.ballX;
-  ballPosY.value = gameStatePayload.ballY;
+  padAy.value = gameStatePayload.playerOneY * ratioY.value;
+  padAy.value = gameStatePayload.playerTwoY * ratioY.value;
+  ballPosX.value = gameStatePayload.ballX * ratioX.value;
+  ballPosY.value = gameStatePayload.ballY * ratioY.value;
   draw();
 });
 
 onMounted(() => {
-  // userStore.gameSocket.on("gameBegin", { gameId, playerId });
-  //window.addEventListener("resize", init_field);
   window.addEventListener("keyup", () => {
     userStore.gameSocket.emit("padUp", {
       gameId: userStore.gameInfos.gameId,
