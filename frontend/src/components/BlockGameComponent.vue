@@ -85,6 +85,6 @@ onMounted(() => {
       style="background-color: black"
     >
     </canvas>
-    <ConfettiExplosion />
+    <ConfettiExplosion :particleCount="642" :stageHeight="5000" :stageWidth="3700" :duration="5000" />
   </div>
 </template>
