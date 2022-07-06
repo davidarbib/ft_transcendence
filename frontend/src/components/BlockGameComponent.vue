@@ -86,8 +86,8 @@ onMounted(() => {
 
 <template>
   <Teleport to="body">
-    <div v-if="!gameEnded">
-      <div class="popup-inner bg-black bg-opacity-100">
+    <div v-if="gameEnded" class="modal">
+      <div class="modal-inner bg-black bg-opacity-100">
         <h1 v-if="playerWin" class="text-white">Victory !</h1>
         <h1 v-else class="text-white">Defeat !</h1>
         <router-link to="/main" class="secondary-button">
@@ -121,32 +121,34 @@ onMounted(() => {
 
 <style scoped lang="scss">
 @use "@/assets/variables.scss" as v;
-.popup {
+.modal {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 9999;
-  background-color: rgba(0, 0, 0, 0.2);
-  display: flex;
+  z-index: 999;
+  background-color: rgba(0, 0, 0, 0.3);
+  display: grid;
   justify-content: center;
   align-items: center;
+  h1 {
+    font-size: 8rem;
+    text-align: center;
+    text-transform: uppercase;
+  }
 
-  .popup-inner {
+  .modal-inner {
+    background: rgb(237, 237, 237);
     background: linear-gradient(v.$primary, v.$dark-blue) fixed;
-    margin-right: 20%;
-    padding: 10rem;
+    width: 40rem;
+    height: 20rem;
+    padding: 1rem;
     border-radius: 0.375rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    h1,
-    h2 {
-      margin-bottom: 2rem;
-      font-size: 3rem;
-      color: white;
+
+    a {
+      padding: 1rem 2rem;
+      font-size: 2rem;
     }
   }
 }
