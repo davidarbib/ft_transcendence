@@ -26,18 +26,21 @@ onMounted(() => {
       console.log(error);
     });
   return chan.value;
-})
+});
 function selectChannel(name: string) {
   channelName.value = name;
   console.log("selectChannel :" + channelName.value);
   emit("name", channelName.value);
 }
 
-function leaveChan ()
-{
+function leaveChan() {
   axios.defaults.withCredentials = true;
-  axios
-      .delete(`http://localhost:8090`)
+  console.log("leave chann");
+}
+
+function addPassword() {
+  axios.defaults.withCredentials = true;
+  console.log("add password");
 }
 
 const emit = defineEmits(["name", "msg"]);
@@ -45,9 +48,6 @@ const emit = defineEmits(["name", "msg"]);
 
 <template>
   <div class="contact-section mx-2">
-    <input placeholder="search" class="rounded searchbar" v-model="searched" />
-    <br />
-    <br />
     <div
       @click="selectChannel(channel.name)"
       class="user-card rounded my-2 bg-black bg-opacity-10 font-medium hover:bg-opacity-30 transition duration-300"
@@ -62,9 +62,15 @@ const emit = defineEmits(["name", "msg"]);
       </div>
       <Transition name="slide-fade">
         <div v-if="channelOptions && channelSelected === channel.id">
-          <ul class="list">
-            <li class="leave" @click="leaveChan">leave</li>
-          </ul>
+          <p class="list">
+            <i class="fa-solid fa-key mx-1" @click="addPassword"></i>
+            <!--        add pass-->
+            <i
+              class="fa-solid fa-right-from-bracket mx-1"
+              @click="leaveChan"
+            ></i>
+            <!--        leave chan-->
+          </p>
         </div>
       </Transition>
     </div>
@@ -75,9 +81,8 @@ const emit = defineEmits(["name", "msg"]);
 @use "../assets/variables.scss" as v;
 .contact-section {
   background: rgba($color: #000000, $alpha: 0.1);
-  height: 92vh;
   overflow: scroll;
-
+  height: 38vh;
   .user-card {
     cursor: pointer;
     display: grid;
@@ -100,10 +105,7 @@ const emit = defineEmits(["name", "msg"]);
 
     .list {
       padding-bottom: 1rem;
-      a {
-        color: white;
-        padding-left: 1rem;
-      }
+      color: white;
     }
 
     .slide-fade-enter-active {
