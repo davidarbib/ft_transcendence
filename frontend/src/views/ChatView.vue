@@ -13,6 +13,9 @@ const messageText = ref("");
 const myInput = ref("");
 let userIn = ref([]);
 
+const isAdmin = ref(false);
+const isOwner = ref(false);
+
 interface Messages {
   [room: string]: string;
   room: string;
@@ -112,28 +115,32 @@ function banUser() {
       v-for="login in userIn"
       :key="login.id"
     >
-      <p>{{ login.login }}</p>
+      <div class="user-prop">
+        {{ login.login }}
+        <p v-if="isAdmin" class="admin-status">
+          <i class="fa-solid fa-crown m-1"></i>
+        </p>
+        <p v-if="isOwner" class="owner-status">
+          <i class="fa-solid fa-star m-1"></i>
+        </p>
+      </div>
       <div class="icon">
-        <div class="common-icons">
-          <!--        add friend-->
-          <p @click="addFriend()">
-            <i class="fa-solid fa-heart mx-1"></i>
-          </p>
-          <!--        mute-->
-          <p @click="muteClient()">
-            <i class="fa-solid fa-comment-slash mx-1"></i>
-          </p>
-        </div>
-        <div class="admin-icons">
-          <!--        ban -->
-          <p @click="banUser()">
-            <i class="fa-solid fa-ban mx-1"></i>
-          </p>
-          <!--        add admin-->
-          <p @click="addAdmin()">
-            <i class="fa-solid fa-crown mx-1"></i>
-          </p>
-        </div>
+        <!--        add friend-->
+        <p class="common-icons" @click="addFriend()">
+          <i class="fa-solid fa-heart mx-1"></i>
+        </p>
+        <!--        mute-->
+        <p class="common-icons" @click="muteClient()">
+          <i class="fa-solid fa-comment-slash mx-1"></i>
+        </p>
+        <!--        ban -->
+        <p v-if="isAdmin" class="admin-icons" @click="banUser()">
+          <i class="fa-solid fa-ban mx-1"></i>
+        </p>
+        <!--        add admin-->
+        <p v-if="isAdmin" class="admin-icons" @click="addAdmin()">
+          <i class="fa-solid fa-crown mx-1"></i>
+        </p>
       </div>
     </div>
     <div class="messages text-gray-300">
@@ -201,11 +208,36 @@ function banUser() {
     padding-left: 0.5rem;
     margin-left: 0.5rem;
     grid-area: 3 / 1 / 5 / 2;
+    .user-prop {
+      display: flex;
+      flex-direction: row;
+      .admin-status {
+        position: relative;
+        left: 11rem;
+        color: v.$primary;
+      }
+      .owner-status {
+        position: relative;
+        left: 8rem;
+        color: v.$primary;
+      }
+    }
     .icon {
       display: flex;
       flex-direction: row;
-      cursor: pointer;
-      color: white;
+      color: whitesmoke;
+      .common-icons {
+        cursor: pointer;
+        :hover {
+          color: v.$primary;
+        }
+      }
+      .admin-icons {
+        cursor: pointer;
+      }
+      :hover {
+        color: v.$primary;
+      }
     }
   }
 
