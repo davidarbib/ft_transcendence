@@ -46,8 +46,16 @@ function draw(): void {
 }
 
 userStore.gameSocket.on("gameState", (gameStatePayload) => {
+
   console.log("ball coord in socket on : ");
   console.log(gameStatePayload.ballX + ", " + gameStatePayload.ballY);
+
+  console.log("padA coord in socket on : ");
+  console.log(gameStatePayload.playerOneY);
+
+  console.log("padB coord in socket on : ");
+  console.log(gameStatePayload.playerTwoY);
+
   padAy.value = gameStatePayload.playerOneY * ratioY.value;
   padAy.value = gameStatePayload.playerTwoY * ratioY.value;
   ballPosX.value = gameStatePayload.ballX * ratioX.value;
