@@ -28,6 +28,8 @@ function draw_shape(x: number, y: number, width: number, height: number): void {
 
 function draw(): void {
   console.log(ballPosX.value + ", " + ballPosY.value);
+  console.log(padAy.value + ", " + padAx.value);
+  console.log(padBy.value + ", " + padBx.value);
   width.value = (window.innerWidth * 80) / 100;
   height.value = (window.innerHeight * 80) / 100;
   const ctx = ref(canvasRef.value?.getContext("2d"));
@@ -46,7 +48,7 @@ function draw(): void {
 
 userStore.gameSocket.on("gameState", (gameStatePayload) => {
   padAy.value = gameStatePayload.playerOneY * ratioY.value;
-  padAy.value = gameStatePayload.playerTwoY * ratioY.value;
+  padBy.value = gameStatePayload.playerTwoY * ratioY.value;
   ballPosX.value = gameStatePayload.ballX * ratioX.value;
   ballPosY.value = gameStatePayload.ballY * ratioY.value;
   draw();
