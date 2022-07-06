@@ -56,6 +56,8 @@ function sendMessage() {
 }
 
 watch(getName, () => {
+  getAdmins();
+  getOwner();
   getUserInChan();
   messages.value = [];
   userStore.chatsocket.emit(
@@ -82,6 +84,15 @@ function muteClient() {
 }
 
 function addFriend() {
+    axios
+    .post(`http://localhost:8090/contacts/${getName.value}`, {
+      userLogin:userStore.user.login, followedlogin:""})
+    .then((response) => {
+      console.log(response.data);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
   console.log("friend");
 }
 
@@ -99,13 +110,13 @@ function getOwner() {
 }
 
 function addAdmin() {
+  userStore.chatsocket.emit('addAdmin', {name:getName.value, user: userStore.user, login: ""})
   console.log("add admin");
 }
 
 function banUser() {
-  console.log("ban user");
+  console.log("need ban user");
 }
-
 </script>
 
 <template>
@@ -126,18 +137,26 @@ function banUser() {
     >
       <p>{{ login.login }}</p>
       <div class="icon">
-        <p class="common-icons">
-          <i class="fa-solid fa-heart mx-1" @click="addFriend"></i>
+        <div class="common-icons">
           <!--        add friend-->
-          <i class="fa-solid fa-comment-slash mx-1" @click="muteClient"></i>
+          <p @click="addFriend()">
+            <i class="fa-solid fa-heart mx-1"></i>
+          </p>
           <!--        mute-->
-        </p>
-        <p class="admin-icons">
-          <i class="fa-solid fa-ban mx-1" @click="banUser"></i>
+          <p @click="muteClient()">
+            <i class="fa-solid fa-comment-slash mx-1"></i>
+          </p>
+        </div>
+        <div class="admin-icons">
           <!--        ban -->
-          <i class="fa-solid fa-crown mx-1" @click="addAdmin"></i>
+          <p @click="banUser()">
+            <i class="fa-solid fa-ban mx-1"></i>
+          </p>
           <!--        add admin-->
-        </p>
+          <p @click="addAdmin()">
+            <i class="fa-solid fa-crown mx-1"></i>
+          </p>
+        </div>
       </div>
     </div>
     <div class="messages text-gray-300">

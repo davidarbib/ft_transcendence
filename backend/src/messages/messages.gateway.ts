@@ -129,6 +129,33 @@ export class MessagesGateway
       }
     })
   }
+
+  @SubscribeMessage('addAdmin')
+  async addAdmin( @MessageBody('name') name:string, @MessageBody('user') user:User, @MessageBody('login') login:string )
+  {
+    const list = await myDataSource.getRepository(ChanParticipant).find({relations : ['participant', 'chan']});
+    list.forEach( element => {
+
+      if (element.chan && element.participant)
+      {
+        if (element.chan.name == name &&  element.participant.login== user.login  && (element.privilege == ChanPartStatus.OWNER  || element.privilege == ChanPartStatus.ADMIN))
+        {
+          list.forEach(async element1 => {
+            if (element1.chan.name == name &&  element1.participant.login== login)
+            {
+              const chanPart = element1;
+              chanPart.privilege = ChanPartStatus.ADMIN;
+              await myDataSource.getRepository(ChanParticipant).save(chanPart);
+              return;
+
+            }
+
+          })
+        }
+      }
+    })
+  }
+  
   // @SubscribeMessage('addfriend')
   // async TheOwner( @MessageBody('name') name:string)
   // {

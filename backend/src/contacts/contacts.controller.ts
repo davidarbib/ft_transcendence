@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ConsoleLogger } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, UseGuards,  Param, Delete, ConsoleLogger } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
 import { JwtGuard } from 'src/auth/guards/jwt.guard';
 import { User } from 'src/users/entities/user.entity';
@@ -7,7 +7,7 @@ import { CreateContactDto } from './dto/create-contact.dto';
 import { UpdateContactDto } from './dto/update-contact.dto';
 
 @Controller('contacts')
-//@Useguard(JwtGuard)
+@UseGuards(JwtGuard)
 export class ContactsController {
   constructor(private readonly contactsService: ContactsService) {}
   @Post()

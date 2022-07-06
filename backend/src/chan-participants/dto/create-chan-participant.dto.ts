@@ -8,9 +8,12 @@ export class CreateChanParticipantDto  {
     privilege: ChanPartStatus;
 
     @IsBoolean()
+    @IsOptional()
+
     mute: boolean;
     
     @IsBoolean()
+    @IsOptional()
     ban: boolean;
 
     participant: User;
@@ -18,6 +21,6 @@ export class CreateChanParticipantDto  {
     chan : Channel;
 
     @IsDate()
-   // @IsOptional()
+    @IsOptional()
     end_timestamp : Date;
 }
