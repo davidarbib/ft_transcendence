@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 
+defineProps({ music: String });
 const volumeButton = ref(true);
 const muted = ref("");
 
@@ -18,13 +19,13 @@ const toggleMusic = () => {
   </div>
   <div v-if="volumeButton">
     <audio id="myVideo" autoplay loop hidden>
-      <source src="@/assets/homepage_music.mp3" type="audio/mpeg" />
+      <source src="{{music}}" type="audio/mpeg" />
       This browser does not support the audio element.
     </audio>
   </div>
   <div v-else>
     <audio id="myVideo" autoplay loop hidden muted>
-      <source src="@/assets/homepage_music.mp3" type="audio/mpeg" />
+      <source src="{{music}}" type="audio/mpeg" />
       This browser does not support the audio element.
     </audio>
   </div>
