@@ -150,15 +150,9 @@ export class Game
     
     public movePad(playerId: string, cmd: PadCmd)
     {
-        console.log(`height : ${this.state.height}`);
-        console.log("pad positions in movePad beginning");
-        console.log(this.state.player1.yPos)
-        console.log(this.state.player2.yPos);
         let finalPos : number;
         let playerState : PlayerState = this.playerSelector(playerId);
         let velocity : number = playerState.velocity;
-        console.log(`velocity : ${velocity}`)
-        console.log(`playerState yPos : ${playerState.yPos}`);
         switch (cmd)
         {
             case PadCmd.UP:

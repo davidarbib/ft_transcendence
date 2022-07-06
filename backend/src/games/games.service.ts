@@ -9,7 +9,6 @@ import { myDataSource } from 'src/app-data-source';
 import { Player } from 'src/players/entities/player.entity';
 import { Game } from 'src/games/game/game';
 import { Socket } from 'socket.io';
-import { ESMap } from 'typescript';
 import { GameState } from './game/gameState';
 
 export interface UserSocket
