@@ -12,6 +12,8 @@ let padAx = ref<number>(30);
 let padAy = ref<number>(height.value / 2 - 30);
 let padBx = ref<number>(width.value - 40);
 let padBy = ref<number>(height.value / 2 - 30);
+let scoreA = ref<number>(0);
+let scoreB = ref<number>(0);
 
 function draw_shape(x: number, y: number, width: number, height: number): void {
   const ctx = ref(canvasRef.value?.getContext("2d"));
@@ -68,6 +70,9 @@ onMounted(() => {
 </script>
 
 <template>
+  <h1 class="text-8xl tracking-widest text-white my-42">
+    {{ scoreA + ":" + scoreB }}
+  </h1>
   <div class="w-full text-center">
     <canvas
       tabindex="0"

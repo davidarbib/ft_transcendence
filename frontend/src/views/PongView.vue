@@ -11,7 +11,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="flex items-center min-h-screen">
+  <div class="flex flex-col items-center min-h-screen">
     <BlockGame />
   </div>
 </template>
