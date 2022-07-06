@@ -140,8 +140,8 @@ export class GamesGateway {
   {
     //TODO security
     client.join(gameId);
-    this.gamesService.games[gameId].setReady(playerId);
-    if (this.gamesService.games[gameId].arePlayersReady())
+    this.gamesService.setReady(gameId, playerId);
+    if (this.gamesService.arePlayersReady(gameId))
       this.gameLoop(gameId);
   }
 
@@ -165,15 +165,24 @@ export class GamesGateway {
     client.leave(gameId);
   }
 
-  @SubscribeMessage('movePad')
-  async movePad
+  @SubscribeMessage('padUp')
+  async padUp
   (
     @MessageBody('gameId') gameId: string,
     @MessageBody('playerId') playerId: string,
-    @MessageBody('cmd') cmd: PadCmd,
   )
   {
-    this.gamesService.getGame(gameId).movePad(playerId, cmd);
+    this.gamesService.getGame(gameId).movePad(playerId, PadCmd.UP);
+  }
+
+  @SubscribeMessage('padDown')
+  async padDown
+  (
+    @MessageBody('gameId') gameId: string,
+    @MessageBody('playerId') playerId: string,
+  )
+  {
+    this.gamesService.getGame(gameId).movePad(playerId, PadCmd.DOWN);
   }
 
   @OnEvent('score' , {async: true})
@@ -213,11 +222,13 @@ export class GamesGateway {
       {
         let loopPayload: GameStatePayload;
         const gameState = this.gamesService.getGame(gameId).getState();
-        loopPayload.gameId = gameId;
-        loopPayload.playerOneY = gameState.player1.yPos;
-        loopPayload.playerTwoY = gameState.player2.yPos;
-        loopPayload.ballX = gameState.ball.xPos;
-        loopPayload.ballY = gameState.ball.yPos;
+        loopPayload = {
+          gameId : gameId,
+          playerOneY : gameState.player1.yPos,
+          playerTwoY : gameState.player2.yPos,
+          ballX : gameState.ball.xPos,
+          ballY : gameState.ball.yPos,
+        } 
         this.server.to(gameId).emit("gameState", loopPayload);
       }
       else

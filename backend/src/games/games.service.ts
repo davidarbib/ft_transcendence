@@ -10,6 +10,7 @@ import { Player } from 'src/players/entities/player.entity';
 import { Game } from 'src/games/game/game';
 import { Socket } from 'socket.io';
 import { ESMap } from 'typescript';
+import { GameState } from './game/gameState';
 
 export interface UserSocket
 {
@@ -88,6 +89,19 @@ export class GamesService {
       })
   }
 
+  setReady(gameId: string, playerId: string)
+  {
+    this.games[gameId].setReady(playerId);
+  }
+
+
+  arePlayersReady(gameId) : boolean
+  {
+    if (this.games[gameId].arePlayersReady())
+      return true;
+    return false;
+  }
+
   gameExist(gameId: string) : boolean
   {
     return this.games.has(gameId);
@@ -96,6 +110,11 @@ export class GamesService {
   getGame(gameId: string) : Game
   {
     return this.games[gameId];
+  }
+
+  getState(gameId: string) : GameState
+  {
+    return this.games[gameId].getState();
   }
 
   createMMGame
