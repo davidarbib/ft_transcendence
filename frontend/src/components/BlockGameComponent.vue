@@ -17,6 +17,8 @@ let padBx = ref<number>(width.value - 40);
 let padBy = ref<number>((50 + 30) * ratioY.value);
 let scoreA = ref<number>(0);
 let scoreB = ref<number>(0);
+let playerWin = ref<boolean>(false);
+let gameEnded = ref<boolean>(false);
 
 function draw_shape(x: number, y: number, width: number, height: number): void {
   const ctx = ref(canvasRef.value?.getContext("2d"));
@@ -58,24 +60,46 @@ userStore.gameSocket.on("score", (scorePayload) => {
   else scoreB.value++;
 });
 
+userStore.gameSocket.on("endGame", (endGamePayload) => {
+  if (
+    (endGamePayload.didPlayerOneWin && userStore.gameInfos.isP1) ||
+    (!endGamePayload.didPlayerOneWin && !userStore.gameInfos.isP1)
+  )
+    playerWin.value = true;
+  gameEnded.value = true;
+});
+
 onMounted(() => {
-  window.addEventListener("keyup", () => {
-    userStore.gameSocket.emit("padUp", {
-      gameId: userStore.gameInfos.gameId,
-      playerId: userStore.gameInfos.playerId,
-    });
-  });
-  window.addEventListener("keydown", () => {
-    userStore.gameSocket.emit("padDown", {
-      gameId: userStore.gameInfos.gameId,
-      playerId: userStore.gameInfos.playerId,
-    });
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowUp") {
+      userStore.gameSocket.emit("padUp", {
+        gameId: userStore.gameInfos.gameId,
+        playerId: userStore.gameInfos.playerId,
+      });
+    }
+    if (e.key === "ArrowDown") {
+      userStore.gameSocket.emit("padDown", {
+        gameId: userStore.gameInfos.gameId,
+        playerId: userStore.gameInfos.playerId,
+      });
+    }
   });
   draw();
 });
 </script>
 
 <template>
+  <Teleport to="body">
+    <div v-if="gameEnded" class="modal">
+      <div class="modal-inner bg-black bg-opacity-100">
+        <h1 v-if="playerWin" class="text-white">Victory !</h1>
+        <h1 v-else class="text-white">Defeat !</h1>
+        <router-link to="/main" class="secondary-button">
+          Go back home
+        </router-link>
+      </div>
+    </div>
+  </Teleport>
   <h1 class="text-8xl tracking-widest text-white my-42">
     {{ scoreA + ":" + scoreB }}
   </h1>
@@ -89,6 +113,47 @@ onMounted(() => {
       style="background-color: black"
     >
     </canvas>
-    <ConfettiExplosion />
+    <ConfettiExplosion
+      v-if="playerWin"
+      :particleCount="642"
+      :stageHeight="5000"
+      :stageWidth="3700"
+      :duration="5000"
+    />
   </div>
 </template>
+
+<style scoped lang="scss">
+@use "@/assets/variables.scss" as v;
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 999;
+  background-color: rgba(0, 0, 0, 0.3);
+  display: grid;
+  justify-content: center;
+  align-items: center;
+  h1 {
+    font-size: 8rem;
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  .modal-inner {
+    background: rgb(237, 237, 237);
+    background: linear-gradient(v.$primary, v.$dark-blue) fixed;
+    width: 40rem;
+    height: 20rem;
+    padding: 1rem;
+    border-radius: 0.375rem;
+
+    a {
+      padding: 1rem 2rem;
+      font-size: 2rem;
+    }
+  }
+}
+</style>
