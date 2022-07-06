@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, nextTick } from "vue";
 import { useUserStore } from "@/stores/auth";
 import ConfettiExplosion from "vue-confetti-explosion";
 
@@ -27,8 +27,6 @@ function draw_shape(x: number, y: number, width: number, height: number): void {
 }
 
 function draw(): void {
-  //width.value = (window.innerWidth * 80) / 100;
-  //height.value = (window.innerHeight * 80) / 100;
   const ctx = ref(canvasRef.value?.getContext("2d"));
   ctx.value?.clearRect(0, 0, width.value, height.value);
   draw_shape(ballPosX.value, ballPosY.value, 20, 20);
@@ -65,7 +63,15 @@ userStore.gameSocket.on("endGame", (endGamePayload) => {
   gameEnded.value = true;
 });
 
+async function handleResize() {
+  width.value = (window.innerWidth * 80) / 100;
+  height.value = (window.innerHeight * 80) / 100;
+  await nextTick();
+  draw();
+}
+
 onMounted(() => {
+  window.addEventListener("resize", handleResize);
   window.addEventListener("keydown", (e) => {
     if (e.key === "ArrowUp") {
       userStore.gameSocket.emit("padUp", {
