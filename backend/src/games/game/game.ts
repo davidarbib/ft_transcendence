@@ -1,5 +1,11 @@
 import { GameState, PowerUp, PlayerState, BallState } from "./gameState";
-import { Vector2D, normalize, getReflectedVector, invert } from "./vector.utils"
+import {
+    Vector2D,
+    normalize,
+    invert,
+    invertX,
+    invertY,
+} from "./vector.utils";
 import * as param from "./constants";
 import { initialize } from "passport";
 import { EventEmitter2 } from "@nestjs/event-emitter";
@@ -144,8 +150,14 @@ export class Game
     
     public movePad(playerId: string, cmd: PadCmd)
     {
+        console.log(`height : ${this.state.height}`);
+        console.log("pad positions in movePad beginning");
+        console.log(this.state.player1.yPos)
+        console.log(this.state.player2.yPos);
         let playerState : PlayerState = this.playerSelector(playerId);
         let velocity : number = playerState.velocity;
+        console.log(`velocity : ${velocity}`)
+        console.log(`playerState yPos : ${playerState.yPos}`);
         switch (cmd)
         {
             case PadCmd.UP:
@@ -153,6 +165,7 @@ export class Game
                 break;
             case PadCmd.DOWN:
                 const wallDistance : number = this.state.height - playerState.yPos;
+                console.log(`wallDistance : ${wallDistance}`)
                 playerState.yPos -= Math.min(velocity, wallDistance);
                 break;
             default:
@@ -167,51 +180,54 @@ export class Game
         options: GameOptions,
     )
     {
-        //this.state.id = ids.gameId;
-
         //TODO four-angle random direction 
         
-        this.state.serviceSide = this.randomSide();
+        let side = this.randomSide()
 
         const ballVector : Vector2D = {
             x : this.state.serviceSide,
             y : this.randomSide(),
         }
 
-        this.state.ball = {
-            xPos: param.BALLINITX,
-            yPos: param.BALLINITY,
-            size: param.BALLSIZE,
-            velocity: param.BALLVELOCITY,
-            direction: ballVector,
-        };
-
-        this.state.player1 = {
-            id: ids.playerOneId, 
-            //socket: ids.playerOneSocket,
-            isP1: true,
-            xPos: param.P1PADX,
-            yPos: param.PADY,
-            size: param.PADSIZE,
-            score: 0,
-            powerUp: PowerUp.NONE,
-            handicap: options.p1Handicap,
-            velocity: param.PADVELOCITY,
-            ready: false
-        }
-
-        this.state.player2 = {
-            id: ids.playerTwoId, 
-            //socket: ids.playerTwoSocket,
-            isP1: false,
-            xPos: param.P2PADX,
-            yPos: param.PADY,
-            size: param.PADSIZE,
-            score: 0,
-            powerUp: PowerUp.NONE,
-            handicap: options.p2Handicap,
-            velocity: param.PADVELOCITY,
-            ready: false
+        this.state = {
+            id : ids.gameId,
+            height : param.HEIGHT,
+            width : param.WIDTH,
+            player1 : {
+                id: ids.playerOneId, 
+                //socket: ids.playerOneSocket,
+                isP1: true,
+                xPos: param.P1PADX,
+                yPos: param.PADY,
+                size: param.PADSIZE,
+                score: 0,
+                powerUp: PowerUp.NONE,
+                handicap: options.p1Handicap,
+                velocity: param.PADVELOCITY,
+                ready: false
+            },
+            player2 : {
+                id: ids.playerTwoId, 
+                //socket: ids.playerTwoSocket,
+                isP1: false,
+                xPos: param.P2PADX,
+                yPos: param.PADY,
+                size: param.PADSIZE,
+                score: 0,
+                powerUp: PowerUp.NONE,
+                handicap: options.p2Handicap,
+                velocity: param.PADVELOCITY,
+                ready: false
+            },
+            ball : {
+                xPos: param.BALLINITX,
+                yPos: param.BALLINITY,
+                size: param.BALLSIZE,
+                velocity: param.BALLVELOCITY,
+                direction: ballVector,
+            },
+            winThresh : param.WINTHRESH,
+            serviceSide: side,
         }
     }
     
@@ -261,7 +277,7 @@ export class Game
 
     private wallBounce(wall: Wall)
     {
-        this.state.ball.direction = invert(this.state.ball.direction);
+        this.state.ball.direction = invertY(this.state.ball.direction);
         /*
         let normal: Vector2D;
 
@@ -306,7 +322,7 @@ export class Game
         if (this.state.ball.yPos > boundaries.up
             && this.state.ball.yPos < boundaries.down)
             //this.state.ball.direction = getReflectedVector(this.state.ball.direction, normal);
-            this.state.ball.direction = invert(this.state.ball.direction);
+            this.state.ball.direction = invertX(this.state.ball.direction);
         else
         {
             if (this.state.ball.yPos <= boundaries.up)    
@@ -348,6 +364,7 @@ export class Game
 
     private scorePoint(player: PlayerState) : boolean
     {
+        console.log("point detected");
         let xDirection : number;
         let yDirection : number;
 

@@ -27,6 +27,9 @@ function draw_shape(x: number, y: number, width: number, height: number): void {
 }
 
 function draw(): void {
+  console.log(ballPosX.value + ", " + ballPosY.value);
+  width.value = (window.innerWidth * 80) / 100;
+  height.value = (window.innerHeight * 80) / 100;
   const ctx = ref(canvasRef.value?.getContext("2d"));
   ctx.value?.clearRect(0, 0, width.value, height.value);
   draw_shape(ballPosX.value, ballPosY.value, 20, 20);

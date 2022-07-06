@@ -77,6 +77,16 @@ export function invert(v: Vector2D): Vector2D
     return new Vector2D(v.x * -1, v.y * -1);
 }
 
+export function invertX(v: Vector2D): Vector2D
+{
+    return new Vector2D(v.x * -1, v.y);
+}
+
+export function invertY(v: Vector2D): Vector2D
+{
+    return new Vector2D(v.x, v.y * -1);
+}
+
 export function getReflectedVector(v: Vector2D, normal: Vector2D): Vector2D
 {
     let reflect: Vector2D;
