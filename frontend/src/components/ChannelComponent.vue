@@ -111,7 +111,10 @@ const emit = defineEmits(["name", "msg"]);
       display: flex;
       flex-direction: row;
       padding-bottom: 1rem;
-      color: white;
+      color: whitesmoke;
+      :hover {
+        color: v.$primary;
+      }
     }
 
     .slide-fade-enter-active {
