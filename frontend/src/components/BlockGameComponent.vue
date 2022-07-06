@@ -17,6 +17,7 @@ let padBx = ref<number>(width.value - 40);
 let padBy = ref<number>((50 + 30) * ratioY.value);
 let scoreA = ref<number>(0);
 let scoreB = ref<number>(0);
+let playerWin = ref<boolean>(false);
 
 function draw_shape(x: number, y: number, width: number, height: number): void {
   const ctx = ref(canvasRef.value?.getContext("2d"));
@@ -54,6 +55,14 @@ userStore.gameSocket.on("score", (scorePayload) => {
   else scoreB.value++;
 });
 
+userStore.gameSocket.on("endGame", (endGamePayload) => {
+  if (
+    (endGamePayload.didPlayerOneWin && userStore.gameInfos.isP1) ||
+    (!endGamePayload.didPlayerOneWin && !userStore.gameInfos.isP1)
+  )
+    playerWin.value = true;
+});
+
 onMounted(() => {
   window.addEventListener("keyup", () => {
     userStore.gameSocket.emit("padUp", {
@@ -85,6 +94,12 @@ onMounted(() => {
       style="background-color: black"
     >
     </canvas>
-    <ConfettiExplosion :particleCount="642" :stageHeight="5000" :stageWidth="3700" :duration="5000" />
+    <ConfettiExplosion
+      v-if="playerWin"
+      :particleCount="642"
+      :stageHeight="5000"
+      :stageWidth="3700"
+      :duration="5000"
+    />
   </div>
 </template>
