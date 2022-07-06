@@ -18,6 +18,7 @@ let padBy = ref<number>((50 + 30) * ratioY.value);
 let scoreA = ref<number>(0);
 let scoreB = ref<number>(0);
 let playerWin = ref<boolean>(false);
+let gameEnded = ref<boolean>(false);
 
 function draw_shape(x: number, y: number, width: number, height: number): void {
   const ctx = ref(canvasRef.value?.getContext("2d"));
@@ -61,12 +62,12 @@ userStore.gameSocket.on("endGame", (endGamePayload) => {
     (!endGamePayload.didPlayerOneWin && !userStore.gameInfos.isP1)
   )
     playerWin.value = true;
+  gameEnded.value = true;
 });
 
 onMounted(() => {
   window.addEventListener("keydown", (e) => {
     if (e.key === "ArrowUp") {
-      console.log("upArrow");
       userStore.gameSocket.emit("padUp", {
         gameId: userStore.gameInfos.gameId,
         playerId: userStore.gameInfos.playerId,
@@ -84,6 +85,16 @@ onMounted(() => {
 </script>
 
 <template>
+  <Teleport to="body">
+    <div v-if="!gameEnded">
+      <div class="popup-inner bg-black bg-opacity-100">
+        <h1 class="text-white">Victory !</h1>
+        <router-link to="/main" class="secondary-button">
+          Go back home
+        </router-link>
+      </div>
+    </div>
+  </Teleport>
   <h1 class="text-8xl tracking-widest text-white my-42">
     {{ scoreA + ":" + scoreB }}
   </h1>
@@ -106,3 +117,36 @@ onMounted(() => {
     />
   </div>
 </template>
+
+<style scoped lang="scss">
+@use "@/assets/variables.scss" as v;
+.popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+  background-color: rgba(0, 0, 0, 0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .popup-inner {
+    background: linear-gradient(v.$primary, v.$dark-blue) fixed;
+    margin-right: 20%;
+    padding: 10rem;
+    border-radius: 0.375rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    h1,
+    h2 {
+      margin-bottom: 2rem;
+      font-size: 3rem;
+      color: white;
+    }
+  }
+}
+</style>
