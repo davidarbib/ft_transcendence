@@ -2,52 +2,46 @@
 import NavbarItem from "@/components/NavbarItemComponent.vue";
 import Channel from "@/components/ChannelComponent.vue";
 import PubChannel from "@/components/PubChannelComponent.vue";
-import { ref, reactive , onBeforeMount, watch} from "vue";
+import { ref, watch } from "vue";
 import { useUserStore } from "@/stores/auth";
-import { io } from "socket.io-client";
-import { computed } from "@vue/reactivity";
 import axios from "axios";
-const chatsocket = io("http://localhost:8090");
 const getName = ref("");
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const userStore = useUserStore();
-let messages: any = {};
+let messages: any = ref([]);
 const messageText = ref("");
 const myInput = ref("");
 let userIn = ref([]);
-let test = ref([]);
+  axios.defaults.withCredentials = true;
 
-  chatsocket.on("connection", (socket) => {
-  });
-  chatsocket.on("message", (message) => {
-    messages[getName].value.push(message) ;
-  });
+interface Messages {
+  [room: string]: string;
+  room: string;
+  stock_msg;
+}
+let test: Messages[] = [];
 
-/*
-onBeforeMount(() =>{
-   userStore.chatsocket.emit('findMessageFromChan', {name:getName.value, login :userStore.user}, (response) => {
-     messages.value = response
-  });
-        console.log("qhddhwdjhd")
-});*/
-
+userStore.chatsocket.on("connection", (socket) => {});
+userStore.chatsocket.on("message", (message: never) => {
+  test.push({ room: getName.value, stock_msg: message });
+  messages.value.push(message);
+});
 
 function getUserInChan() {
-  axios.defaults.withCredentials = true;
   axios
     .get(`http://localhost:8090/channels/${getName.value}`)
     .then((response) => {
       userIn.value = response.data;
+      console.log(response.data);
     })
     .catch((error) => {
       console.log(error);
     });
   return userIn.value;
-};
-
+}
 
 function sendMessage() {
-  chatsocket.emit(
+  userStore.chatsocket.emit(
     "createMessage",
     {
       name: getName.value,
@@ -60,6 +54,58 @@ function sendMessage() {
     }
   );
 }
+
+watch(getName, () => {
+  getUserInChan();
+  messages.value = [];
+  userStore.chatsocket.emit(
+    "findMessageFromChan",
+    { name: getName.value, login: userStore.user.login },
+    (data: never) => {
+      console.log(data);
+      messages.value = data;
+    }
+  );
+});
+
+function muteClient() {
+    axios
+    .patch(`http://localhost:8090/chan-participants/${getName.value}`, {
+      name:getName.value, mute:true})
+    .then((response) => {
+      console.log(response.data);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  console.log("mute");
+}
+
+function addFriend() {
+  console.log("friend");
+}
+
+function getAdmins() {
+  userStore.chatsocket.emit('userAdmin', {name:getName.value}, (data)=>{
+      // mettre la data ou tu ve
+  })
+  // <i class="fa-solid fa-crown"></i>
+}
+
+function getOwner() {
+    userStore.chatsocket.emit('Owner', {name:getName.value}, (data)=>{
+      // mettre la data ou tu ve
+  })
+}
+
+function addAdmin() {
+  console.log("add admin");
+}
+
+function banUser() {
+  console.log("ban user");
+}
+
 </script>
 
 <template>
@@ -71,10 +117,28 @@ function sendMessage() {
       <Channel @name="(msg) => (getName = msg)" />
     </div>
     <div class="channel-pub">
-      <PubChannel @name="(msgs) => (getName = msgs)" />
+      <PubChannel @name="(msg) => (getName = msg)" />
     </div>
-    <div class="channel-parti" v-for="login in getUserInChan" :key="login">
+    <div
+      class="channel-parti bg-black bg-opacity-20"
+      v-for="login in userIn"
+      :key="login.id"
+    >
       <p>{{ login.login }}</p>
+      <div class="icon">
+        <p class="common-icons">
+          <i class="fa-solid fa-heart mx-1" @click="addFriend"></i>
+          <!--        add friend-->
+          <i class="fa-solid fa-comment-slash mx-1" @click="muteClient"></i>
+          <!--        mute-->
+        </p>
+        <p class="admin-icons">
+          <i class="fa-solid fa-ban mx-1" @click="banUser"></i>
+          <!--        ban -->
+          <i class="fa-solid fa-crown mx-1" @click="addAdmin"></i>
+          <!--        add admin-->
+        </p>
+      </div>
     </div>
     <div class="messages text-gray-300">
       <p class="text-2xl">{{ getName }}</p>
@@ -83,7 +147,7 @@ function sendMessage() {
         v-for="message in messages"
         :key="message"
       >
-        {{ message.login }}{{ message.name }} :
+        {{ message.login }} :
         {{ message.time }}
         <p>{{ message.content }}</p>
       </div>
@@ -135,8 +199,18 @@ function sendMessage() {
   }
 
   .channel-parti {
-    background-color: aqua;
+    overflow: scroll;
+    color: v.$primary;
+    border-radius: 0.375rem;
+    padding-left: 0.5rem;
+    margin-left: 0.5rem;
     grid-area: 3 / 1 / 5 / 2;
+    .icon {
+      display: flex;
+      flex-direction: row;
+      cursor: pointer;
+      color: white;
+    }
   }
 
   .message-input {

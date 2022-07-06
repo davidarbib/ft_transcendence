@@ -39,8 +39,16 @@ export class MessagesGateway
   async findMsg(@MessageBody('name') name:string, @MessageBody('login') login:string)
   {
     const msg = await this.messageService.findMsg(name, login);
-    this.server.emit('allmsg', msg);
     return  msg;
+  }
+
+  @SubscribeMessage('ourchan')
+  async findChan( @MessageBody('user') user:User)
+  {
+    const chan = await this.messageService.findChan(user);
+    console.log(chan);
+    this.server.emit('chan', chan);
+    return  chan ;
   }
 
   @SubscribeMessage('createChannel')
@@ -66,9 +74,10 @@ export class MessagesGateway
 
   @SubscribeMessage('joinchan')
   async joinRoom( @MessageBody('login') login:string,@ConnectedSocket() client:Socket, @MessageBody('name') name:string) {
+    console.log("ddd");
     const userToJoin =  await this.messageService.identify(login, name, client);
     if (userToJoin == 0)
-  {
+    {
     client.on("connection", (socket) => {
       socket.join(name);
     });
@@ -78,14 +87,16 @@ export class MessagesGateway
   @SubscribeMessage('leavechan')
   async LeaveRoom( @MessageBody('user') user:User, @MessageBody('name') name:string)
   {
+    console.log("oui ca passe ici");
     const chanPart = await myDataSource.getRepository(ChanParticipant).find({relations:['participant', 'chan']})
    chanPart.forEach( async element => {
     if (element.participant && element.chan)
     {
       if (element.participant.login == user.login && element.chan.name == name)
       {
-        const chanPartDelete = await myDataSource.getRepository(ChanParticipant).findOneBy({id : element.participant.id});
-        return chanPartDelete.remove();
+        const chanPartDelete = await myDataSource.getRepository(ChanParticipant).findOneBy({id : element.id});
+         chanPartDelete.remove();
+        return ;
       }
 
     }
@@ -105,6 +116,7 @@ export class MessagesGateway
       })
       return listAdmin;
     }
+
   @SubscribeMessage('Owner')
   async TheOwner( @MessageBody('name') name:string)
   {
@@ -117,6 +129,18 @@ export class MessagesGateway
       }
     })
   }
+  // @SubscribeMessage('addfriend')
+  // async TheOwner( @MessageBody('name') name:string)
+  // {
+  //   const list = await myDataSource.getRepository(ChanParticipant).find({relations : ['participant', 'chan']});
+  //   list.forEach( element => {
+  //     if (element.chan && element.participant)
+  //     {
+  //       if (element.chan.name == name && element.privilege == ChanPartStatus.OWNER)
+  //         return element.participant;
+  //     }
+  //   })
+  // }
   /*
   @SubscribeMessage('listOfContacts')
   async list_contact( @MessageBody('login') login :string)

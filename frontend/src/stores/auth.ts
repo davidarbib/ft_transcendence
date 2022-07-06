@@ -3,7 +3,6 @@ import { ref, watch } from "vue";
 import axios from "axios";
 import { io } from "socket.io-client";
 
-
 export const useUserStore = defineStore("user", () => {
   const user = ref({
     id: "default",

@@ -42,7 +42,7 @@ export class Channel extends BaseEntity
 
     @ApiProperty()
     @OneToMany(() => ChanParticipant, (chanParticipant : ChanParticipant) => chanParticipant.chan)
-    participants: ChanParticipant[];
+    participant: ChanParticipant[];
 
     @ApiProperty()
     @OneToMany(() => Messages, (message : Messages) => message.chan)

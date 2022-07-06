@@ -9,7 +9,6 @@ import { ChanParticipant } from 'src/chan-participants/entities/chan-participant
 import { channel } from 'diagnostics_channel';
 import { Console } from 'console';
 import { ContactsService } from 'src/contacts/contacts.service';
-import {elementAt} from "rxjs";
 import { Server, Socket } from 'socket.io';
 
 
@@ -38,6 +37,16 @@ export class MessagesService {
     return msg;
   }
 
+  async findChan( usr:User){
+
+    const test = await myDataSource.getRepository(ChanParticipant).find({ relations: ['participant', 'chan'] });
+    let arr: any = [];
+    test.forEach(element => {
+      if (element.participant.login == usr.login)
+        arr.push(element.chan)
+    });
+  }
+
   async findAll() {
     const msg = await myDataSource.getRepository(Messages).find();
     return msg
@@ -48,11 +57,14 @@ export class MessagesService {
     const msg = await this.msgRepo.find({ relations: [ 'chan'] })
     let arr : any = [];
     msg.forEach(element => {
-      if (element.chan.name == name)
+      if (element.chan)
       {
-   //       if (!this.contactsService.block_bool(login, element.author.login))
-            arr.push(element);
+     if (element.chan.name == name)
+      {
+        //      if (!this.contactsService.block_bool(login, element.author.login))
+        arr.push(element);
       }
+    }
     });
     return arr;
   }
