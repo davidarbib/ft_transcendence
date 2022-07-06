@@ -45,10 +45,10 @@ function draw(): void {
 //};
 
 userStore.gameSocket.on("gameState", (gameStatePayload) => {
-  padAy.value = gameStatePayload.playerOneY;
-  padAy.value = gameStatePayload.playerTwoY;
-  ballPosX.value = gameStatePayload.ballX;
-  ballPosY.value = gameStatePayload.ballY;
+  padAy.value = gameStatePayload.playerOneY * ratioY.value;
+  padAy.value = gameStatePayload.playerTwoY * ratioY.value;
+  ballPosX.value = gameStatePayload.ballX * ratioX.value;
+  ballPosY.value = gameStatePayload.ballY * ratioY.value;
   draw();
 });
 
