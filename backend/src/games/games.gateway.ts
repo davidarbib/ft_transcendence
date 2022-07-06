@@ -224,6 +224,10 @@ export class GamesGateway {
       {
         let loopPayload: GameStatePayload;
         const gameState = this.gamesService.getGame(gameId).getState();
+        console.log("positions just before emit:");
+        console.log(gameState.player1.yPos);
+        console.log(gameState.player2.yPos);
+        console.log(gameState.ball.yPos);
         loopPayload = {
           gameId : gameId,
           playerOneY : gameState.player1.yPos,
@@ -239,6 +243,6 @@ export class GamesGateway {
         this.server.in(gameId).socketsLeave(gameId);
       }
    // }, 33); //30fps
-    }, 2000); //slow for debugging
+    }, 4000); //slow for debugging
   }
 }

@@ -154,6 +154,7 @@ export class Game
         console.log("pad positions in movePad beginning");
         console.log(this.state.player1.yPos)
         console.log(this.state.player2.yPos);
+        let finalPos : number;
         let playerState : PlayerState = this.playerSelector(playerId);
         let velocity : number = playerState.velocity;
         console.log(`velocity : ${velocity}`)
@@ -161,12 +162,12 @@ export class Game
         switch (cmd)
         {
             case PadCmd.UP:
-                playerState.yPos += Math.min(velocity, playerState.yPos);
+                finalPos = playerState.yPos - velocity;
+                playerState.yPos = Math.max(finalPos, 0);
                 break;
             case PadCmd.DOWN:
-                const wallDistance : number = this.state.height - playerState.yPos;
-                console.log(`wallDistance : ${wallDistance}`)
-                playerState.yPos -= Math.min(velocity, wallDistance);
+                finalPos = playerState.yPos + velocity;
+                playerState.yPos = Math.min(finalPos, this.state.height);
                 break;
             default:
                 throw new InternalServerErrorException("Bad command");
