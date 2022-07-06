@@ -64,17 +64,20 @@ userStore.gameSocket.on("endGame", (endGamePayload) => {
 });
 
 onMounted(() => {
-  window.addEventListener("keyup", () => {
-    userStore.gameSocket.emit("padUp", {
-      gameId: userStore.gameInfos.gameId,
-      playerId: userStore.gameInfos.playerId,
-    });
-  });
-  window.addEventListener("keydown", () => {
-    userStore.gameSocket.emit("padDown", {
-      gameId: userStore.gameInfos.gameId,
-      playerId: userStore.gameInfos.playerId,
-    });
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowUp") {
+      console.log("upArrow");
+      userStore.gameSocket.emit("padUp", {
+        gameId: userStore.gameInfos.gameId,
+        playerId: userStore.gameInfos.playerId,
+      });
+    }
+    if (e.key === "ArrowDown") {
+      userStore.gameSocket.emit("padDown", {
+        gameId: userStore.gameInfos.gameId,
+        playerId: userStore.gameInfos.playerId,
+      });
+    }
   });
   draw();
 });
