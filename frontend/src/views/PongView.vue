@@ -9,10 +9,11 @@ const userStore = useUserStore();
 onMounted(() => {
   userStore.gameSocket.emit("canvasReady", userStore.gameInfos);
 });
+console.log(userStore.gameMode);
 </script>
 
 <template>
-  <div class="sound"><MusicLoop music="../assets/homepage_music.mp3" /></div>
+  <div class="sound"><MusicLoop :music="userStore.gameMode" /></div>
   <div class="flex flex-col items-center min-h-screen">
     <BlockGame />
   </div>

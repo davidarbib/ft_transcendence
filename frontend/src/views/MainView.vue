@@ -2,7 +2,7 @@
 import NavbarItem from "@/components/NavbarItemComponent.vue";
 import Contact from "@/components/ContactComponent.vue";
 import Title from "@/components/TitleComponent.vue";
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { computed } from "@vue/reactivity";
 import { useUserStore } from "@/stores/auth";
 import { useRouter } from "vue-router";
@@ -14,6 +14,10 @@ let elapsedTimeS = ref(0);
 let elapsedTimeM = ref(0);
 let timer = ref();
 const userStore = useUserStore();
+
+watch(game_mode, () => {
+  userStore.gameMode = game_mode.value;
+});
 
 const formattedElapsedTime = computed(() => {
   if (elapsedTimeS.value > 59) {
@@ -81,7 +85,6 @@ userStore.gameSocket.on("gameReady", function (game) {
         </div>
       </div>
       <select v-model="game_mode" id="b2" class="secondary-button">
-        <option value="beach">Beach</option>
         <option value="vice">Vice</option>
         <option value="monkey">Monkey</option>
         <option value="mario">Mario</option>

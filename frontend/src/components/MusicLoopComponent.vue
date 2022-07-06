@@ -19,13 +19,31 @@ const toggleMusic = () => {
   </div>
   <div v-if="volumeButton">
     <audio id="myVideo" autoplay loop hidden>
-      <source src="{{music}}" type="audio/mpeg" />
+      <source
+        v-if="music === 'default' || music === 'vice'"
+        src="@/assets/homepage_music.mp3"
+        type="audio/mpeg"
+      />
+      <source
+        v-else-if="music === 'monkey'"
+        src="@/assets/monkey_music.mp3"
+        type="audio/mpeg"
+      />
+      <source
+        v-else-if="music === 'mario'"
+        src="@/assets/mario_music.mp3"
+        type="audio/mpeg"
+      />
       This browser does not support the audio element.
     </audio>
   </div>
   <div v-else>
     <audio id="myVideo" autoplay loop hidden muted>
-      <source src="{{music}}" type="audio/mpeg" />
+      <source
+        v-if="music === 'default'"
+        src="@/assets/homepage_music.mp3"
+        type="audio/mpeg"
+      />
       This browser does not support the audio element.
     </audio>
   </div>
