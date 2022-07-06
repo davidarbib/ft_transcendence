@@ -24,6 +24,8 @@ function draw_shape(x: number, y: number, width: number, height: number): void {
 }
 
 function draw(): void {
+  console.log("ball coord in draw : ");
+  console.log(ballPosX.value + ", " + ballPosY.value);
   width.value = (window.innerWidth * 80) / 100;
   height.value = (window.innerHeight * 80) / 100;
   const ctx = ref(canvasRef.value?.getContext("2d"));
@@ -41,6 +43,8 @@ function draw(): void {
 }
 
 userStore.gameSocket.on("gameState", (gameStatePayload) => {
+  console.log("ball coord in socket on : ");
+  console.log(gameStatePayload.ballX + ", " + gameStatePayload.ballY);
   padAy.value = gameStatePayload.playerOneY * ratioY.value;
   padAy.value = gameStatePayload.playerTwoY * ratioY.value;
   ballPosX.value = gameStatePayload.ballX * ratioX.value;

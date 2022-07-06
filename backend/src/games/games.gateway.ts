@@ -172,6 +172,7 @@ export class GamesGateway {
     @MessageBody('playerId') playerId: string,
   )
   {
+    console.log("move up");
     this.gamesService.getGame(gameId).movePad(playerId, PadCmd.UP);
   }
 
@@ -182,6 +183,7 @@ export class GamesGateway {
     @MessageBody('playerId') playerId: string,
   )
   {
+    console.log("move down");
     this.gamesService.getGame(gameId).movePad(playerId, PadCmd.DOWN);
   }
 
@@ -236,6 +238,7 @@ export class GamesGateway {
         clearInterval(gameClock);
         this.server.in(gameId).socketsLeave(gameId);
       }
-    }, 33); //30fps
+   // }, 33); //30fps
+    }, 2000); //slow for debugging
   }
 }

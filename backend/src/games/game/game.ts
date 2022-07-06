@@ -1,5 +1,11 @@
 import { GameState, PowerUp, PlayerState, BallState } from "./gameState";
-import { Vector2D, normalize, getReflectedVector, invert } from "./vector.utils"
+import {
+    Vector2D,
+    normalize,
+    invert,
+    invertX,
+    invertY,
+} from "./vector.utils";
 import * as param from "./constants";
 import { initialize } from "passport";
 import { EventEmitter2 } from "@nestjs/event-emitter";
@@ -261,7 +267,7 @@ export class Game
 
     private wallBounce(wall: Wall)
     {
-        this.state.ball.direction = invert(this.state.ball.direction);
+        this.state.ball.direction = invertY(this.state.ball.direction);
         /*
         let normal: Vector2D;
 
@@ -306,7 +312,7 @@ export class Game
         if (this.state.ball.yPos > boundaries.up
             && this.state.ball.yPos < boundaries.down)
             //this.state.ball.direction = getReflectedVector(this.state.ball.direction, normal);
-            this.state.ball.direction = invert(this.state.ball.direction);
+            this.state.ball.direction = invertX(this.state.ball.direction);
         else
         {
             if (this.state.ball.yPos <= boundaries.up)    
@@ -348,6 +354,7 @@ export class Game
 
     private scorePoint(player: PlayerState) : boolean
     {
+        console.log("point detected");
         let xDirection : number;
         let yDirection : number;
 
