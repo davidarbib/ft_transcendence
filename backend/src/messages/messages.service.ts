@@ -74,4 +74,8 @@ export class MessagesService {
   
     return  0;
   }
+  async list_contact(login : string)
+  {
+
+  }
 }

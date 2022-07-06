@@ -74,4 +74,55 @@ export class MessagesGateway
     });
 
   }
-  }}
+}
+  @SubscribeMessage('leavechan')
+  async LeaveRoom( @MessageBody('user') user:User, @MessageBody('name') name:string)
+  {
+    const chanPart = await myDataSource.getRepository(ChanParticipant).find({relations:['participant', 'chan']})
+   chanPart.forEach( async element => {
+    if (element.participant && element.chan)
+    {
+      if (element.participant.login == user.login && element.chan.name == name)
+      {
+        const chanPartDelete = await myDataSource.getRepository(ChanParticipant).findOneBy({id : element.participant.id});
+        return chanPartDelete.remove();
+      }
+
+    }
+  })
+  }
+  @SubscribeMessage('userAdmin')
+  async ListOfAdmin( @MessageBody('name') name:string)
+  {
+    let  listAdmin;
+      const list = await myDataSource.getRepository(ChanParticipant).find({relations : ['participant', 'chan']});
+      list.forEach( element => {
+        if (element.chan && element.participant)
+        {
+          if (element.chan.name == name && element.privilege == ChanPartStatus.ADMIN)
+            listAdmin.push(element.participant);
+        }
+      })
+      return listAdmin;
+    }
+  @SubscribeMessage('Owner')
+  async TheOwner( @MessageBody('name') name:string)
+  {
+    const list = await myDataSource.getRepository(ChanParticipant).find({relations : ['participant', 'chan']});
+    list.forEach( element => {
+      if (element.chan && element.participant)
+      {
+        if (element.chan.name == name && element.privilege == ChanPartStatus.OWNER)
+          return element.participant;
+      }
+    })
+  }
+  /*
+  @SubscribeMessage('listOfContacts')
+  async list_contact( @MessageBody('login') login :string)
+  {
+
+    return this.messageService.list_contact(login);
+  }*/
+}
+  
