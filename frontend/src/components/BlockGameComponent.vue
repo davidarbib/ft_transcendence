@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { useUserStore } from "@/stores/auth";
+import ConfettiExplosion from "vue-confetti-explosion";
 
 const userStore = useUserStore();
 let canvasRef = ref<HTMLCanvasElement | null>(null);
@@ -8,12 +9,12 @@ let width = ref<number>((window.innerWidth * 80) / 100);
 let height = ref<number>((window.innerHeight * 80) / 100);
 let ratioX = ref<number>(width.value / 100);
 let ratioY = ref<number>(height.value / 100);
-let ballPosX = ref<number>(0);
-let ballPosY = ref<number>(0);
-let padAx = ref<number>(30 * ratioX.value);
-let padAy = ref<number>(0);
-let padBx = ref<number>((width.value - 40) * ratioX.value);
-let padBy = ref<number>(0);
+let ballPosX = ref<number>(50 * ratioX.value);
+let ballPosY = ref<number>(50 * ratioY.value);
+let padAx = ref<number>(30);
+let padAy = ref<number>((50 + 30) * ratioY.value);
+let padBx = ref<number>(width.value - 40);
+let padBy = ref<number>((50 + 30) * ratioY.value);
 let scoreA = ref<number>(0);
 let scoreB = ref<number>(0);
 
@@ -52,6 +53,11 @@ userStore.gameSocket.on("gameState", (gameStatePayload) => {
   draw();
 });
 
+userStore.gameSocket.on("score", (scorePayload) => {
+  if (scorePayload === true) scoreA.value++;
+  else scoreB.value++;
+});
+
 onMounted(() => {
   window.addEventListener("keyup", () => {
     userStore.gameSocket.emit("padUp", {
@@ -83,5 +89,6 @@ onMounted(() => {
       style="background-color: black"
     >
     </canvas>
+    <ConfettiExplosion />
   </div>
 </template>
