@@ -62,15 +62,16 @@ const emit = defineEmits(["name", "msg"]);
       </div>
       <Transition name="slide-fade">
         <div v-if="channelOptions && channelSelected === channel.id">
-          <p class="list">
-            <i class="fa-solid fa-key mx-1" @click="addPassword"></i>
+          <div class="list">
             <!--        add pass-->
-            <i
-              class="fa-solid fa-right-from-bracket mx-1"
-              @click="leaveChan"
-            ></i>
+            <p @click="addPassword()">
+              <i class="fa-solid fa-key mx-1"></i>
+            </p>
             <!--        leave chan-->
-          </p>
+            <p @click="leaveChan()">
+              <i class="fa-solid fa-right-from-bracket mx-1"></i>
+            </p>
+          </div>
         </div>
       </Transition>
     </div>
