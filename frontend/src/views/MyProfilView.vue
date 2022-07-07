@@ -36,7 +36,21 @@ function onFileChanged($event: Event) {
 async function saveImage() {
   if (file.value) {
     try {
-      // save file.value
+      axios
+        .patch(`${api.url}/users/${userStore.user.id}`, {
+          avatarRef: file.value,
+        })
+        .then(() => {
+          error2fa.value = false;
+          success2fa.value = true;
+          notifyMessage.value = "Successfully updated profile picture";
+        })
+        .catch((error) => {
+          console.log(error);
+          error2fa.value = true;
+          success2fa.value = false;
+          notifyMessage.value = "Error when uploading new profile picture";
+        });
     } catch (error) {
       console.error(error);
       form.value?.reset();
