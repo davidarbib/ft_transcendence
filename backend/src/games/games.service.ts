@@ -10,6 +10,7 @@ import { Player } from 'src/players/entities/player.entity';
 import { Game } from 'src/games/game/game';
 import { Socket } from 'socket.io';
 import { GameState } from './game/gameState';
+import { randomUUID } from 'crypto';
 
 export interface UserSocket
 {
@@ -24,14 +25,15 @@ export class GamesService {
     private readonly matchesService : MatchesService,
     private readonly playersService : PlayersService,
   )
-
-  {
-  }
+  { }
 
   games : Map<string, Game> = new Map();
+  invitUser : Map<string, string> = new Map();
+  userInvit : Map<string, string> = new Map();
+  hostSocket : Map<string, Socket> = new Map();
   userWhoWaitMatch : UserSocket[] = [];
 
-  async create(user1: User, user2 :User) {
+  async create(user1: User, user2: User) {
     console.log("user1 : ");
     console.log(user1);
     console.log("user2 : ");
@@ -116,7 +118,7 @@ export class GamesService {
     return this.games[gameId].getState();
   }
 
-  createMMGame
+  createGame
   (
     gameId: string,
     playerOneId: string,
@@ -132,5 +134,42 @@ export class GamesService {
       undefined,
     );
     this.games[gameId] = game;
+  }
+
+  addInvit(userId: string, client: Socket) : string
+  {
+    this.hostSocket[userId] = client;
+    const uuid : string = randomUUID();
+    this.invitUser[uuid] = userId;
+    this.userInvit[userId] = userId;
+    return uuid;
+  }
+
+  delInvit(userId: string)
+  {
+    const uuid = this.userInvit[userId];
+    this.userInvit.delete[userId];
+    this.invitUser.delete[uuid];
+    this.hostSocket.delete[userId];
+  }
+
+  isAlreadyInviting(userId: string) : boolean
+  {
+    return (this.userInvit.has(userId));
+  }
+
+  doesInvitExist(invitId: string) : boolean
+  {
+    return (this.invitUser.has(invitId));
+  }
+
+  getInvitHost(invitId: string) : string
+  {
+    return (this.invitUser[invitId]);
+  }
+
+  getHostSocket(userId: string)
+  {
+    return (this.hostSocket[userId]);
   }
 }
