@@ -100,8 +100,8 @@ onMounted(() => {
   <Teleport to="body">
     <div v-if="gameEnded" class="modal">
       <div class="modal-inner bg-black bg-opacity-100">
-        <h1 v-if="playerWin" class="text-white">Victory !</h1>
-        <h1 v-else class="text-white">Defeat !</h1>
+        <h1 v-if="playerWin" class="text-white">Victory</h1>
+        <h1 v-else class="text-white">Defeat</h1>
         <router-link to="/main" class="secondary-button">
           Go back home
         </router-link>
