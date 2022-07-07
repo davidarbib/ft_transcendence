@@ -72,7 +72,7 @@ userStore.gameSocket.on("endGame", (endGamePayload) => {
     (endGamePayload.didPlayerOneWin && userStore.gameInfos.isP1) ||
     (!endGamePayload.didPlayerOneWin && !userStore.gameInfos.isP1)
   )
-  playerWin.value = true;
+    playerWin.value = true;
   gameEnded.value = true;
   userStore.gameInfos.gameId = "";
   userStore.gameInfos.playerId = "";
