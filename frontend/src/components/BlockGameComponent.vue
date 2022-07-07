@@ -67,6 +67,9 @@ userStore.gameSocket.on("endGame", (endGamePayload) => {
   )
     playerWin.value = true;
   gameEnded.value = true;
+  userStore.gameInfos.gameId = "";
+  userStore.gameInfos.playerId = "";
+  userStore.gameInfos.isP1 = false;
 });
 
 async function handleResize() {
