@@ -144,10 +144,16 @@ onMounted(() => {
 
 .mario {
   background-image: url("@/assets/mario_bg.png");
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center;
 }
 
 .monkey {
   background-image: url("@/assets/monkey-bg.jpg");
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center;
 }
 .modal {
   position: fixed;
