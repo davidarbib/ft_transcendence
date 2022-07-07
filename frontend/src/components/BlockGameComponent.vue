@@ -22,14 +22,15 @@ let gameEnded = ref<boolean>(false);
 
 function draw_shape(x: number, y: number, width: number, height: number): void {
   const ctx = ref(canvasRef.value?.getContext("2d"));
-  ctx.value!.fillStyle = "#FFFFFF";
+  if (userStore.gameMode !== "monkey") {
+    ctx.value!.fillStyle = "#FFFFFF";
+  } else {
+    ctx.value!.fillStyle = "#000000";
+  }
   ctx.value?.fillRect(x, y, width, height);
 }
 
 function draw(): void {
-  console.log(ballPosX.value + ", " + ballPosY.value);
-  console.log(padAy.value + ", " + padAx.value);
-  console.log(padBy.value + ", " + padBx.value);
   width.value = (window.innerWidth * 80) / 100;
   height.value = (window.innerHeight * 80) / 100;
   const ctx = ref(canvasRef.value?.getContext("2d"));
@@ -54,8 +55,8 @@ userStore.gameSocket.on("gameState", (gameStatePayload) => {
   draw();
 });
 
-userStore.gameSocket.on("score", (scorePayload) => {
-  if (scorePayload === true) scoreA.value++;
+userStore.gameSocket.on("score", (scorePayload: boolean) => {
+  if (scorePayload) scoreA.value++;
   else scoreB.value++;
 });
 
@@ -77,7 +78,7 @@ async function handleResize() {
 
 onMounted(() => {
   window.addEventListener("resize", handleResize);
-  window.addEventListener("keydown", (e) => {
+  window.addEventListener("keypress", (e) => {
     if (e.key === "ArrowUp") {
       userStore.gameSocket.emit("padUp", {
         gameId: userStore.gameInfos.gameId,
@@ -114,10 +115,10 @@ onMounted(() => {
     <canvas
       tabindex="0"
       class="inline"
+      :class="userStore.gameMode"
       ref="canvasRef"
       :width="width"
       :height="height"
-      style="background-color: black"
     >
     </canvas>
     <ConfettiExplosion
@@ -132,6 +133,19 @@ onMounted(() => {
 
 <style scoped lang="scss">
 @use "@/assets/variables.scss" as v;
+
+.default,
+.vice {
+  background-color: black;
+}
+
+.mario {
+  background-image: url("@/assets/mario_bg.png");
+}
+
+.monkey {
+  background-image: url("@/assets/monkey-bg.jpg");
+}
 .modal {
   position: fixed;
   top: 0;
