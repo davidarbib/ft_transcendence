@@ -76,18 +76,10 @@ watch(getName, () => {
 });
 
 function muteClient() {
-  axios
-    .patch(`http://localhost:8090/chan-participants/${getName.value}`, {
-      name: getName.value,
-      mute: true,
-    })
-    .then((response) => {
-      console.log(response.data);
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-  console.log("mute");
+
+  userStore.chatsocket.emit('MuteBanUser', {name: getName.value, user :userStore.user,target:"" , mute: true}, (data) => {
+    //data
+  })
 }
 
 function addFriend() {
@@ -106,9 +98,8 @@ function addFriend() {
 }
 
 function getAdmins() {
-  userStore.chatsocket.emit("userAdmin", { name: getName.value }, (data) => {
-    // mettre la data ou tu ve
-  });
+  userStore.chatsocket.emit('userAdmin', {name:getName.value}, (data)=>{
+  })
   // <i class="fa-solid fa-crown"></i>
 }
 
@@ -122,6 +113,12 @@ function getOwner() {
   });
 }
 
+function userStatus() {
+   userStore.chatsocket.emit('userChanStatus', {name:getName.value, login:userStore.user.login}, (data) =>{
+    // mettre data ou tu ve 
+   })
+  console.log("bool string status");
+}
 function addAdmin() {
   userStore.chatsocket.emit("addAdmin", {
     name: getName.value,
@@ -132,7 +129,9 @@ function addAdmin() {
 }
 
 function banUser() {
-  console.log("need ban user");
+   userStore.chatsocket.emit('MuteBanUser', {name: getName.value, user :userStore.user,target:"" , ban: true}, (data) => {
+    //data
+  })
 }
 </script>
 
@@ -147,8 +146,9 @@ function banUser() {
     <div class="channel-pub">
       <PubChannel @name="(msg) => (getName = msg)" />
     </div>
+    <div class="participants-list">
     <div
-      class="channel-parti bg-black bg-opacity-20"
+      class="channel-parti rounded my-2 bg-black bg-opacity-10 font-medium hover:bg-opacity-30"
       v-for="login in userIn"
       :key="login.id"
     >
@@ -188,6 +188,7 @@ function banUser() {
         </p>
       </div>
     </div>
+      </div>
     <div class="messages text-gray-300">
       <p class="text-2xl">{{ getName }}</p>
       <div
@@ -250,13 +251,19 @@ function banUser() {
     }
   }
 
+  .participants-list {
+    grid-area: 3 / 1 / 5 / 2;
   .channel-parti {
+    display: grid;
     overflow: scroll;
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none; /* Old versions of Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
     color: v.$primary;
     border-radius: 0.375rem;
     padding-left: 0.5rem;
     margin-left: 0.5rem;
-    grid-area: 3 / 1 / 5 / 2;
     .user-prop {
       display: flex;
       flex-direction: row;
@@ -267,6 +274,7 @@ function banUser() {
         margin-left: 3.5rem;
       }
     }
+  }
     .icon {
       display: flex;
       flex-direction: row;
