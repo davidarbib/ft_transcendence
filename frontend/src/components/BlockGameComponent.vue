@@ -31,6 +31,9 @@ function draw_shape(x: number, y: number, width: number, height: number): void {
 }
 
 function draw(): void {
+  //console.log(ballPosX.value + ", " + ballPosY.value);
+  //console.log(padAy.value + ", " + padAx.value);
+  //console.log(padBy.value + ", " + padBx.value);
   width.value = (window.innerWidth * 80) / 100;
   height.value = (window.innerHeight * 80) / 100;
   const ctx = ref(canvasRef.value?.getContext("2d"));
@@ -58,6 +61,8 @@ userStore.gameSocket.on("gameState", (gameStatePayload) => {
 userStore.gameSocket.on("score", (scorePayload: boolean) => {
   if (scorePayload) scoreA.value++;
   else scoreB.value++;
+  console.log("score : ");
+  console.log(scoreA.value + ", " + scoreB.value);
 });
 
 userStore.gameSocket.on("endGame", (endGamePayload) => {
