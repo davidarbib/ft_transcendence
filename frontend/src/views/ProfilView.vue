@@ -12,7 +12,7 @@ import { ref } from "vue";
 const api = apiStore();
 const userStore = useUserStore();
 const router = useRouter();
-const isCurrentUserProfile = ref(false);
+const isCurrentUserProfile = ref<boolean>(false);
 let user = ref({
   id: "-1",
   login: "",
