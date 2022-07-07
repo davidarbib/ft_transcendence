@@ -71,6 +71,7 @@ export class MessagesGateway
       client.on("connection", (socket) => {
         socket.join(name);
       });
+      this.server.emit('creation', chan);
   }
 
 
@@ -82,8 +83,8 @@ export class MessagesGateway
     {
     client.on("connection", (socket) => {
       socket.join(name);
-    });
 
+    });
   }
 }
   @SubscribeMessage('leavechan')
@@ -163,6 +164,18 @@ export class MessagesGateway
 
   @SubscribeMessage('Owner')
   async TheOwner( @MessageBody('name') name:string)
+  {
+    const list = await myDataSource.getRepository(ChanParticipant).find({relations : ['participant', 'chan']});
+    list.forEach( element => {
+      if (element.chan && element.participant)
+      {
+        if (element.chan.name == name && element.privilege == ChanPartStatus.OWNER)
+          return element.participant;
+      }
+    })
+  }
+  @SubscribeMessage('getUserInChan')
+  async getUserChan( @MessageBody('name') name:string)
   {
     const list = await myDataSource.getRepository(ChanParticipant).find({relations : ['participant', 'chan']});
     list.forEach( element => {

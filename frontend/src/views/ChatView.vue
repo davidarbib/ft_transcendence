@@ -14,8 +14,8 @@ const myInput = ref("");
 let userIn = ref([]);
 axios.defaults.withCredentials = true;
 
-const isAdmin = ref(true);
-const isOwner = ref(true);
+const isAdmin = ref(false);
+const isOwner = ref(false);
 const isBan = ref(false);
 const isMute = ref(false);
 
@@ -26,7 +26,9 @@ interface Messages {
 }
 let test: Messages[] = [];
 
-userStore.chatsocket.on("connection", (socket) => {});
+userStore.chatsocket.on("connection", (socket) => {
+  console.log(socket.id);
+});
 userStore.chatsocket.on("message", (message: never) => {
   test.push({ room: getName.value, stock_msg: message });
   messages.value.push(message);
