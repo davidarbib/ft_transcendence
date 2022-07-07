@@ -12,7 +12,8 @@ import { Player } from 'src/players/entities/player.entity';
 import { PlayersService } from 'src/players/players.service';
 import { ScoreEvent, GameFinishEvent} from 'src/games/game/game.event';
 import { UsersService } from 'src/users/users.service';
-import { PadCmd } from './game/game';
+import { LoopDetails, PadCmd } from './game/game';
+import { Repository } from 'typeorm';
 
 interface GameReadyPayload
 {
@@ -53,6 +54,8 @@ export class GamesGateway {
     private readonly gamesService: GamesService,
     private readonly playerService : PlayersService,
     private readonly matchesService : MatchesService,
+    private readonly usersService : UsersService,
+    private readonly userRepo: Repository<User>,
   )
   { }
 
@@ -172,7 +175,6 @@ export class GamesGateway {
     @MessageBody('playerId') playerId: string,
   )
   {
-    console.log("move up");
     this.gamesService.getGame(gameId).movePad(playerId, PadCmd.UP);
   }
 
@@ -183,62 +185,133 @@ export class GamesGateway {
     @MessageBody('playerId') playerId: string,
   )
   {
-    console.log("move down");
     this.gamesService.getGame(gameId).movePad(playerId, PadCmd.DOWN);
   }
 
-  @OnEvent('score' , {async: true})
-  async handlePoint(payload: ScoreEvent)
+ // @OnEvent('score' , {async: true})
+ // async handlePoint(payload: ScoreEvent)
+ // {
+ //   console.log('score event');
+ //   const player = await myDataSource.getRepository(Player).findOne({where : { id : payload.playerId}})
+ //   this.playerService.incrementScore(player);
+ //   this.server.to(payload.gameId).emit('score', payload.p1);
+ // }
+  async handlePoint(gameId: string, playerId: string, isP1: boolean)
   {
-    const player = await myDataSource.getRepository(Player).findOne({where : { id : payload.playerId}})
+    console.log('handle point');
+    const player = await myDataSource.getRepository(Player).findOne({where : { id : playerId}})
     this.playerService.incrementScore(player);
-    this.server.to(payload.gameId).emit('score', payload.p1);
+    this.server.to(gameId).emit('score', isP1);
   }
 
-  @OnEvent('game_finished' , {async: true} )
-  async handlefinishGame(payload: GameFinishEvent)
-  {
-    let endPayload : EndGamePayload;
-    endPayload.gameId = payload.gameId;
-    endPayload.didPlayerOneWin = payload.didPlayerOneWin;
-    this.server.to(payload.gameId).emit("endGame", endPayload);
+  //@OnEvent('game_finished' , {async: true} )
+  //async handlefinishGame(payload: GameFinishEvent)
+  //{
+  //  let endPayload : EndGamePayload;
+  //  endPayload.gameId = payload.gameId;
+  //  endPayload.didPlayerOneWin = payload.didPlayerOneWin;
+  //  this.server.to(payload.gameId).emit("endGame", endPayload);
 
-    const match = await this.matchesService.findOne(payload.gameId);
-    const winner = await this.playerService.findOne(payload.winnerId);
-    const loser = await this.playerService.findOne(payload.loserId);
+  //  const match = await this.matchesService.findOne(payload.gameId);
+  //  const winner = await this.playerService.findOne(payload.winnerId);
+  //  const loser = await this.playerService.findOne(payload.loserId);
+  //  this.matchesService.finish(match);
+  //  this.playerService.setWinner(winner);
+  //  let usr:User = winner.userRef;
+  //  usr.winCount++;
+  //  myDataSource.getRepository(User).save(usr); 
+  //  usr = loser.userRef;
+  //  usr.lossCount++;
+  //  myDataSource.getRepository(User).save(usr); 
+  //}
+
+  async handleFinishGame
+  (
+    gameId: string,
+    winnerId: string,
+    loserId: string,
+    isP1Win: boolean,
+  )
+  {
+    console.log("endGame back");
+    let endPayload : EndGamePayload = 
+    {
+      gameId: gameId,
+      didPlayerOneWin: isP1Win,
+    };
+    this.server.to(gameId).emit("endGame", endPayload);
+
+    const match = await this.matchesService.findOne(gameId);
+    const winner : Player = await this.playerService.findOne(winnerId);
+    const loser = await this.playerService.findOne(loserId);
     this.matchesService.finish(match);
     this.playerService.setWinner(winner);
-    let usr:User = winner.userRef;
-    usr.winCount++;
-    myDataSource.getRepository(User).save(usr); 
-    usr = loser.userRef;
-    usr.lossCount++;
-    myDataSource.getRepository(User).save(usr); 
+    console.log(`winner : ${winner.id}`);
+    console.log(`winner ref : ${winner.userRef}`);
+    let user:User = await winner.userRef;
+    console.log(`user : ${user}`)
+    user.winCount++;
+    myDataSource.getRepository(User).save(user); 
+    user = loser.userRef;
+    user.lossCount++;
+    myDataSource.getRepository(User).save(user); 
+  }
+  
+  async handleLoopOutput(gameId: string, details: LoopDetails)
+  {
+    let loopPayload: GameStatePayload;
+    const gameState = this.gamesService.getGame(gameId).getState();
+    //console.log("ball positions just before emit:");
+    //console.log(gameState.ball.xPos);
+    //console.log(gameState.ball.yPos);
+    loopPayload = {
+      gameId: gameId,
+      playerOneY: gameState.player1.yPos,
+      playerTwoY: gameState.player2.yPos,
+      ballX: gameState.ball.xPos,
+      ballY: gameState.ball.yPos,
+    }
+    this.server.to(gameId).emit("gameState", loopPayload);
+    if (details.score)
+    {
+      console.log(`isP1score : ${details.isP1Score}`);
+      let playerId : string;
+      if (details.isP1Score)
+        playerId = gameState.player1.id;
+      else
+        playerId = gameState.player2.id;
+      this.handlePoint(gameId, playerId, details.isP1Score);
+    }
   }
 
   async gameLoop(gameId: string)
   {
     let gameClock = setInterval(() => {
-      let ret = this.gamesService.games[gameId].loop();
-      if (!ret)
-      {
-        let loopPayload: GameStatePayload;
-        const gameState = this.gamesService.getGame(gameId).getState();
-        loopPayload = {
-          gameId : gameId,
-          playerOneY : gameState.player1.yPos,
-          playerTwoY : gameState.player2.yPos,
-          ballX : gameState.ball.xPos,
-          ballY : gameState.ball.yPos,
-        } 
-        this.server.to(gameId).emit("gameState", loopPayload);
-      }
+      const { endGame, details } = this.gamesService.games[gameId].loop();
+      if (!endGame)
+        this.handleLoopOutput(gameId, details)
       else
       {
         clearInterval(gameClock);
+        const { score, isP1Score, win, isP1Win} = details;
+        let playerOneId : string = this.gamesService.getState(gameId).player1.id;
+        let playerTwoId : string = this.gamesService.getState(gameId).player2.id;
+        let winnerId, loserId : string;
+        if (isP1Win)
+        {
+          winnerId = playerOneId;
+          loserId = playerTwoId;
+        }
+        else
+        {
+          winnerId = playerTwoId;
+          loserId = playerOneId;
+        }
+        this.handleFinishGame(gameId, winnerId, loserId, isP1Win);
         this.server.in(gameId).socketsLeave(gameId);
       }
-   // }, 33); //30fps
-    }, 2000); //slow for debugging
+    }, 10); //~90fps
+    //}, 33); //30fps
+    //}, 10000); //slow for debugging
   }
 }

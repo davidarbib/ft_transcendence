@@ -2,7 +2,6 @@ import { GameState, PowerUp, PlayerState, BallState } from "./gameState";
 import {
     Vector2D,
     normalize,
-    invert,
     invertX,
     invertY,
 } from "./vector.utils";
@@ -35,6 +34,14 @@ interface Ids
     gameId: string,
     playerOneId: string,
     playerTwoId: string,
+}
+
+export interface LoopDetails
+{
+    score: boolean,
+    isP1Score: boolean,
+    win: boolean,
+    isP1Win: boolean,
 }
 
 export enum PadCmd
@@ -106,6 +113,11 @@ export class Game
 
     public loop()
     {
+        ////---static ball to debug---
+        //this.state.ball.xPos = 0;  
+        //this.state.ball.yPos = 0;
+        ////--------------------------
+
         let wall: Wall;
         let pad: Pad;
 
@@ -117,56 +129,82 @@ export class Game
         if (pad != Pad.NONE)
             this.padBounce(pad);
 
-        this.moveBall();
-        
         let p1Win: boolean = false;
         let p2Win: boolean = false;
+        let score: boolean = false;
+        let scoreP1: boolean = false;
 
         pad = this.goal();
+        console.log(`pad : ${pad}`);
         if (pad == Pad.P1)
-            p1Win = this.scorePoint(this.state.player2);
+        {
+            p2Win = this.scorePoint(this.state.player2);
+            score = true;
+        }
         if (pad == Pad.P2)
-            p2Win = this.scorePoint(this.state.player1);
+        {
+            p1Win = this.scorePoint(this.state.player1);
+            score = true;
+            scoreP1 = true;
+        }
 
         if (p1Win)
         {
-            this.notifyGameFinished(
-                this.state.player1.id,
-                this.state.player2.id,
-                true);
-            return true;
+            //this.notifyGameFinished(
+            //    this.state.player1.id,
+            //    this.state.player2.id,
+            //    true);
+            let loopDetails : LoopDetails=
+            {
+                score: score,
+                isP1Score: scoreP1,
+                isP1Win: true,
+                win : true,
+            }
+            return { endGame: true, details: loopDetails };
         }
         if (p2Win)
         {
-            this.notifyGameFinished(
-                this.state.player2.id,
-                this.state.player1.id,
-                false);
-            return true;
+            //this.notifyGameFinished(
+            //    this.state.player2.id,
+            //    this.state.player1.id,
+            //    false);
+            let loopDetails : LoopDetails =
+            {
+                score: score,
+                isP1Score: false,
+                isP1Win: false,
+                win : true,
+            }
+            return { endGame: true, details: loopDetails };
         }
         
-        return false;
+        this.moveBall();
+
+        let loopDetails : LoopDetails = 
+        {
+            score: score,
+            isP1Score: scoreP1,
+            isP1Win: false,
+            win: false,
+        }
+        return { endGame: false, details: loopDetails };
     }
     
     public movePad(playerId: string, cmd: PadCmd)
     {
-        console.log(`height : ${this.state.height}`);
-        console.log("pad positions in movePad beginning");
-        console.log(this.state.player1.yPos)
-        console.log(this.state.player2.yPos);
+        let finalPos : number;
         let playerState : PlayerState = this.playerSelector(playerId);
         let velocity : number = playerState.velocity;
-        console.log(`velocity : ${velocity}`)
-        console.log(`playerState yPos : ${playerState.yPos}`);
         switch (cmd)
         {
             case PadCmd.UP:
-                playerState.yPos += Math.min(velocity, playerState.yPos);
+                finalPos = playerState.yPos - velocity;
+                playerState.yPos = Math.max(finalPos, 0);
                 break;
             case PadCmd.DOWN:
-                const wallDistance : number = this.state.height - playerState.yPos;
-                console.log(`wallDistance : ${wallDistance}`)
-                playerState.yPos -= Math.min(velocity, wallDistance);
+                finalPos = playerState.yPos + velocity;
+                playerState.yPos = Math.min(finalPos, this.state.height);
                 break;
             default:
                 throw new InternalServerErrorException("Bad command");
@@ -185,9 +223,11 @@ export class Game
         let side = this.randomSide()
 
         const ballVector : Vector2D = {
-            x : this.state.serviceSide,
+            x : side,
             y : this.randomSide(),
         }
+        
+        console.log(ballVector.x + " : " + ballVector.y)
 
         this.state = {
             id : ids.gameId,
@@ -229,13 +269,26 @@ export class Game
             winThresh : param.WINTHRESH,
             serviceSide: side,
         }
+
+        console.log(`ball x at init : ${this.state.ball.xPos}`);
     }
     
+    private padUpEdge(pad: PlayerState) : number
+    {
+        return pad.yPos - param.PADSIZE / 2;
+    }
+
+    private padDownEdge(pad: PlayerState) : number
+    {
+        return pad.yPos + param.PADSIZE / 2;
+    }
+
     private moveBall()
     {
         //let vel = this.state.ball.velocity;
         this.state.ball.xPos += this.state.ball.direction.x;
         this.state.ball.yPos += this.state.ball.direction.y;
+        //console.log(`ball x after move ball: ${this.state.ball.xPos}`);
     }
 
     private touchWall() : Wall
@@ -249,19 +302,36 @@ export class Game
 
     private touchPad() : Pad
     {
-        if (this.state.ball.xPos <= this.state.player1.xPos)
+        if (this.state.ball.xPos <= this.state.player1.xPos
+            && this.state.ball.yPos >= this.padUpEdge(this.state.player1)
+            && this.state.ball.yPos <= this.padDownEdge(this.state.player1))
             return Pad.P1;
-        if (this.state.ball.xPos >= this.state.player2.xPos)
+        if (this.state.ball.xPos >= this.state.player2.xPos
+            && this.state.ball.yPos >= this.padUpEdge(this.state.player2)
+            && this.state.ball.yPos <= this.padDownEdge(this.state.player2))
             return Pad.P2;
         return Pad.NONE;
     }
 
     private goal() : Pad
     {
-        if (this.state.ball.xPos < this.state.player1.xPos)
+        //console.log("-----------------");
+        //console.log("edges p1 : ");
+        //console.log(this.padUpEdge(this.state.player1));
+        //console.log(this.padDownEdge(this.state.player1));
+        //console.log("blastzone p1: ");
+        //console.log(this.state.player1.xPos)
+        //console.log("ball : ")
+        //console.log(this.state.ball.xPos + " , " + this.state.ball.yPos) 
+        if (this.state.ball.xPos < this.state.player1.xPos
+            && (this.state.ball.yPos < this.padUpEdge(this.state.player1)
+                || this.state.ball.yPos > this.padDownEdge(this.state.player1)))
             return Pad.P1;
-        if (this.state.ball.xPos > this.state.player2.xPos)
+        if (this.state.ball.xPos > this.state.player2.xPos
+            && (this.state.ball.yPos < this.padUpEdge(this.state.player2)
+                || this.state.ball.yPos > this.padDownEdge(this.state.player2)))
             return Pad.P2;
+        //console.log("no goal");
         return Pad.NONE;
     }
 
@@ -333,21 +403,23 @@ export class Game
         this.state.ball.direction = normalize(this.state.ball.direction);
     }
 
-    private notifyScore(playerId: string, isP1: boolean)
-    {
-        this.emitter.emit(
-            'score',
-            new ScoreEvent(this.state.id, playerId, isP1),
-        );
-    }
+    //private notifyScore(playerId: string, isP1: boolean)
+    //{
+    //    console.log("notify score");
+    //    this.emitter.emit(
+    //        'score',
+    //        new ScoreEvent(this.state.id, playerId, isP1),
+    //    );
+    //}
 
-    private notifyGameFinished(winnerId: string, loserId: string, playerOneWins: boolean)
-    {
-        this.emitter.emit(
-            'game_finished',
-            new GameFinishEvent(this.state.id, winnerId, loserId, playerOneWins),
-        );
-    }
+    //private notifyGameFinished(winnerId: string, loserId: string, playerOneWins: boolean)
+    //{
+    //    console.log("notify game finished");
+    //    this.emitter.emit(
+    //        'game_finished',
+    //        new GameFinishEvent(this.state.id, winnerId, loserId, playerOneWins),
+    //    );
+    //}
 
     private didPlayerWins(player: PlayerState) : boolean
     {
@@ -370,7 +442,7 @@ export class Game
 
         player.score++;
 
-        this.notifyScore(player.id, player.isP1);
+        //this.notifyScore(player.id, player.isP1);
         if (this.didPlayerWins(player))
             return true;
 
