@@ -77,6 +77,13 @@ userStore.gameSocket.on("endGame", (endGamePayload) => {
 async function handleResize() {
   width.value = (window.innerWidth * 80) / 100;
   height.value = (window.innerHeight * 80) / 100;
+  ratioX.value = width.value / 100;
+  ratioY.value = height.value / 100;
+  ballPosX.value = 50 * ratioX.value;
+  ballPosY.value = 50 * ratioY.value;
+  padAy.value = (50 + 30) * ratioY.value;
+  padBx.value = width.value - 40;
+  padBy.value = (50 + 30) * ratioY.value;
   await nextTick();
   draw();
 }
