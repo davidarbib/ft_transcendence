@@ -10,6 +10,7 @@ import { channel } from 'diagnostics_channel';
 import { Console } from 'console';
 import { ContactsService } from 'src/contacts/contacts.service';
 import { Server, Socket } from 'socket.io';
+import { UpdateChanParticipantDto } from 'src/chan-participants/dto/update-chan-participant.dto';
 
 
 
@@ -47,6 +48,35 @@ export class MessagesService {
     });
   }
 
+  async muteBanUser( name: string,updateChanParticipantDto:UpdateChanParticipantDto, target :string)
+  {
+    let chanPart :ChanParticipant;
+    const arr = await myDataSource.getRepository(ChanParticipant).find({relations:['participant', 'chan']});
+    arr.forEach( async element => {
+        if (element.chan && element.participant)
+        {
+          if ( element.chan.name == name)
+          { 
+            if (element.participant.login == target && element.chan.name == name)
+            {    
+            chanPart = element;
+                let date =   new Date(Date.now());
+                date.setHours(date.getHours() +2);
+                const {mute, ban} = updateChanParticipantDto;
+                 chanPart.mute = mute;
+                 chanPart.ban = ban;
+                 if ( mute == true  || ban == true)
+                 chanPart.end_timestamp = date;
+                 if (mute == false && ban ==false)
+                   chanPart.end_timestamp = new Date(null);
+                   return await myDataSource.getRepository(ChanParticipant).save(chanPart);
+          }
+        }
+        }
+      })
+
+  }
+
   async findAll() {
     const msg = await myDataSource.getRepository(Messages).find();
     return msg
@@ -54,18 +84,19 @@ export class MessagesService {
 
   async findMsg(name: string, login: string )
   {
-    const msg = await this.msgRepo.find({ relations: [ 'chan'] })
+    const msg = await this.msgRepo.find({ relations: [ 'chan', 'author'] })
     let arr : any = [];
     msg.forEach(element => {
       if (element.chan)
       {
      if (element.chan.name == name)
       {
-        //      if (!this.contactsService.block_bool(login, element.author.login))
-        arr.push(element);
+        //if (!this.contactsService.block_bool(login, element.author.login))
+             arr.push(element);
       }
     }
     });
+    console.log(arr);
     return arr;
   }
 
@@ -73,7 +104,7 @@ export class MessagesService {
   {
     const chan = await myDataSource.getRepository(Channel).findOne({where : {name:name}})
     const usr = await myDataSource.getRepository(User).findOne({where : {login:login}})
-    const arr = await myDataSource.getRepository(ChanParticipant).find({relations : ['participant']});
+    const arr = await myDataSource.getRepository(ChanParticipant).find({relations : ['participant', 'chan']});
     arr.forEach(element => {
   if (element.participant.login == login && element.chan.name == name)
       return  1;

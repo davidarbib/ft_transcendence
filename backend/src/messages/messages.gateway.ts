@@ -5,12 +5,14 @@ import {UseGuards,Request} from '@nestjs/common';
 import { User } from 'src/users/entities/user.entity';
 import { Server, Socket } from 'socket.io';
 import { MessagesService } from './messages.service';
+import {HttpException, HttpStatus} from '@nestjs/common'
 import { Messages } from './entities/message.entity';
 import { CreateChannelDto } from 'src/channels/dto/create-channel.dto';
 import { ChanParticipant } from 'src/chan-participants/entities/chan-participant.entity';
 import { ChanPartStatus } from 'src/chan-participants/entities/chan-participant.entity';
 import { myDataSource } from 'src/app-data-source';
 import { Channel, ChanType } from 'src/channels/entities/channel.entity';
+import { UpdateChanParticipantDto } from 'src/chan-participants/dto/update-chan-participant.dto';
 
 @WebSocketGateway({
   cors:{
@@ -87,7 +89,6 @@ export class MessagesGateway
   @SubscribeMessage('leavechan')
   async LeaveRoom( @MessageBody('user') user:User, @MessageBody('name') name:string)
   {
-    console.log("oui ca passe ici");
     const chanPart = await myDataSource.getRepository(ChanParticipant).find({relations:['participant', 'chan']})
    chanPart.forEach( async element => {
     if (element.participant && element.chan)
@@ -101,6 +102,49 @@ export class MessagesGateway
 
     }
   })
+  }
+  @SubscribeMessage('userChanStatus')
+  async userchanStatus( @MessageBody('name') name:string, @MessageBody('login') login:string )
+  {
+    const list = await myDataSource.getRepository(ChanParticipant).find({relations : ['participant', 'chan']});
+    list.forEach( element => {
+      if (element.chan && element.participant)
+      {
+        if (element.chan.name == name && element.participant.login == login)
+          if(element.ban == true)
+            return "BAN";
+          if (element.mute == true)
+            return "MUTE";
+          if (element.privilege == ChanPartStatus.OWNER)
+              return "OWNER";
+          if (element.privilege == ChanPartStatus.ADMIN)
+            return "ADMIN";
+      }
+    })
+  }
+  @SubscribeMessage('MuteBanUser')
+  async MuteBanUser( @MessageBody('name') name:string, @MessageBody('user') usr:User, @MessageBody('target') target:string , @MessageBody() updateChanParticipantDto: UpdateChanParticipantDto) {
+
+      const arr = await myDataSource.getRepository(ChanParticipant).find({relations:['participant', 'chan']});
+      arr.forEach(element => {
+          if (element.chan && element.participant)
+          {
+            if ( element.chan.name == name)
+            { 
+              if (element.participant.login == usr.login && element.chan.name == name)
+              {
+                if (element.privilege == ChanPartStatus.NORMAL){
+                throw new HttpException({
+                status: HttpStatus.FORBIDDEN,
+                error: 'NOT ALLOWED',
+             }, HttpStatus.FORBIDDEN);
+            }
+  // socket.on bc  en mode warning il est mute
+             return this.messageService.muteBanUser(name, updateChanParticipantDto, target);
+              }
+            }
+          }
+      })
   }
   @SubscribeMessage('userAdmin')
   async ListOfAdmin( @MessageBody('name') name:string)
