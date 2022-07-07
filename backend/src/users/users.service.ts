@@ -101,4 +101,22 @@ export class UsersService {
   {
     return this.userRepo.update(userId, {twoFactorEnabled: false});
   }
+
+  async incWinCount(userId: string)
+  {
+    let user = await this.userRepo.findOne({
+      where : { id : userId }
+    });
+    user.winCount++;
+    return this.userRepo.save(user);
+  }
+
+  async incLossCount(userId: string)
+  {
+    let user = await this.userRepo.findOne({
+      where : { id : userId }
+    });
+    user.lossCount++;
+    return this.userRepo.save(user);
+  }
 }
