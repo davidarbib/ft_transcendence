@@ -14,11 +14,24 @@ const myInput = ref("");
 let userIn = ref([]);
 axios.defaults.withCredentials = true;
 
-const isAdmin = ref(true);
+const isAdmin = ref();
+
+function isUserAdmin(login: any) {
+  for (let i in allAdmins) {
+    // if (i.login === login) {
+    // isAdmin.value = true;
+    // return true;
+  }
+  // }
+  // isAdmin.value = false;
+  // return false;
+}
+
 const isOwner = ref(true);
 const isBan = ref(false);
 const isMute = ref(false);
-
+const selectUser = ref("");
+const allAdmins = ref([]);
 interface Messages {
   [room: string]: string;
   room: string;
@@ -61,7 +74,7 @@ function sendMessage() {
 }
 
 watch(getName, () => {
-  getAdmins();
+  getAdmins(); // all admins in allAdmins list
   getOwner();
   getUserInChan();
   messages.value = [];
@@ -69,24 +82,26 @@ watch(getName, () => {
     "findMessageFromChan",
     { name: getName.value, login: userStore.user.login },
     (data: never) => {
-      console.log(data);
       messages.value = data;
     }
   );
 });
 
 function muteClient() {
-
-  userStore.chatsocket.emit('MuteBanUser', {name: getName.value, user :userStore.user,target:"" , mute: true}, (data) => {
-    //data
-  })
+  userStore.chatsocket.emit(
+    "MuteBanUser",
+    { name: getName.value, user: userStore.user, target: "", mute: true },
+    (data) => {
+      //data
+    }
+  );
 }
 
-function addFriend() {
+function addFriend(login: any) {
   axios
     .post(`http://localhost:8090/contacts/${getName.value}`, {
       userLogin: userStore.user.login,
-      followedlogin: "",
+      followedlogin: login,
     })
     .then((response) => {
       console.log(response.data);
@@ -97,10 +112,16 @@ function addFriend() {
   console.log("friend");
 }
 
+// avoir la liste de tout les admins
 function getAdmins() {
-  userStore.chatsocket.emit('userAdmin', {name:getName.value}, (data)=>{
-  })
-  // <i class="fa-solid fa-crown"></i>
+  userStore.chatsocket.emit(
+    "userAdmin",
+    { name: getName.value },
+    (data: any) => {
+      console.log(data);
+      allAdmins.value = data;
+    }
+  );
 }
 
 function playGame() {
@@ -114,24 +135,33 @@ function getOwner() {
 }
 
 function userStatus() {
-   userStore.chatsocket.emit('userChanStatus', {name:getName.value, login:userStore.user.login}, (data) =>{
-    // mettre data ou tu ve 
-   })
+  userStore.chatsocket.emit(
+    "userChanStatus",
+    { name: getName.value, login: userStore.user.login },
+    (data) => {
+      // mettre data ou tu ve
+    }
+  );
   console.log("bool string status");
 }
-function addAdmin() {
+
+// add admin (addAdmin(login))
+function addAdmin(login: any) {
   userStore.chatsocket.emit("addAdmin", {
     name: getName.value,
     user: userStore.user,
-    login: "",
+    login: login,
   });
   console.log("add admin");
 }
 
-function banUser() {
-   userStore.chatsocket.emit('MuteBanUser', {name: getName.value, user :userStore.user,target:"" , ban: true}, (data) => {
-    //data
-  })
+function banUser(login: any) {
+  userStore.chatsocket.emit("MuteBanUser", {
+    name: getName.value,
+    user: userStore.user,
+    target: login,
+    ban: true,
+  });
 }
 </script>
 
@@ -147,48 +177,52 @@ function banUser() {
       <PubChannel @name="(msg) => (getName = msg)" />
     </div>
     <div class="participants-list">
-    <div
-      class="channel-parti rounded my-2 bg-black bg-opacity-10 font-medium hover:bg-opacity-30"
-      v-for="login in userIn"
-      :key="login.id"
-    >
-      <div class="user-prop">
-        {{ login.login }}
-        <div class="user-icons">
-          <!--          is owner icon-->
-          <p v-if="isOwner" class="owner-status">
-            <i class="fa-solid fa-star"></i>
+      <div
+        class="channel-parti rounded my-2 bg-black bg-opacity-10 font-medium hover:bg-opacity-30"
+        v-for="login in userIn"
+        :key="login.id"
+      >
+        <div class="user-prop">
+          {{ login.login }}
+          <div class="user-icons">
+            <!--          is owner icon-->
+            <p v-if="isOwner" class="owner-status">
+              <i class="fa-solid fa-star"></i>
+            </p>
+            <!--          is admin icon-->
+            <p v-if="isUserAdmin(login.login) === true" class="admin-status">
+              <i class="fa-solid fa-crown"></i>
+            </p>
+          </div>
+        </div>
+        <div class="icon">
+          <!--        add friend-->
+          <p class="common-icons" @click="addFriend(login.login)">
+            <i class="fa-solid fa-heart mx-1"></i>
           </p>
-          <!--          is admin icon-->
-          <p v-if="isAdmin" class="admin-status">
-            <i class="fa-solid fa-crown"></i>
+          <!--        play game-->
+          <p class="common-icons" @click="playGame()">
+            <i class="fa-solid fa-gamepad mx-1"></i>
+          </p>
+          <!--        mute-->
+          <p class="common-icons" @click="muteClient()">
+            <i class="fa-solid fa-comment-slash mx-1"></i>
+          </p>
+          <!--        ban -->
+          <p
+            v-if="isAdmin || isOwner"
+            class="admin-icons"
+            @click="banUser(login.login)"
+          >
+            <i class="fa-solid fa-ban mx-1"></i>
+          </p>
+          <!--        add admin-->
+          <p v-if="isAdmin || isOwner" class="admin-icons" @click="addAdmin()">
+            <i class="fa-solid fa-crown mx-1"></i>
           </p>
         </div>
       </div>
-      <div class="icon">
-        <!--        add friend-->
-        <p class="common-icons" @click="addFriend()">
-          <i class="fa-solid fa-heart mx-1"></i>
-        </p>
-        <!--        play game-->
-        <p class="common-icons" @click="playGame()">
-          <i class="fa-solid fa-gamepad mx-1"></i>
-        </p>
-        <!--        mute-->
-        <p class="common-icons" @click="muteClient()">
-          <i class="fa-solid fa-comment-slash mx-1"></i>
-        </p>
-        <!--        ban -->
-        <p v-if="isAdmin" class="admin-icons" @click="banUser()">
-          <i class="fa-solid fa-ban mx-1"></i>
-        </p>
-        <!--        add admin-->
-        <p v-if="isAdmin" class="admin-icons" @click="addAdmin()">
-          <i class="fa-solid fa-crown mx-1"></i>
-        </p>
-      </div>
     </div>
-      </div>
     <div class="messages text-gray-300">
       <p class="text-2xl">{{ getName }}</p>
       <div
@@ -253,28 +287,28 @@ function banUser() {
 
   .participants-list {
     grid-area: 3 / 1 / 5 / 2;
-  .channel-parti {
-    display: grid;
-    overflow: scroll;
-    -webkit-touch-callout: none; /* iOS Safari */
-    -webkit-user-select: none; /* Safari */
-    -moz-user-select: none; /* Old versions of Firefox */
-    -ms-user-select: none; /* Internet Explorer/Edge */
-    color: v.$primary;
-    border-radius: 0.375rem;
-    padding-left: 0.5rem;
-    margin-left: 0.5rem;
-    .user-prop {
-      display: flex;
-      flex-direction: row;
+    .channel-parti {
+      display: grid;
+      overflow: scroll;
+      -webkit-touch-callout: none; /* iOS Safari */
+      -webkit-user-select: none; /* Safari */
+      -moz-user-select: none; /* Old versions of Firefox */
+      -ms-user-select: none; /* Internet Explorer/Edge */
       color: v.$primary;
-      .user-icons {
+      border-radius: 0.375rem;
+      padding-left: 0.5rem;
+      margin-left: 0.5rem;
+      .user-prop {
         display: flex;
         flex-direction: row;
-        margin-left: 3.5rem;
+        color: v.$primary;
+        .user-icons {
+          display: flex;
+          flex-direction: row;
+          margin-left: 3.5rem;
+        }
       }
     }
-  }
     .icon {
       display: flex;
       flex-direction: row;

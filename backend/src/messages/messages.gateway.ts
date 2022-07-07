@@ -48,7 +48,6 @@ export class MessagesGateway
   async findChan( @MessageBody('user') user:User)
   {
     const chan = await this.messageService.findChan(user);
-    console.log(chan);
     this.server.emit('chan', chan);
     return  chan ;
   }
@@ -76,7 +75,6 @@ export class MessagesGateway
 
   @SubscribeMessage('joinchan')
   async joinRoom( @MessageBody('login') login:string,@ConnectedSocket() client:Socket, @MessageBody('name') name:string) {
-    console.log("ddd");
     const userToJoin =  await this.messageService.identify(login, name, client);
     if (userToJoin == 0)
     {
@@ -152,6 +150,7 @@ export class MessagesGateway
     let  listAdmin;
       const list = await myDataSource.getRepository(ChanParticipant).find({relations : ['participant', 'chan']});
       list.forEach( element => {
+        console.log(element);
         if (element.chan && element.participant)
         {
           if (element.chan.name == name && element.privilege == ChanPartStatus.ADMIN)
