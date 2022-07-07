@@ -11,13 +11,6 @@ const searched = ref("");
 const friendMenu = ref(false);
 const friendSelected = ref(-1);
 const tmp = ref([]);
-/*const userFriends = computed(() =>{
-  
-    allfriend();
-  //test.filter((friend) =>
-   // friend.pseudo.toLowerCase().includes(searched.value.toLowerCase())
-});*/
-
 function toggleFriendMenu(id: number) {
   friendSelected.value = id;
   friendMenu.value = !friendMenu.value;
@@ -36,7 +29,7 @@ function toggleFriendMenu(id: number) {
       @click="toggleFriendMenu(user.id)"
     >
       {{ user.login }}
-      <div ></div>
+      <div></div>
       <div class="user-icon">
         <img src="@/assets/sphere.png" alt="" class="h-10 w-10" />
         <p v-if="user.status" class="online">

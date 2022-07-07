@@ -36,7 +36,8 @@ onMounted(() => {
       if (response.data === "") router.push({ path: "/profile_not_found" });
       if (user.value.username === userStore.$state.user.username)
         isCurrentUserProfile.value = true;
-    }).catch((error) => {
+    })
+    .catch((error) => {
       console.log(error);
       router.push({ path: "/profile_not_found" });
     });
