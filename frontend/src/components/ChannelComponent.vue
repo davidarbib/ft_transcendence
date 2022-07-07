@@ -21,7 +21,6 @@ onMounted(() => {
     .get(`http://localhost:8090/channels/chan/${userStore.user.login}`)
     .then((response) => {
       chan.value = response.data;
-      
     })
     .catch((error) => {
       console.log(error);
@@ -35,10 +34,12 @@ function selectChannel(name: string) {
 }
 
 function leaveChan() {
-  console.log("leave chann");
- userStore.chatsocket.emit('leavechan', {user : userStore.user, name : channelName.value}, () =>{
-
-   })
+  console.log("leave channel");
+  userStore.chatsocket.emit(
+    "leavechan",
+    { user: userStore.user, name: channelName.value },
+    () => {}
+  );
 }
 
 function addPassword() {

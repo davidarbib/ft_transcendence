@@ -12,10 +12,12 @@ let messages: any = ref([]);
 const messageText = ref("");
 const myInput = ref("");
 let userIn = ref([]);
-  axios.defaults.withCredentials = true;
+axios.defaults.withCredentials = true;
 
-const isAdmin = ref(false);
-const isOwner = ref(false);
+const isAdmin = ref(true);
+const isOwner = ref(true);
+const isBan = ref(false);
+const isMute = ref(false);
 
 interface Messages {
   [room: string]: string;
@@ -74,9 +76,11 @@ watch(getName, () => {
 });
 
 function muteClient() {
-    axios
+  axios
     .patch(`http://localhost:8090/chan-participants/${getName.value}`, {
-      name:getName.value, mute:true})
+      name: getName.value,
+      mute: true,
+    })
     .then((response) => {
       console.log(response.data);
     })
@@ -87,9 +91,11 @@ function muteClient() {
 }
 
 function addFriend() {
-    axios
+  axios
     .post(`http://localhost:8090/contacts/${getName.value}`, {
-      userLogin:userStore.user.login, followedlogin:""})
+      userLogin: userStore.user.login,
+      followedlogin: "",
+    })
     .then((response) => {
       console.log(response.data);
     })
@@ -100,20 +106,28 @@ function addFriend() {
 }
 
 function getAdmins() {
-  userStore.chatsocket.emit('userAdmin', {name:getName.value}, (data)=>{
-      // mettre la data ou tu ve
-  })
+  userStore.chatsocket.emit("userAdmin", { name: getName.value }, (data) => {
+    // mettre la data ou tu ve
+  });
   // <i class="fa-solid fa-crown"></i>
 }
 
+function playGame() {
+  console.log("matchmaking");
+}
+
 function getOwner() {
-    userStore.chatsocket.emit('Owner', {name:getName.value}, (data)=>{
-      // mettre la data ou tu ve
-  })
+  userStore.chatsocket.emit("Owner", { name: getName.value }, (data) => {
+    // mettre la data ou tu ve
+  });
 }
 
 function addAdmin() {
-  userStore.chatsocket.emit('addAdmin', {name:getName.value, user: userStore.user, login: ""})
+  userStore.chatsocket.emit("addAdmin", {
+    name: getName.value,
+    user: userStore.user,
+    login: "",
+  });
   console.log("add admin");
 }
 
@@ -140,17 +154,25 @@ function banUser() {
     >
       <div class="user-prop">
         {{ login.login }}
-        <p v-if="isAdmin" class="admin-status">
-          <i class="fa-solid fa-crown m-1"></i>
-        </p>
-        <p v-if="isOwner" class="owner-status">
-          <i class="fa-solid fa-star m-1"></i>
-        </p>
+        <div class="user-icons">
+          <!--          is owner icon-->
+          <p v-if="isOwner" class="owner-status">
+            <i class="fa-solid fa-star"></i>
+          </p>
+          <!--          is admin icon-->
+          <p v-if="isAdmin" class="admin-status">
+            <i class="fa-solid fa-crown"></i>
+          </p>
+        </div>
       </div>
       <div class="icon">
         <!--        add friend-->
         <p class="common-icons" @click="addFriend()">
           <i class="fa-solid fa-heart mx-1"></i>
+        </p>
+        <!--        play game-->
+        <p class="common-icons" @click="playGame()">
+          <i class="fa-solid fa-gamepad mx-1"></i>
         </p>
         <!--        mute-->
         <p class="common-icons" @click="muteClient()">
@@ -181,10 +203,14 @@ function banUser() {
     <div class="message-input">
       <input
         type="text"
+        v-if="!isBan"
+        v-on:keyup.enter="sendMessage"
         v-model="myInput"
         class="h-3/4 w-3/4 px-2 focus:outline-none border rounded border-gray-300"
       />
-      <button @click="sendMessage" class="valid primary-button">send</button>
+      <button v-if="!isBan" @click="sendMessage" class="valid primary-button">
+        <i v-if="!isBan" class="fa-solid fa-paper-plane"></i>
+      </button>
     </div>
   </div>
 </template>
@@ -234,15 +260,11 @@ function banUser() {
     .user-prop {
       display: flex;
       flex-direction: row;
-      .admin-status {
-        position: relative;
-        left: 11rem;
-        color: v.$primary;
-      }
-      .owner-status {
-        position: relative;
-        left: 8rem;
-        color: v.$primary;
+      color: v.$primary;
+      .user-icons {
+        display: flex;
+        flex-direction: row;
+        margin-left: 3.5rem;
       }
     }
     .icon {
@@ -257,9 +279,9 @@ function banUser() {
       }
       .admin-icons {
         cursor: pointer;
-      }
-      :hover {
-        color: v.$primary;
+        :hover {
+          color: v.$primary;
+        }
       }
     }
   }

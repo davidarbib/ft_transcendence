@@ -15,21 +15,20 @@ const emit = defineEmits(["response"]);
 
 function createChannel() {
   open.value = false;
-  userStore.chatsocket.emit('createChannel', {
-      login: userStore.user.login,
-      name: createChanName.value,
-      type: chan_setting.value,
-      password: createChanPass.value,
-},
-)
+  userStore.chatsocket.emit("createChannel", {
+    login: userStore.user.login,
+    name: createChanName.value,
+    type: chan_setting.value,
+    password: createChanPass.value,
+  });
 }
 
 onMounted(() => {
-  userStore.chatsocket.emit('ourchan', {user :userStore.user}, (data) =>{
+  userStore.chatsocket.emit("ourchan", { user: userStore.user }, (data) => {
     chan.value = data;
-  })
-})
- /* axios.defaults.withCredentials = true;
+  });
+});
+/* axios.defaults.withCredentials = true;
   axios
     .post("http://localhost:8090/channels", {
       name: createChanName.value,

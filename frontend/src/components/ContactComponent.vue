@@ -59,12 +59,13 @@ function toggleFriendMenu(id: number) {
     <br />
     <div
       class="user-card rounded my-2 bg-black bg-opacity-10 font-medium hover:bg-opacity-30 transition duration-300"
-      v-for="user in allfriend" :key="user.id"
+      v-for="user in allfriend"
+      :key="user.id"
       @click="toggleFriendMenu(user.id)"
     >
       {{ user.login }}
-      <div ></div>
-     <div class="user-icon">
+      <div></div>
+      <div class="user-icon">
         <img src="@/assets/sphere.png" alt="" class="h-10 w-10" />
         <p v-if="user.status" class="online">
           <i class="fa-solid fa-circle status-dot outline-inherit"></i>
