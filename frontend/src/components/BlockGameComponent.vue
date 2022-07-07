@@ -22,10 +22,12 @@ let gameEnded = ref<boolean>(false);
 
 function draw_shape(x: number, y: number, width: number, height: number): void {
   const ctx = ref(canvasRef.value?.getContext("2d"));
-  if (userStore.gameMode !== "monkey") {
-    ctx.value!.fillStyle = "#FFFFFF";
-  } else {
+  if (userStore.gameMode === "monkey") {
     ctx.value!.fillStyle = "#000000";
+  } else if (userStore.gameMode === "vice") {
+    ctx.value!.fillStyle = "#e63380";
+  } else {
+    ctx.value!.fillStyle = "#FFFFFF";
   }
   ctx.value?.fillRect(x, y, width, height);
 }
@@ -137,9 +139,12 @@ onMounted(() => {
 <style scoped lang="scss">
 @use "@/assets/variables.scss" as v;
 
-.default,
-.vice {
+.default {
   background-color: black;
+}
+
+.vice {
+  background: rgba(0, 0, 0, 0.2);
 }
 
 .mario {
