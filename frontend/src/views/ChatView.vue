@@ -5,12 +5,10 @@ import PubChannel from "@/components/PubChannelComponent.vue";
 import { ref, watch } from "vue";
 import { useUserStore } from "@/stores/auth";
 import axios from "axios";
-import { RouteLocation, RouteLocationRaw, useRouter } from "vue-router";
-const getName = ref("");
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const router = useRouter();
+
+let getName = ref("");
 const userStore = useUserStore();
-let messages: any = ref([]);
+let messages = ref([]);
 const messageText = ref("");
 const myInput = ref("");
 let userIn = ref([]);
@@ -18,7 +16,7 @@ axios.defaults.withCredentials = true;
 
 const isAdmin = ref(false);
 
-function isUserAdmin(login: any) {
+function isUserAdmin(login: never) {
   for (let i in allAdmins.value) {
     if (i.login === login) {
       isAdmin.value = true;
@@ -31,31 +29,30 @@ function isUserAdmin(login: any) {
 
 const isOwner = ref(false);
 const owner = ref();
-function isUserOwner(login: any) {
+
+function isUserOwner() {
   if (owner.value) {
-    if (owner.value.login == userStore.user.login) {
-      isOwner.value = true;
-    } else {
-      isOwner.value = false;
-    }
+    isOwner.value = owner.value.login == userStore.user.login;
   }
 }
+
 const isBan = ref(false);
-const isMute = ref(false);
-const selectUser = ref("");
 const allAdmins = ref([]);
+
 interface Messages {
   [room: string]: string;
+
   room: string;
-  stock_msg;
+  stock_msg: never;
 }
+
 let test: Messages[] = [];
 
 userStore.chatsocket.on("connection", (socket) => {
   console.log(socket.id);
 });
 userStore.chatsocket.on("message", (message) => {
-  messages.value.push(message);
+  return messages.value.push(message);
 });
 
 function getUserInChan() {
@@ -104,16 +101,11 @@ function muteClient(login: any) {
   userStore.chatsocket.emit(
     "MuteBanUser",
     { name: getName.value, user: userStore.user, target: login, mute: true },
-    (data) => {
+    (data: never) => {
       console.log(data);
       //data
     }
   );
-}
-
-function viewProfile(login: RouteLocationRaw) {
-  router.push({ name: "profile", pseudo: login });
-  console.log("view profile");
 }
 
 function addFriend(login: never) {
@@ -131,7 +123,7 @@ function addFriend(login: never) {
   console.log("friend");
 }
 
-// avoir la liste de tout les admins
+// get all admins
 function getAdmins() {
   axios
     .get(`http://localhost:8090/chan-participants/admin/${getName.value}`, {
