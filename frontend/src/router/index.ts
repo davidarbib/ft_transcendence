@@ -8,6 +8,7 @@ import PongView from "@/views/PongView.vue";
 import ProfileView from "@/views/ProfilView.vue";
 import MyProfileView from "@/views/MyProfilView.vue";
 import Auth2faView from "@/views/Auth2faView.vue";
+import PrivateGameView from "@/views/PrivateGame.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -44,6 +45,11 @@ const router = createRouter({
       path: "/profile/:pseudo",
       name: "profile",
       component: ProfileView,
+    },
+    {
+      path: "/privateGame/:inviteId",
+      name: "privateGame",
+      component: PrivateGameView,
     },
     {
       path: "/auth2fa",
