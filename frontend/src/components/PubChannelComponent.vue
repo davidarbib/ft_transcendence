@@ -10,6 +10,13 @@ const chanPublic = ref([]);
 const chanPrivate = ref([]);
 const userStore = useUserStore();
 
+userStore.chatsocket.on("creation", (data) => {
+  if(data.type == 'public')
+    chanPublic.value.push(data);
+  if (data.type == 'private')
+    chanPrivate.value.push(data);
+
+});
 watch(childMsg, () => {
   axios.defaults.withCredentials = true;
   axios

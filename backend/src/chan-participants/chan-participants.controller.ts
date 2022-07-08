@@ -35,13 +35,44 @@ export class ChanParticipantsController {
     return this.chanParticipantsService.findOne(name);
   }*/
 
+  @Get('owner/:name')
+  async owner(@Param('name') name: string) {
+   let  owner: User = new User;
+    const list = await myDataSource.getRepository(ChanParticipant).find({relations : ['participant', 'chan']});
+    list.forEach( element => {
+      if (element.chan && element.participant)
+      {
+        if (element.chan.name == name && element.privilege == ChanPartStatus.OWNER)
+        {
+            owner = element.participant;
+          }  
+        }
+      })
+      return owner;
+  }
+
+  @Get('admin/:name')
+  async admin(@Param('name') name: string) {
+   let  admin: User[] = [];
+    const list = await myDataSource.getRepository(ChanParticipant).find({relations : ['participant', 'chan']});
+    list.forEach( element => {
+      if (element.chan && element.participant)
+      {
+        if (element.chan.name == name && element.privilege == ChanPartStatus.ADMIN)
+        {
+            admin.push(element.participant);
+          }  
+        }
+      })
+      return admin;
+  }
+
   @Patch(':name')
   async update(@Param('name') name: string, @Body() updateChanParticipantDto: UpdateChanParticipantDto, @Request() req) {
 
     const usr : User = req.user;
     const arr = await myDataSource.getRepository(ChanParticipant).find({relations:['participant', 'chan']});
     arr.forEach(element => {
-      console.log(usr);
         if (element.chan && element.participant)
         {
           if ( element.chan.name == name)

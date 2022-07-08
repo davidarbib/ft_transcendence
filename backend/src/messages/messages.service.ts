@@ -11,6 +11,7 @@ import { Console } from 'console';
 import { ContactsService } from 'src/contacts/contacts.service';
 import { Server, Socket } from 'socket.io';
 import { UpdateChanParticipantDto } from 'src/chan-participants/dto/update-chan-participant.dto';
+import { ChanPartStatus } from 'src/chan-participants/entities/chan-participant.entity';
 
 
 
@@ -47,8 +48,7 @@ export class MessagesService {
         arr.push(element.chan)
     });
   }
-
-  async muteBanUser( name: string,updateChanParticipantDto:UpdateChanParticipantDto, target :string)
+ async muteBanUser( name: string,updateChanParticipantDto:UpdateChanParticipantDto, target :string)
   {
     let chanPart :ChanParticipant;
     const arr = await myDataSource.getRepository(ChanParticipant).find({relations:['participant', 'chan']});
@@ -96,26 +96,32 @@ export class MessagesService {
       }
     }
     });
-    console.log(arr);
     return arr;
   }
 
-  async identify(login: string, name:string, client :Socket)
+  async identify(login: string, name:string)
   {
+    let isonChan:boolean = false;
     const chan = await myDataSource.getRepository(Channel).findOne({where : {name:name}})
     const usr = await myDataSource.getRepository(User).findOne({where : {login:login}})
     const arr = await myDataSource.getRepository(ChanParticipant).find({relations : ['participant', 'chan']});
     arr.forEach(element => {
   if (element.participant.login == login && element.chan.name == name)
-      return  1;
+      {
+        console.log("YAHHHH");
+        isonChan = true;
+      }
   })
-    const chanPart : ChanParticipant = new ChanParticipant;
-    chanPart.participant = usr;
-    chanPart.chan = chan;
+    if (isonChan == false)
+    {
+      const chanPart : ChanParticipant = new ChanParticipant;
+      chanPart.participant = usr;
+      chanPart.chan = chan;
+      await myDataSource.getRepository(ChanParticipant).save(chanPart);
+    }
   //  chan.participants.push(chanPart);
-    await myDataSource.getRepository(ChanParticipant).save(chanPart);
   
-    return  0;
+    return  isonChan;
   }
   async list_contact(login : string)
   {

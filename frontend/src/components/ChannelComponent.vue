@@ -15,6 +15,11 @@ function toggleChannelMenu(id: number) {
   channelSelected.value = id;
   channelOptions.value = !channelOptions.value;
 }
+
+userStore.chatsocket.on('join', (data : never) => {
+  chan.value.push(data);
+})
+
 onMounted(() => {
   axios.defaults.withCredentials = true;
   axios

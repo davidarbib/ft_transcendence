@@ -23,6 +23,13 @@ function createChannel() {
   });
 }
 
+userStore.chatsocket.on("join", (data) => {
+  userStore.chatsocket.emit("ourchan", {user:userStore.user} , (data1) => {
+    chan.value = data1;
+  }
+  );
+  })
+
 onMounted(() => {
   userStore.chatsocket.emit("ourchan", { user: userStore.user }, (data) => {
     chan.value = data;

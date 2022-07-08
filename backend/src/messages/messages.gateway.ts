@@ -48,7 +48,6 @@ export class MessagesGateway
   async findChan( @MessageBody('user') user:User)
   {
     const chan = await this.messageService.findChan(user);
-    console.log(chan);
     this.server.emit('chan', chan);
     return  chan ;
   }
@@ -56,7 +55,6 @@ export class MessagesGateway
   @SubscribeMessage('createChannel')
   async createChan(@MessageBody('login') login: string, @MessageBody('name')name : string, @MessageBody('type')type : ChanType, @MessageBody('password')password : string,  @ConnectedSocket() client:Socket) 
   {
-    console.log(name);
     const usr = await myDataSource.getRepository(User).findOne({where : { login:login}});
       const chanPart : ChanParticipant = new ChanParticipant;
       const chan : Channel = new Channel;
@@ -69,21 +67,23 @@ export class MessagesGateway
       chanPart.privilege = ChanPartStatus.OWNER;
       await myDataSource.getRepository(ChanParticipant).save(chanPart);
       client.on("connection", (socket) => {
-        socket.join(name);
+        socket.join(chan.id);
       });
+      this.server.in(client.id).emit('join', chan);
       this.server.emit('creation', chan);
+      this.server.in(chan.id).emit('newuser', usr);
   }
 
 
   @SubscribeMessage('joinchan')
   async joinRoom( @MessageBody('login') login:string,@ConnectedSocket() client:Socket, @MessageBody('name') name:string) {
-    console.log("ddd");
-    const userToJoin =  await this.messageService.identify(login, name, client);
-    if (userToJoin == 0)
+    const userToJoin =  await this.messageService.identify(login, name);
+    console.log(userToJoin);
+    if (userToJoin == false)
     {
     client.on("connection", (socket) => {
       socket.join(name);
-
+      
     });
   }
 }
@@ -150,30 +150,18 @@ export class MessagesGateway
   @SubscribeMessage('userAdmin')
   async ListOfAdmin( @MessageBody('name') name:string)
   {
+
     let  listAdmin;
       const list = await myDataSource.getRepository(ChanParticipant).find({relations : ['participant', 'chan']});
       list.forEach( element => {
         if (element.chan && element.participant)
         {
           if (element.chan.name == name && element.privilege == ChanPartStatus.ADMIN)
-            listAdmin.push(element.participant);
+             listAdmin.push(element);
         }
       })
       return listAdmin;
     }
-
-  @SubscribeMessage('Owner')
-  async TheOwner( @MessageBody('name') name:string)
-  {
-    const list = await myDataSource.getRepository(ChanParticipant).find({relations : ['participant', 'chan']});
-    list.forEach( element => {
-      if (element.chan && element.participant)
-      {
-        if (element.chan.name == name && element.privilege == ChanPartStatus.OWNER)
-          return element.participant;
-      }
-    })
-  }
   @SubscribeMessage('getUserInChan')
   async getUserChan( @MessageBody('name') name:string)
   {
