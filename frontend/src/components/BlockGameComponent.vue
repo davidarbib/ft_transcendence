@@ -3,22 +3,75 @@ import { ref, onMounted, nextTick } from "vue";
 import { useUserStore } from "@/stores/auth";
 import ConfettiExplosion from "vue-confetti-explosion";
 
+/*
+** Backend constants
+*/
+const WIDTH=100;
+const HEIGHT=100;
+
+const PADGAPX=10;
+const PADWIDTH=1;
+const PADHEIGHT=25;
+const P1PADX=PADGAPX;
+const P2PADX=WIDTH - PADGAPX;
+const PADY=HEIGHT/2;
+
+const BALLSIZE=5;
+const BALLINITX=WIDTH/2;
+const BALLINITY=HEIGHT/2; 
+
+const BALLDRAWSHIFT=BALLSIZE/2;
+const PADXDRAWSHIFT=PADWIDTH/2;
+const PADYDRAWSHIFT=PADHEIGHT/2;
+
 const userStore = useUserStore();
 let canvasRef = ref<HTMLCanvasElement | null>(null);
 let width = ref<number>((window.innerWidth * 80) / 100);
 let height = ref<number>((window.innerHeight * 80) / 100);
-let ratioX = ref<number>(width.value / 100);
-let ratioY = ref<number>(height.value / 100);
-let ballPosX = ref<number>(50 * ratioX.value);
-let ballPosY = ref<number>(50 * ratioY.value);
-let padAx = ref<number>(30);
-let padAy = ref<number>((50 + 30) * ratioY.value);
-let padBx = ref<number>(width.value - 40);
-let padBy = ref<number>((50 + 30) * ratioY.value);
+let ratioX = ref<number>(width.value / WIDTH);
+let ratioY = ref<number>(height.value / HEIGHT);
+let ballPosX = ref<number>(BALLINITX * ratioX.value);
+let ballPosY = ref<number>(BALLINITY * ratioY.value);
+let padAx = ref<number>(P1PADX * ratioX.value);
+let padAy = ref<number>(PADY * ratioY.value);
+let padBx = ref<number>(P2PADX * ratioX.value);
+let padBy = ref<number>(PADY * ratioY.value);
 let scoreA = ref<number>(0);
 let scoreB = ref<number>(0);
 let playerWin = ref<boolean>(false);
 let gameEnded = ref<boolean>(false);
+
+//function draw_shape(x: number, y: number, width: number, height: number): void {
+//  const ctx = ref(canvasRef.value?.getContext("2d"));
+//  if (userStore.gameMode === "monkey") {
+//    ctx.value!.fillStyle = "#000000";
+//  } else if (userStore.gameMode === "vice") {
+//    ctx.value!.fillStyle = "#e63380";
+//  } else {
+//    ctx.value!.fillStyle = "#FFFFFF";
+//  }
+//  ctx.value?.fillRect(x, y, width, height);
+//}
+//
+//function draw(): void {
+//  //console.log(ballPosX.value + ", " + ballPosY.value);
+//  //console.log(padAy.value + ", " + padAx.value);
+//  //console.log(padBy.value + ", " + padBx.value);
+//  width.value = (window.innerWidth * 80) / 100;
+//  height.value = (window.innerHeight * 80) / 100;
+//  const ctx = ref(canvasRef.value?.getContext("2d"));
+//  ctx.value?.clearRect(0, 0, width.value, height.value);
+//  draw_shape(ballPosX.value, ballPosY.value, 20, 20);
+//  draw_shape(padAx.value, padAy.value, 10, 60);
+//  draw_shape(padBx.value, padBy.value, 10, 60);
+//  for (
+//    let middle_line_height = height.value;
+//    middle_line_height > 0;
+//    middle_line_height -= 20
+//  ) {
+//    draw_shape(width.value / 2, middle_line_height, 10, 10);
+//  }
+//}
 
 function draw_shape(x: number, y: number, width: number, height: number): void {
   const ctx = ref(canvasRef.value?.getContext("2d"));
@@ -29,7 +82,7 @@ function draw_shape(x: number, y: number, width: number, height: number): void {
   } else {
     ctx.value!.fillStyle = "#FFFFFF";
   }
-  ctx.value?.fillRect(x, y, width, height);
+  ctx.value?.fillRect(x - width * 0.5, y - height * 0.5, width, height);
 }
 
 function draw(): void {
@@ -40,9 +93,9 @@ function draw(): void {
   height.value = (window.innerHeight * 80) / 100;
   const ctx = ref(canvasRef.value?.getContext("2d"));
   ctx.value?.clearRect(0, 0, width.value, height.value);
-  draw_shape(ballPosX.value, ballPosY.value, 20, 20);
-  draw_shape(padAx.value, padAy.value, 10, 60);
-  draw_shape(padBx.value, padBy.value, 10, 60);
+  draw_shape(ballPosX.value, ballPosY.value, BALLSIZE, BALLSIZE);
+  draw_shape(padAx.value, padAy.value, PADWIDTH, PADHEIGHT);
+  draw_shape(padBx.value, padBy.value, PADWIDTH, PADHEIGHT);
   for (
     let middle_line_height = height.value;
     middle_line_height > 0;
@@ -95,7 +148,8 @@ async function handleResize() {
 
 onMounted(() => {
   window.addEventListener("resize", handleResize);
-  window.addEventListener("keypress", (e) => {
+  window.addEventListener("keydown", (e) => {
+    console.log("key press");
     if (e.key === "ArrowUp") {
       userStore.gameSocket.emit("padUp", {
         gameId: userStore.gameInfos.gameId,
