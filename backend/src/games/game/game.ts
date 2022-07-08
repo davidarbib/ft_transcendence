@@ -135,7 +135,7 @@ export class Game
         let scoreP1: boolean = false;
 
         pad = this.goal();
-        console.log(`pad : ${pad}`);
+        //console.log(`pad : ${pad}`);
         if (pad == Pad.P1)
         {
             p2Win = this.scorePoint(this.state.player2);
