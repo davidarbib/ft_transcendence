@@ -1,5 +1,6 @@
 FROM node:alpine3.14
 
+USER root
 WORKDIR /app
 
 COPY package*.json ./

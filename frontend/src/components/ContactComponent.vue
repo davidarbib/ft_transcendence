@@ -4,20 +4,43 @@ import { ref } from "vue";
 /*
 const userStore = useUserStore();
 const friend = ref([]);
+<<<<<<< HEAD
 */
 // const user = ref([]);
 
+const user = ref([]);
+/*
+const allfriend = computed(() => {
+  axios.defaults.withCredentials = true;
+  const addr = 'http://localhost:8090/contacts/m3L_dis/friend';
+  axios
+    .get(addr, {login : userStore.user.login})
+    .then((response) => {
+      friend.value = response.data;
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+    return friend.value
+});*/
+/*
+const  alluser = computed (() => {
+  axios.defaults.withCredentials = true;
+  axios
+    .get("http://localhost:8090/users")
+    .then((response) => {
+      user.value = response.data;
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+    return user.value
+});
+*/
 const searched = ref("");
 const friendMenu = ref(false);
 const friendSelected = ref(-1);
 const tmp = ref([]);
-/*const userFriends = computed(() =>{
-  
-    allfriend();
-  //test.filter((friend) =>
-   // friend.pseudo.toLowerCase().includes(searched.value.toLowerCase())
-});*/
-
 function toggleFriendMenu(id: number) {
   friendSelected.value = id;
   friendMenu.value = !friendMenu.value;
@@ -31,12 +54,12 @@ function toggleFriendMenu(id: number) {
     <br />
     <div
       class="user-card rounded my-2 bg-black bg-opacity-10 font-medium hover:bg-opacity-30 transition duration-300"
-      v-for="user in tmp"
+      v-for="user in allfriend"
       :key="user.id"
       @click="toggleFriendMenu(user.id)"
     >
       {{ user.login }}
-      <div ></div>
+      <div></div>
       <div class="user-icon">
         <img src="@/assets/sphere.png" alt="" class="h-10 w-10" />
         <p v-if="user.status" class="online">

@@ -9,7 +9,6 @@ const userStore = useUserStore();
 onMounted(() => {
   userStore.gameSocket.emit("canvasReady", userStore.gameInfos);
 });
-console.log(userStore.gameMode);
 </script>
 
 <template>

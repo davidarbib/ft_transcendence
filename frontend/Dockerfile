@@ -1,5 +1,6 @@
 FROM node:17-buster-slim
 
+USER root
 WORKDIR /app
 
 ENV PATH /app/node_modules/.bin:$PATH

@@ -22,10 +22,12 @@ let gameEnded = ref<boolean>(false);
 
 function draw_shape(x: number, y: number, width: number, height: number): void {
   const ctx = ref(canvasRef.value?.getContext("2d"));
-  if (userStore.gameMode !== "monkey") {
-    ctx.value!.fillStyle = "#FFFFFF";
-  } else {
+  if (userStore.gameMode === "monkey") {
     ctx.value!.fillStyle = "#000000";
+  } else if (userStore.gameMode === "vice") {
+    ctx.value!.fillStyle = "#e63380";
+  } else {
+    ctx.value!.fillStyle = "#FFFFFF";
   }
   ctx.value?.fillRect(x, y, width, height);
 }
@@ -70,13 +72,23 @@ userStore.gameSocket.on("endGame", (endGamePayload) => {
     (endGamePayload.didPlayerOneWin && userStore.gameInfos.isP1) ||
     (!endGamePayload.didPlayerOneWin && !userStore.gameInfos.isP1)
   )
-  playerWin.value = true;
+    playerWin.value = true;
   gameEnded.value = true;
+  userStore.gameInfos.gameId = "";
+  userStore.gameInfos.playerId = "";
+  userStore.gameInfos.isP1 = false;
 });
 
 async function handleResize() {
   width.value = (window.innerWidth * 80) / 100;
   height.value = (window.innerHeight * 80) / 100;
+  ratioX.value = width.value / 100;
+  ratioY.value = height.value / 100;
+  ballPosX.value = 50 * ratioX.value;
+  ballPosY.value = 50 * ratioY.value;
+  padAy.value = (50 + 30) * ratioY.value;
+  padBx.value = width.value - 40;
+  padBy.value = (50 + 30) * ratioY.value;
   await nextTick();
   draw();
 }
@@ -105,8 +117,8 @@ onMounted(() => {
   <Teleport to="body">
     <div v-if="gameEnded" class="modal">
       <div class="modal-inner bg-black bg-opacity-100">
-        <h1 v-if="playerWin" class="text-white">Victory !</h1>
-        <h1 v-else class="text-white">Defeat !</h1>
+        <h1 v-if="playerWin" class="text-white">Victory</h1>
+        <h1 v-else class="text-white">Defeat</h1>
         <router-link to="/main" class="secondary-button">
           Go back home
         </router-link>
@@ -139,17 +151,26 @@ onMounted(() => {
 <style scoped lang="scss">
 @use "@/assets/variables.scss" as v;
 
-.default,
-.vice {
+.default {
   background-color: black;
+}
+
+.vice {
+  background: rgba(0, 0, 0, 0.2);
 }
 
 .mario {
   background-image: url("@/assets/mario_bg.png");
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center;
 }
 
 .monkey {
   background-image: url("@/assets/monkey-bg.jpg");
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center;
 }
 .modal {
   position: fixed;

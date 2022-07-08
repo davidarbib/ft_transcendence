@@ -8,10 +8,10 @@ import { useUserStore } from "@/stores/auth";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
-let game_mode = ref("default");
-let popupTriggers = ref(false);
-let elapsedTimeS = ref(0);
-let elapsedTimeM = ref(0);
+let game_mode = ref<string>("default");
+let popupTriggers = ref<boolean>(false);
+let elapsedTimeS = ref<number>(0);
+let elapsedTimeM = ref<number>(0);
 let timer = ref();
 const userStore = useUserStore();
 

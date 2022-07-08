@@ -1,81 +1,67 @@
 <script setup lang="ts">
-import channels from "@/assets/msg_test.json";
-import { io } from 'socket.io-client'
-import { ref, computed } from "vue";
+import { ref, onMounted } from "vue";
 import axios from "axios";
-const  socket = io('http://localhost:8090');
+import { useUserStore } from "@/stores/auth";
 
-
-const searched = ref("");
+const userStore = useUserStore();
 const chan = ref([]);
-const messages = ref([]);
 const channelOptions = ref(false);
 const channelSelected = ref(-1);
-const channelName = ref('');
-
-
-function showMessages(name :string ) {
-   socket.emit ('findMessageFromChan', {name :name } , (response) => {
-      messages.value = response;
-   console.log(messages.value)
-   emit('msg', messages.value);
-   });
-   }
+const channelName = ref("");
 
 function toggleChannelMenu(id: number) {
   channelSelected.value = id;
   channelOptions.value = !channelOptions.value;
 }
 
-const ourchan = computed(() => {
- axios.defaults.withCredentials = true;
-  const addr = 'http://localhost:8090/channels/chan/m3L_dis';
+userStore.chatsocket.on('join', (data) => {
+  chan.value.push(data);
+})
+
+onMounted(() => {
+  axios.defaults.withCredentials = true;
   axios
-    .get(addr)
+    .get(`http://localhost:8090/channels/chan/${userStore.user.login}`)
     .then((response) => {
       chan.value = response.data;
     })
     .catch((error) => {
       console.log(error);
     });
-    return chan.value
+  return chan.value;
 });
-
 function selectChannel(name: string) {
   channelName.value = name;
-  console.log('selectChannel :' + channelName.value);
-  emit('name', channelName.value);
+  console.log("selectChannel :" + channelName.value);
+  emit("name", channelName.value);
 }
 
-const emit = defineEmits(['name', 'msg']);
-// onMounted(() => {
-//   axios.defaults.withCredentials = true;
-//   axios
-//     .get('http://localhost:8090/channels')
-//     .then((response) => {
-//       test.values = response.data;
-//     })
-//     .catch((error) => {
-//       console.log(error);
-//     });
-// });
+function leaveChan() {
+  console.log("leave channel");
+  userStore.chatsocket.emit(
+    "leavechan",
+    { user: userStore.user, name: channelName.value },
+    () => {}
+  );
+}
 
+function addPassword() {
+  axios.defaults.withCredentials = true;
+  console.log("add password");
+}
 
-
+const emit = defineEmits(["name", "msg"]);
 </script>
 
 <template>
   <div class="contact-section mx-2">
-    <input placeholder="search" class="rounded searchbar" v-model="searched" />
-    <br />
-    <br />
     <div
-      @click="selectChannel(channel.name); showMessages(channel.name)"
+      @click="selectChannel(channel.name)"
       class="user-card rounded my-2 bg-black bg-opacity-10 font-medium hover:bg-opacity-30 transition duration-300"
-      v-for="channel in ourchan"
+      v-for="channel in chan"
       :key="channel.id"
     >
-      <div class="user-pseudo py-2" >
+      <div class="user-pseudo py-2">
         <p>{{ channel.name }}</p>
         <p class="icon" @click="toggleChannelMenu(channel.id, channel.name)">
           <i class="fa-solid fa-gear"></i>
@@ -83,10 +69,16 @@ const emit = defineEmits(['name', 'msg']);
       </div>
       <Transition name="slide-fade">
         <div v-if="channelOptions && channelSelected === channel.id">
-          <ul class="list">
-            <li><router-link to="/chat">leave</router-link></li>
-            <li><router-link to="/">rename</router-link></li>
-          </ul>
+          <div class="list">
+            <!--        add pass-->
+            <p @click="addPassword()">
+              <i class="fa-solid fa-key mx-1"></i>
+            </p>
+            <!--        leave chan-->
+            <p @click="leaveChan()">
+              <i class="fa-solid fa-right-from-bracket mx-1"></i>
+            </p>
+          </div>
         </div>
       </Transition>
     </div>
@@ -97,9 +89,8 @@ const emit = defineEmits(['name', 'msg']);
 @use "../assets/variables.scss" as v;
 .contact-section {
   background: rgba($color: #000000, $alpha: 0.1);
-  height: 92vh;
   overflow: scroll;
-
+  height: 38vh;
   .user-card {
     cursor: pointer;
     display: grid;
@@ -121,10 +112,12 @@ const emit = defineEmits(['name', 'msg']);
     }
 
     .list {
+      display: flex;
+      flex-direction: row;
       padding-bottom: 1rem;
-      a {
-        color: white;
-        padding-left: 1rem;
+      color: whitesmoke;
+      :hover {
+        color: v.$primary;
       }
     }
 

@@ -18,6 +18,7 @@ export const useUserStore = defineStore("user", () => {
   });
 
   const gameSocket = io("http://localhost:8090");
+  const chatsocket = io("http://localhost:8090");
   const gameMode = "default";
 
   const gameInfos = ref({
@@ -50,5 +51,5 @@ export const useUserStore = defineStore("user", () => {
     { deep: true }
   );
 
-  return { user, gameSocket, gameInfos, gameMode };
+  return { user, gameSocket, gameInfos, gameMode, chatsocket };
 });

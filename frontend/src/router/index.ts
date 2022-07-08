@@ -44,7 +44,6 @@ const router = createRouter({
       path: "/profile/:pseudo",
       name: "profile",
       component: ProfileView,
-      props: true,
     },
     {
       path: "/auth2fa",

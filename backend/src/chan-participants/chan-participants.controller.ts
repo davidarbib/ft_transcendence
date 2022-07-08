@@ -1,12 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Request, Res } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Request, Res, UseGuards } from '@nestjs/common';
 import { myDataSource } from 'src/app-data-source';
 import { Channel } from 'src/channels/entities/channel.entity';
 import { User } from 'src/users/entities/user.entity';
 import { ChanParticipantsService } from './chan-participants.service';
 import { UpdateChanParticipantDto } from './dto/update-chan-participant.dto';
 import { ChanParticipant, ChanPartStatus } from './entities/chan-participant.entity';
+import { JwtGuard } from 'src/auth/guards/jwt.guard';
 import {HttpException, HttpStatus} from '@nestjs/common'
 @Controller('chan-participants')
+@UseGuards(JwtGuard)
 export class ChanParticipantsController {
   constructor(private readonly chanParticipantsService: ChanParticipantsService) {}
 
@@ -33,20 +35,63 @@ export class ChanParticipantsController {
     return this.chanParticipantsService.findOne(name);
   }*/
 
+  @Get('owner/:name')
+  async owner(@Param('name') name: string) {
+   let  owner: User = new User;
+    const list = await myDataSource.getRepository(ChanParticipant).find({relations : ['participant', 'chan']});
+    list.forEach( element => {
+      if (element.chan && element.participant)
+      {
+        if (element.chan.name == name && element.privilege == ChanPartStatus.OWNER)
+        {
+            owner = element.participant;
+          }  
+        }
+      })
+      return owner;
+  }
+
+  @Get('admin/:name')
+  async admin(@Param('name') name: string) {
+   let  admin: User[] = [];
+    const list = await myDataSource.getRepository(ChanParticipant).find({relations : ['participant', 'chan']});
+    list.forEach( element => {
+      if (element.chan && element.participant)
+      {
+        if (element.chan.name == name && element.privilege == ChanPartStatus.ADMIN)
+        {
+            admin.push(element.participant);
+          }  
+        }
+      })
+      return admin;
+  }
+
   @Patch(':name')
   async update(@Param('name') name: string, @Body() updateChanParticipantDto: UpdateChanParticipantDto, @Request() req) {
 
-    const usr : User = req.user.user;
-      const channel = await myDataSource.getRepository(Channel).findOneBy({name});
-      const chanPart: ChanParticipant = usr.chanParticipations[channel.id]
-      if (!chanPart)
-        return;
-     if (chanPart.privilege == ChanPartStatus.NORMAL)
-     throw new HttpException({
-      status: HttpStatus.FORBIDDEN,
-      error: 'NOT ALLOWED',
-    }, HttpStatus.FORBIDDEN);
-    return this.chanParticipantsService.update(name, updateChanParticipantDto, chanPart);
+    const usr : User = req.user;
+    const arr = await myDataSource.getRepository(ChanParticipant).find({relations:['participant', 'chan']});
+    arr.forEach(element => {
+        if (element.chan && element.participant)
+        {
+          if ( element.chan.name == name)
+          { 
+            if (element.participant.login == usr.login && element.chan.name == name)
+            {
+        
+            
+             if (element.privilege == ChanPartStatus.NORMAL)
+            throw new HttpException({
+             status: HttpStatus.FORBIDDEN,
+             error: 'NOT ALLOWED',
+           }, HttpStatus.FORBIDDEN);
+
+           return this.chanParticipantsService.update(name, updateChanParticipantDto, element);
+            }
+          }
+        }
+    })
   }
 /*
   @Patch(':name')

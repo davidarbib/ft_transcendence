@@ -8,17 +8,15 @@ import { Messages } from "src/messages/entities/message.entity";
 export class CreateChannelDto extends Channel
 {
     @IsString()
-    @Length(1,10)
     name:string;
 
     type:ChanType;
    
     @IsString()
     @IsOptional()
-    @Length(1,10)
     password: string;
 
-    participants : ChanParticipant[]
+    participant : ChanParticipant[]
 
     messages: Messages[];
     

@@ -1,22 +1,49 @@
 <script setup lang="ts">
-
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import axios from "axios";
-import { RouterLink, useRouter } from "vue-router";
+import { useUserStore } from "@/stores/auth";
 
+const userStore = useUserStore();
 const open = ref(false);
-const createChanName = ref('');
-const createChanPass = ref('');
-const chan_setting = ref('private');
+const createChanName = ref("");
+const chan = ref([]);
+const createChanPass = ref("");
+const chan_setting = ref("private");
+const emit = defineEmits(["response"]);
 
-function createChannel(){
+function createChannel() {
   open.value = false;
-  axios.defaults.withCredentials = true;
-  axios
-    .post('http://localhost:8090/channels', {name: createChanName.value})
-    .catch((error) => console.log('error with the creation of channel'))
+  userStore.chatsocket.emit("createChannel", {
+    login: userStore.user.login,
+    name: createChanName.value,
+    type: chan_setting.value,
+    password: createChanPass.value,
+  });
 }
 
+userStore.chatsocket.on("join", (data) => {
+  userStore.chatsocket.emit("ourchan", { user: userStore.user }, (data1) => {
+    chan.value = data1;
+  });
+});
+
+onMounted(() => {
+  userStore.chatsocket.emit("ourchan", { user: userStore.user }, (data: never) => {
+      chan.value = data;
+    }
+  );
+});
+/* axios.defaults.withCredentials = true;
+  axios
+    .post("http://localhost:8090/channels", {
+      name: createChanName.value,
+      type: chan_setting.value,
+      password: createChanPass.value,
+    })
+    .then(() => {
+      emit("response", createChanName.value);
+    })
+    .catch((error) => console.log(error));*/
 </script>
 
 <template>
@@ -33,14 +60,7 @@ function createChannel(){
           name="email"
           type="email"
           autocomplete="email"
-          required="true"
-          class="
-            log
-            w-full
-            rounded-t-md
-            focus:outline-none
-            border border-gray-300
-          "
+          class="log w-full rounded-t-md focus:outline-none border border-gray-300"
           placeholder="Name"
         />
         <select v-model="chan_setting" class="status secondary-button">
@@ -53,20 +73,15 @@ function createChannel(){
           name="password"
           type="password"
           autocomplete="current-password"
-          required="true"
-          class="
-            pass
-            w-full
-            rounded-b-md
-            focus:outline-none
-            border border-gray-300
-          "
+          class="pass w-full rounded-b-md focus:outline-none border border-gray-300"
           placeholder="Password"
         />
         <button @click="open = false" class="cancel secondary-button">
           Cancel
         </button>
-        <button @click="createChannel" class="valid primary-button"> Create </button>
+        <button @click="createChannel" class="valid primary-button">
+          Create
+        </button>
       </div>
     </div>
   </Teleport>

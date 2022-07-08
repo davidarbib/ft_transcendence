@@ -4,8 +4,8 @@ import { apiStore } from "@/stores/api";
 import axios from "axios";
 import router from "@/router";
 
-let code = ref("");
-let codeInvalid = ref("hidden");
+let code = ref<string>("");
+let codeInvalid = ref<string>("hidden");
 const api = apiStore();
 
 watch(code, (newCode) => {
