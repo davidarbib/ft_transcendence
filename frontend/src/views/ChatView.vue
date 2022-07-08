@@ -240,8 +240,8 @@ function banUser(login: any) {
             class="common-icons"
             :to="{ name: 'profile', params: { pseudo: login.login } }"
           >
-            <i class="fa-solid fa-profil mx-1"></i
-          ></router-link>
+            <i class="fa-solid fa-user-large mx-1"></i>
+          </router-link>
           <!--        add friend-->
           <p class="common-icons" @click="addFriend(login.login)">
             <i class="fa-solid fa-heart mx-1"></i>
