@@ -37,19 +37,14 @@ async function saveImage() {
   if (file.value) {
     try {
       axios
-        .patch(`${api.url}/users/${userStore.user.id}`, {
-          avatarRef: file.value,
+        .post(`${api.url}/users/upload/`, {
+          file: file.value,
         })
         .then(() => {
-          error2fa.value = false;
-          success2fa.value = true;
-          notifyMessage.value = "Successfully updated profile picture";
+          console.log("SuccessFully updated username");
         })
-        .catch((error) => {
-          console.log(error);
-          error2fa.value = true;
-          success2fa.value = false;
-          notifyMessage.value = "Error when uploading new profile picture";
+        .catch(() => {
+          console.log("This username is invalid try another one....");
         });
     } catch (error) {
       console.error(error);
@@ -65,13 +60,6 @@ const updatePseudo = () => {
       id: userStore.user.id,
       login: userStore.user.login,
       username: pseudo.value,
-      status: userStore.user.status,
-      authToken: userStore.user.authToken,
-      avatarRef: userStore.user.avatarRef,
-      lossCount: userStore.user.lossCount,
-      winCount: userStore.user.winCount,
-      twoFactorEnabled: userStore.user.twoFactorEnabled,
-      twoFactorSecret: userStore.user.twoFactorSecret,
     })
     .then(() => {
       userStore.user.username = pseudo.value;
@@ -289,55 +277,53 @@ const turnoff2fa = () => {
         justify-content: center;
         align-items: center;
       }
-      .profile-picture {
-        position: relative;
-        top: -2rem;
-      }
+      position: relative;
+      top: -2rem;
     }
-    .stats {
-      margin-bottom: 4rem;
-      ul {
-        display: flex;
-        flex-direction: row;
-        justify-content: center;
-        text-align: center;
-        .stats-value {
-          color: rgb(161, 161, 161);
-          font-size: 0.7rem;
-        }
-      }
-    }
-    .input-update {
+  }
+  .stats {
+    margin-bottom: 4rem;
+    ul {
       display: flex;
       flex-direction: row;
-      justify-content: space-around;
-      margin-bottom: 2rem;
-      input {
-        width: 80%;
-        border-radius: 0.375rem;
+      justify-content: center;
+      text-align: center;
+      .stats-value {
+        color: rgb(161, 161, 161);
+        font-size: 0.7rem;
       }
-      p {
-        cursor: pointer;
-      }
-    }
-
-    .toggle-2fa {
-      width: 100%;
-      margin-top: 3rem;
-      button {
-        margin: auto;
-        width: 80%;
-      }
-    }
-
-    .update-user-infos {
-      width: 60%;
-      margin: auto auto 1rem;
     }
   }
-  .hidden {
-    opacity: 0;
+  .input-update {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    margin-bottom: 2rem;
+    input {
+      width: 80%;
+      border-radius: 0.375rem;
+    }
+    p {
+      cursor: pointer;
+    }
   }
+
+  .toggle-2fa {
+    width: 100%;
+    margin-top: 3rem;
+    button {
+      margin: auto;
+      width: 80%;
+    }
+  }
+
+  .update-user-infos {
+    width: 60%;
+    margin: auto auto 1rem;
+  }
+}
+.hidden {
+  opacity: 0;
 }
 
 .modal {

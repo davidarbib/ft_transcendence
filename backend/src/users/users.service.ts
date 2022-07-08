@@ -36,7 +36,7 @@ export class UsersService {
   async update(usr: User, updateUserDto: UpdateUserDto) {
     const {username} = updateUserDto;
     usr.username = username;
-   return  myDataSource.getRepository(User).save(usr);
+    return  myDataSource.getRepository(User).save(usr);
   }
 
   async dfa_update(usr:User, updatedto : UpdateUserDto)

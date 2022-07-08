@@ -24,7 +24,6 @@ export class ChannelsController {
   {
     const CreateChannel = plainToClass(CreateChannelDto, createChannelDto);
    const usr: User = req.user;
-   console.log(usr.username);
     return this.channelsService.create(CreateChannel, usr);
   }
   @Get()

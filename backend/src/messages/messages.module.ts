@@ -6,6 +6,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport'
 import { UsersModule } from 'src/users/users.module';
+import { ContactsService } from 'src/contacts/contacts.service';
 
 @Module({
     imports: [
@@ -23,6 +24,6 @@ import { UsersModule } from 'src/users/users.module';
           inject: [ConfigService],
         }),
       ],
-    providers: [MessagesGateway, MessagesService,Repository ]
+    providers: [MessagesGateway, MessagesService,Repository, ContactsService]
 })
 export class MessagesModule {}

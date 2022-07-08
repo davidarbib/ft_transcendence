@@ -26,8 +26,14 @@ export class ChannelsService {
     return myDataSource.getRepository(Channel).find();
   }
 
-  findOne(name:string) {
-    return  myDataSource.getRepository(Channel).findOneBy({name});
+  async findOne(name:string) {
+    const test = await myDataSource.getRepository(ChanParticipant).find({ relations: ['participant', 'chan'] });
+    let arr: any = [];
+    test.forEach(element => {
+      if (element.chan.name == name)
+        arr.push(element.participant)
+    });
+    return arr;
   }
 
   async findChanPriv()
