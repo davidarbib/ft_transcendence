@@ -21,11 +21,12 @@ export class UsersService {
     return this.userRepo.find();
   }
 
- /* findName(login:string)
+  async findName(login:string)
   {
-    const userRepository = myDataSource.getRepository(User);
+    console.log("OK");
+    const userRepository = await myDataSource.getRepository(User);
     return userRepository.findOne({ where: { login} })
-  }*/
+  }
   findOne(id:string) {
     console.log(`id : ${id}`);
     return this.userRepo.findOne({ where: {id

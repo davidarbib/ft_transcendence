@@ -12,6 +12,7 @@ import { ref } from "vue";
 const api = apiStore();
 const userStore = useUserStore();
 const router = useRouter();
+const login = ref<string | string[]>("");
 const isCurrentUserProfile = ref<boolean>(false);
 let user = ref({
   id: "-1",
@@ -24,22 +25,23 @@ let user = ref({
   lossCount: "",
 });
 
-const props = defineProps({
-  pseudo: String,
-});
-
 onMounted(() => {
+  axios.defaults.withCredentials = true;
+  login.value = router.currentRoute.value.params.pseudo;
   axios
-    .get(`${api.url}/users/${props.pseudo}`)
+    .get(`${api.url}/users/login/${login.value}/`)
     .then((response) => {
       user.value = response.data;
-      if (response.data === "") router.push({ path: "/profile_not_found" });
+      if (response.data === "") {
+        // router.push({ path: "/profile_not_found" });
+        console.log("response.data is empty");
+      }
       if (user.value.username === userStore.$state.user.username)
         isCurrentUserProfile.value = true;
     })
     .catch((error) => {
       console.log(error);
-      router.push({ path: "/profile_not_found" });
+      //router.push({ path: "/profile_not_found" });
     });
 });
 </script>
