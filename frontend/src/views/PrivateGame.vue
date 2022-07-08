@@ -9,15 +9,15 @@ const userStore = useUserStore();
 onMounted(() => {
   userStore.gameSocket.emit("acceptInvite", {
     userId: userStore.user.id,
-    invitId: router.currentRoute.value.params.inviteId,
+    inviteId: router.currentRoute.value.params.inviteId,
   });
 });
 
-userStore.gameSocket.on("invitImpossible", () => {
+userStore.gameSocket.on("inviteImpossible", () => {
   router.push("main");
 });
 
-userStore.gameSocket.on("invitNotFound", () => {
+userStore.gameSocket.on("inviteNotFound", () => {
   router.push("main");
 });
 

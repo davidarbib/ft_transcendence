@@ -17,7 +17,7 @@ const isAdmin = ref(false);
 
 axios.defaults.withCredentials = true;
 
-userStore.gameSocket.on("invitCreate", (invite) => {
+userStore.gameSocket.on("inviteCreated", (invite) => {
   console.log("INVITATION CREER");
   inviteUid.value = invite;
   userStore.chatsocket.emit(
