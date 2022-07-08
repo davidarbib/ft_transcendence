@@ -66,25 +66,27 @@ export class MessagesGateway
       chanPart.chan = tmp_chan;
       chanPart.privilege = ChanPartStatus.OWNER;
       await myDataSource.getRepository(ChanParticipant).save(chanPart);
-      client.on("connection", (socket) => {
-        socket.join(chan.id);
-      });
+   //   client.on("connection", (socket) => {
+   //     .join(chan.id);
+    //  });
+      client.join(chan.id);
       this.server.in(client.id).emit('join', chan);
       this.server.emit('creation', chan);
-      this.server.in(chan.id).emit('newuser', usr);
+  //    this.server.to(chan.id).emit('newuser', usr);
   }
 
 
   @SubscribeMessage('joinchan')
   async joinRoom( @MessageBody('login') login:string,@ConnectedSocket() client:Socket, @MessageBody('name') name:string) {
+    const chan = await myDataSource.getRepository(Channel).findOne({where : { name:name}});
+    const usr = await myDataSource.getRepository(User).findOne({where : { login:login}});
     const userToJoin =  await this.messageService.identify(login, name);
-    console.log(userToJoin);
     if (userToJoin == false)
     {
-    client.on("connection", (socket) => {
-      socket.join(name);
-      
-    });
+      this.server.to(chan.id).emit('newUser', usr);
+      client.join(chan.id);
+      this.server.in(client.id).emit('join', chan);
+
   }
 }
   @SubscribeMessage('leavechan')

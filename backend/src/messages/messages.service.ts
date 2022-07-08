@@ -108,7 +108,6 @@ export class MessagesService {
     arr.forEach(element => {
   if (element.participant.login == login && element.chan.name == name)
       {
-        console.log("YAHHHH");
         isonChan = true;
       }
   })
@@ -120,11 +119,6 @@ export class MessagesService {
       await myDataSource.getRepository(ChanParticipant).save(chanPart);
     }
   //  chan.participants.push(chanPart);
-  
     return  isonChan;
-  }
-  async list_contact(login : string)
-  {
-
   }
 }

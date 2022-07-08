@@ -62,6 +62,11 @@ userStore.chatsocket.on("message", (message: never) => {
   messages.value.push(message);
 });
 
+userStore.chatsocket.on("newUser", (usr: never) => {
+  userIn.value.push(usr);
+  console.log(usr);
+});
+
 function getUserInChan() {
   axios
     .get(`http://localhost:8090/channels/${getName.value}`)
