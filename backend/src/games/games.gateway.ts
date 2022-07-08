@@ -198,11 +198,11 @@ export class GamesGateway {
   )
   {
     if (this.gamesService.isAlreadyInviting(userId))
-      client.emit("invitImpossible");
+      client.emit("inviteImpossible");
     else
     {
       const uuid = this.gamesService.addInvit(userId, client);
-      client.emit("invitCreated", uuid);
+      client.emit("inviteCreated", uuid);
     }
   }
 
@@ -215,7 +215,7 @@ export class GamesGateway {
   )
   {
     if (!this.gamesService.doesInvitExist(invitId))
-      client.emit("invitNotFound");
+      client.emit("inviteNotFound");
     else
     {
       const hostId = this.gamesService.getInvitHost(invitId);
