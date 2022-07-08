@@ -5,8 +5,9 @@ import PubChannel from "@/components/PubChannelComponent.vue";
 import { ref, watch } from "vue";
 import { useUserStore } from "@/stores/auth";
 import axios from "axios";
-import { useRouter } from "vue-router"
+import { RouteLocation, RouteLocationRaw, useRouter } from "vue-router";
 const getName = ref("");
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const router = useRouter();
 const userStore = useUserStore();
 let messages: any = ref([]);
@@ -20,31 +21,24 @@ const isAdmin = ref(false);
 function isUserAdmin(login: any) {
   for (let i in allAdmins.value) {
     if (i.login === login) {
-     isAdmin.value = true;
-     return true;
+      isAdmin.value = true;
+      return true;
+    }
   }
- }
-   isAdmin.value = false;
-   return false;
+  isAdmin.value = false;
+  return false;
 }
 
-/*
-socket.on ('message', (message) => {
-=======
 const isOwner = ref(false);
-  const owner = ref();
+const owner = ref();
 function isUserOwner(login: any) {
-  if (owner.value)
-  {
-  if (owner.value.login == userStore.user.login)
-  {
-    isOwner.value  = true;
+  if (owner.value) {
+    if (owner.value.login == userStore.user.login) {
+      isOwner.value = true;
+    } else {
+      isOwner.value = false;
+    }
   }
-  else
-  {
-  isOwner.value = false;
-  }
-}
 }
 const isBan = ref(false);
 const isMute = ref(false);
@@ -60,10 +54,9 @@ let test: Messages[] = [];
 userStore.chatsocket.on("connection", (socket) => {
   console.log(socket.id);
 });
-userStore.chatsocket.on("message", (message: never) => {
->>>>>>> profil_user_mel1
+userStore.chatsocket.on("message", (message) => {
   messages.value.push(message);
-});*/
+});
 
 function getUserInChan() {
   axios
@@ -106,7 +99,7 @@ watch(getName, () => {
   );
 });
 
-function muteClient(login :any) {
+function muteClient(login: any) {
   console.log("TEST TO MUTE");
   userStore.chatsocket.emit(
     "MuteBanUser",
@@ -118,17 +111,16 @@ function muteClient(login :any) {
   );
 }
 
-function viewProfil(login:any)
-{
-  //router.push({name: 'profile', pseudo: login})
-  console.log("view profil");
+function viewProfile(login: RouteLocationRaw) {
+  router.push({ name: "profile", pseudo: login });
+  console.log("view profile");
 }
 
-function addFriend(login: any) {
+function addFriend(login: never) {
   axios
     .post(`http://localhost:8090/contacts/${getName.value}`, {
       userLogin: userStore.user.login,
-      followedlogin: login,
+      followedLogin: login,
     })
     .then((response) => {
       console.log(response.data);
@@ -141,9 +133,9 @@ function addFriend(login: any) {
 
 // avoir la liste de tout les admins
 function getAdmins() {
-    axios
+  axios
     .get(`http://localhost:8090/chan-participants/admin/${getName.value}`, {
-      name: getName.value
+      name: getName.value,
     })
     .then((response) => {
       allAdmins.value = response.data;
@@ -160,7 +152,7 @@ function playGame() {
 function getOwner() {
   axios
     .get(`http://localhost:8090/chan-participants/owner/${getName.value}`, {
-      name: getName.value
+      name: getName.value,
     })
     .then((response) => {
       owner.value = response.data;
@@ -233,9 +225,12 @@ function banUser(login: any) {
         </div>
         <div class="icon">
           <!--        view profil-->
-          <p class="common-icons" @click="viewProfil(login.login)">
-            <i class="fa-solid fa-profil mx-1"></i>
-          </p>
+          <router-link
+            class="common-icons"
+            :to="{ name: 'profile', params: { pseudo: login.login } }"
+          >
+            <i class="fa-solid fa-profil mx-1"></i
+          ></router-link>
           <!--        add friend-->
           <p class="common-icons" @click="addFriend(login.login)">
             <i class="fa-solid fa-heart mx-1"></i>
@@ -257,7 +252,11 @@ function banUser(login: any) {
             <i class="fa-solid fa-ban mx-1"></i>
           </p>
           <!--        add admin-->
-          <p v-if="isAdmin || isOwner" class="admin-icons" @click="addAdmin(login.login)">
+          <p
+            v-if="isAdmin || isOwner"
+            class="admin-icons"
+            @click="addAdmin(login.login)"
+          >
             <i class="fa-solid fa-crown mx-1"></i>
           </p>
         </div>
@@ -267,10 +266,6 @@ function banUser(login: any) {
       <p class="text-2xl">{{ getName }}</p>
       <div
         class="message bg-black bg-opacity-20 w-3/4 mx-2 rounded p-2"
-        @msg=' (msgo) => messages.push(msgo) '
-         v-for="message in messages">
-            {{ userStore.user.login}} :
-           {{message.time}}
         v-for="message in messages"
         :key="message"
       >

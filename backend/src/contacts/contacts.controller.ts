@@ -13,7 +13,7 @@ export class ContactsController {
   @Post()
   create(@Body() createContactDto : CreateContactDto) {
     const contactDto = plainToClass(CreateContactDto, createContactDto);
-   User.findOne({where : {login:contactDto.followedlogin}}).then(user => {
+   User.findOne({where : {login:contactDto.followedLogin}}).then(user => {
      if (!user)
        return;
       return this.contactsService.create(contactDto);
