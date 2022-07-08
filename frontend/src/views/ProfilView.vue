@@ -33,7 +33,7 @@ onMounted(() => {
     .then((response) => {
       user.value = response.data;
       if (response.data === "") {
-        // router.push({ path: "/profile_not_found" });
+        router.push({ path: "/profile_not_found" });
         console.log("response.data is empty");
       }
       if (user.value.username === userStore.$state.user.username)
@@ -41,7 +41,7 @@ onMounted(() => {
     })
     .catch((error) => {
       console.log(error);
-      //router.push({ path: "/profile_not_found" });
+      router.push({ path: "/profile_not_found" });
     });
 });
 </script>
