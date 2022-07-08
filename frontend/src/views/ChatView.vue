@@ -12,9 +12,27 @@ let messages = ref([]);
 const messageText = ref("");
 const myInput = ref("");
 let userIn = ref([]);
+let inviteUid = ref<string>("");
+const isAdmin = ref(false);
+
 axios.defaults.withCredentials = true;
 
-const isAdmin = ref(false);
+userStore.gameSocket.on("invitCreate", (invite) => {
+  console.log("INVITATION CREER");
+  inviteUid.value = invite;
+  userStore.chatsocket.emit(
+    "createMessage",
+    {
+      name: getName.value,
+      login: userStore.user.login,
+      content: `http://localhost:8000/privateGame/${inviteUid.value}`,
+    },
+    () => {
+      messageText.value = "";
+      myInput.value = "";
+    }
+  );
+});
 
 function isUserAdmin(login: never) {
   for (let i in allAdmins.value) {
@@ -138,7 +156,8 @@ function getAdmins() {
 }
 
 function playGame() {
-  console.log("matchmaking");
+  console.log("create game");
+  userStore.gameSocket.emit("createInvite", { userId: userStore.user.id });
 }
 
 function getOwner() {
