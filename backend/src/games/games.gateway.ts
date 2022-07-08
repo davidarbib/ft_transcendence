@@ -203,35 +203,32 @@ export class GamesGateway {
     {
       const uuid = this.gamesService.addInvit(userId, client);
       client.emit("inviteCreated", uuid);
+      console.log(`inviteId : ${uuid}`);
     }
   }
 
   @SubscribeMessage('acceptInvite')
-  acceptInvite
+  async acceptInvite
   (
     @MessageBody('userId') userId: string,
-    @MessageBody('invitId') invitId: string,
+    @MessageBody('inviteId') inviteId: string,
     @ConnectedSocket() client: Socket,
   )
   {
-    if (!this.gamesService.doesInvitExist(invitId))
+    if (!this.gamesService.doesInvitExist(inviteId))
       client.emit("inviteNotFound");
     else
     {
-      const hostId = this.gamesService.getInvitHost(invitId);
+      console.log("invite found");
+      const hostId = this.gamesService.getInvitHost(inviteId);
       let hostSocket : Socket = this.gamesService.getHostSocket(hostId)
       let user1, user2 : User;
-      this.usersService.findOne(hostId)
-      .then((user) => {
-        user1 = user;
-      });
-      this.usersService.findOne(userId)
-      .then((user) => {
-        user2 = user;
-      });
+      user1 = await this.usersService.findOne(hostId);
+      user2 = await this.usersService.findOne(userId);
       this.gamesService.create(user1, user2)
       .then(({ match, playerOneId, playerTwoId }) => {
         this.gamesService.createGame(match.id, playerOneId, playerTwoId);
+        console.log("game created by invite");
         let payload : GameReadyPayload = {
           gameId: match.id,
           playerId: playerOneId,
@@ -243,7 +240,10 @@ export class GamesGateway {
           playerId: playerTwoId,
           isP1: false,
         }
-        hostSocket.emit("gameReady", payload);
+        client.emit("gameReady", payload);
+      })
+      .catch(() => {
+        console.log("problem in match creation");
       });
     }
   }

@@ -138,19 +138,20 @@ export class GamesService {
 
   addInvit(userId: string, client: Socket) : string
   {
-    this.hostSocket[userId] = client;
+    this.hostSocket.set(userId, client);
     const uuid : string = randomUUID();
-    this.invitUser[uuid] = userId;
-    this.userInvit[userId] = userId;
+    this.invitUser.set(uuid, userId);
+    this.userInvit.set(userId, uuid);
+    console.log(`hostId: ${userId}`)
     return uuid;
   }
 
   delInvit(userId: string)
   {
     const uuid = this.userInvit[userId];
-    this.userInvit.delete[userId];
-    this.invitUser.delete[uuid];
-    this.hostSocket.delete[userId];
+    this.userInvit.delete(userId);
+    this.invitUser.delete(uuid);
+    this.hostSocket.delete(userId);
   }
 
   isAlreadyInviting(userId: string) : boolean
@@ -158,18 +159,27 @@ export class GamesService {
     return (this.userInvit.has(userId));
   }
 
-  doesInvitExist(invitId: string) : boolean
+  doesInvitExist(inviteId: string) : boolean
   {
-    return (this.invitUser.has(invitId));
+    //console.log(`check invit : ${inviteId}`);
+    //console.log(`hostId stored ${this.invitUser[inviteId]}`);
+    //console.log(this.invitUser.has(inviteId));
+    //console.log(this.invitUser.has('xxxxxxxxxxxxxxxx'));
+    //console.log("----------1231212----------");
+    //this.invitUser.set('test', 'lol');
+    //this.invitUser['test2'] = 'lol';
+    //console.log(this.invitUser.has('test'));
+    //console.log(this.invitUser.has('test2'));
+    return (this.invitUser.has(inviteId));
   }
 
-  getInvitHost(invitId: string) : string
+  getInvitHost(inviteId: string) : string
   {
-    return (this.invitUser[invitId]);
+    return (this.invitUser.get(inviteId));
   }
 
   getHostSocket(userId: string)
   {
-    return (this.hostSocket[userId]);
+    return (this.hostSocket.get(userId));
   }
 }

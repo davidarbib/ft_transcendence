@@ -22,6 +22,7 @@ userStore.gameSocket.on("inviteNotFound", () => {
 });
 
 userStore.gameSocket.on("gameReady", function (game) {
+  console.log("game is ready");
   userStore.gameInfos.gameId = game.gameId;
   userStore.gameInfos.playerId = game.playerId;
   userStore.gameInfos.isP1 = game.isP1;
