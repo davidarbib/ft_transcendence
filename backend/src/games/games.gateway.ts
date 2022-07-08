@@ -70,15 +70,15 @@ export class GamesGateway {
     return this.gamesService.findAll();
   }*/
 
-  @SubscribeMessage('createGame')
-  async create
-  (
-    @MessageBody('player1') user: User,
-    @MessageBody('player2') user1: User
-  )
-  {
-   return this.gamesService.create(user, user1);
-  }
+  //@SubscribeMessage('createGame')
+  //async create
+  //(
+  //  @MessageBody('player1') user: User,
+  //  @MessageBody('player2') user1: User
+  //)
+  //{
+  // return this.gamesService.create(user, user1);
+  //}
 
   @SubscribeMessage('joinMM')
   async userWaiting
@@ -95,7 +95,7 @@ export class GamesGateway {
     if (match)
     {
       console.log("match created");
-      this.gamesService.createMMGame(
+      this.gamesService.createGame(
         match.id,
         playerOneId,
         playerTwoId,
@@ -188,6 +188,64 @@ export class GamesGateway {
     this.gamesService.getGame(gameId).movePad(playerId, PadCmd.DOWN);
   }
 
+  @SubscribeMessage('createInvite')
+  createInvite
+  (
+    @MessageBody('userId') userId: string,
+    @ConnectedSocket() client: Socket,
+  )
+  {
+    if (this.gamesService.isAlreadyInviting(userId))
+      client.emit("invitImpossible");
+    else
+    {
+      const uuid = this.gamesService.addInvit(userId, client);
+      client.emit("invitCreated", uuid);
+    }
+  }
+
+  @SubscribeMessage('acceptInvite')
+  acceptInvite
+  (
+    @MessageBody('userId') userId: string,
+    @MessageBody('invitId') invitId: string,
+    @ConnectedSocket() client: Socket,
+  )
+  {
+    if (!this.gamesService.doesInvitExist(invitId))
+      client.emit("invitNotFound");
+    else
+    {
+      const hostId = this.gamesService.getInvitHost(invitId);
+      let hostSocket : Socket = this.gamesService.getHostSocket(hostId)
+      let user1, user2 : User;
+      this.usersService.findOne(hostId)
+      .then((user) => {
+        user1 = user;
+      });
+      this.usersService.findOne(userId)
+      .then((user) => {
+        user2 = user;
+      });
+      this.gamesService.create(user1, user2)
+      .then(({ match, playerOneId, playerTwoId }) => {
+        this.gamesService.createGame(match.id, playerOneId, playerTwoId);
+        let payload : GameReadyPayload = {
+          gameId: match.id,
+          playerId: playerOneId,
+          isP1: true,
+        }
+        hostSocket.emit("gameReady", payload);
+        payload = {
+          gameId: match.id,
+          playerId: playerTwoId,
+          isP1: false,
+        }
+        hostSocket.emit("gameReady", payload);
+      });
+    }
+  }
+
  // @OnEvent('score' , {async: true})
  // async handlePoint(payload: ScoreEvent)
  // {
@@ -196,6 +254,7 @@ export class GamesGateway {
  //   this.playerService.incrementScore(player);
  //   this.server.to(payload.gameId).emit('score', payload.p1);
  // }
+
   async handlePoint(gameId: string, playerId: string, isP1: boolean)
   {
     console.log('handle point');
