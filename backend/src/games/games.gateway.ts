@@ -175,6 +175,7 @@ export class GamesGateway {
     @MessageBody('playerId') playerId: string,
   )
   {
+    console.log("move up");
     this.gamesService.getGame(gameId).movePad(playerId, PadCmd.UP);
   }
 
@@ -185,6 +186,7 @@ export class GamesGateway {
     @MessageBody('playerId') playerId: string,
   )
   {
+    console.log("move down");
     this.gamesService.getGame(gameId).movePad(playerId, PadCmd.DOWN);
   }
 
@@ -196,11 +198,11 @@ export class GamesGateway {
   )
   {
     if (this.gamesService.isAlreadyInviting(userId))
-      client.emit("invitImpossible");
+      client.emit("inviteImpossible");
     else
     {
       const uuid = this.gamesService.addInvit(userId, client);
-      client.emit("invitCreated", uuid);
+      client.emit("inviteCreated", uuid);
     }
   }
 
@@ -213,7 +215,7 @@ export class GamesGateway {
   )
   {
     if (!this.gamesService.doesInvitExist(invitId))
-      client.emit("invitNotFound");
+      client.emit("inviteNotFound");
     else
     {
       const hostId = this.gamesService.getInvitHost(invitId);
@@ -305,10 +307,7 @@ export class GamesGateway {
     const loser = await this.playerService.findOne(loserId);
     this.matchesService.finish(match);
     this.playerService.setWinner(winner);
-    console.log(`winner : ${winner.id}`);
-    console.log(`winner ref : ${winner.userRef}`);
-    let user:User = await winner.userRef;
-    console.log(`user : ${user}`)
+    let user:User = winner.userRef;
     user.winCount++;
     myDataSource.getRepository(User).save(user); 
     user = loser.userRef;
@@ -369,8 +368,8 @@ export class GamesGateway {
         this.handleFinishGame(gameId, winnerId, loserId, isP1Win);
         this.server.in(gameId).socketsLeave(gameId);
       }
-    }, 10); //~90fps
-    //}, 33); //30fps
+    //}, 10); //~90fps for debugging
+    }, 33); //~30fps
     //}, 10000); //slow for debugging
   }
 }

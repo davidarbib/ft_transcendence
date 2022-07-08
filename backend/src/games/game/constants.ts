@@ -1,11 +1,13 @@
-const PADGAP = 10;
+const PADGAPX = 10;
 
 export const WIDTH=100;
 export const HEIGHT=100;
 
 export const PADSIZE=25;
-export const P1PADX=PADGAP;
-export const P2PADX=WIDTH - PADGAP;
+export const PADWIDTH=2;
+export const PADHEIGHT=25;
+export const P1PADX=PADGAPX;
+export const P2PADX=WIDTH - PADGAPX;
 export const PADY=HEIGHT/2;
 export const PADVELOCITY=2;
 
