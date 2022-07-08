@@ -10,7 +10,7 @@ export class ContactsService {
   async create(contact : CreateContactDto) {
     const newContact = new Contact;
     newContact.userLogin = contact.userLogin;
-    newContact.followedLogin = contact.followedLogin;
+    newContact.followedLogin = contact.followedlogin;
     newContact.block = contact.block;
     return myDataSource.getRepository(Contact).save(newContact);
   }
