@@ -15,7 +15,8 @@ import { GamesService } from './games.service';
   providers: [
     Repository,
     GamesGateway,
-    GamesService],
+    GamesService
+  ],
   exports: [
     GamesGateway,
     GamesService,

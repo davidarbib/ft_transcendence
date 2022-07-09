@@ -20,7 +20,8 @@ interface GameReadyPayload
   gameId: string,
   playerId: string,
   isP1: boolean,
-    
+  playerOneName: string,
+  playerTwoName: string,
 }
 
 interface GameStatePayload
@@ -105,6 +106,8 @@ export class GamesGateway {
         gameId: match.id,
         playerId: playerOneId,
         isP1: true,
+        playerOneName: "",
+        playerTwoName: "",
       };
       clients.clientOne.emit("gameReady", payload);
       
@@ -112,6 +115,8 @@ export class GamesGateway {
         gameId: match.id,
         playerId: playerTwoId,
         isP1: false,
+        playerOneName: "",
+        playerTwoName: "",
       }
       clients.clientTwo.emit("gameReady", payload);
     };
@@ -151,11 +156,26 @@ export class GamesGateway {
   @SubscribeMessage('spectate')
   async spectate
   (
-    @MessageBody('gameId') gameId: string,
+    @MessageBody('userId') userId: string,
     @ConnectedSocket() client: Socket,
   )
   {
-    client.join(gameId);
+    //find game played par user
+    this.gamesService.getGamePlayedByUser(userId)
+    .then((gameId) => {
+      const payload : GameReadyPayload = {
+        gameId: gameId,
+        playerId: null,
+        isP1: false,
+        playerOneName: "",
+        playerTwoName: "",
+      }
+      client.join(gameId); 
+      client.emit('gameReady', payload);
+    })
+    .catch((error) => {
+      client.emit('spectateFailure', error);
+    });
   }
 
   @SubscribeMessage('endSpectate')
@@ -233,12 +253,16 @@ export class GamesGateway {
           gameId: match.id,
           playerId: playerOneId,
           isP1: true,
+          playerOneName: user1.username,
+          playerTwoName: user2.username,
         }
         hostSocket.emit("gameReady", payload);
         payload = {
           gameId: match.id,
           playerId: playerTwoId,
           isP1: false,
+          playerOneName: user1.username,
+          playerTwoName: user2.username,
         }
         client.emit("gameReady", payload);
       })

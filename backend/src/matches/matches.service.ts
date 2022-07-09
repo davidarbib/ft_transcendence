@@ -42,4 +42,9 @@ export class MatchesService {
     match.active = false;
     return await myDataSource.getRepository(Match).save(match);
   }
+
+  async getMatchPlayedByUser(userId: string)
+  {
+
+  }
 }

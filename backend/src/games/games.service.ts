@@ -136,6 +136,23 @@ export class GamesService {
     this.games[gameId] = game;
   }
 
+  async getGamePlayedByUser(userId: string) : Promise<string>
+  {
+    const match: Match = await myDataSource
+    .getRepository(Match)
+    .createQueryBuilder('match')
+    .select('match.id')
+    .leftJoin(Player, 'player',
+      "'player'.'userRefId' = :userId AND 'match'.'id' = 'player'.'matchRefId'",
+      { 'userId': userId })
+    .where("'match'.'active' = :active",
+      { 'active': true })
+    .getOne();
+    if (!match)
+      throw("game not found");
+    return match.id;
+  }
+
   addInvit(userId: string, client: Socket) : string
   {
     this.hostSocket.set(userId, client);
