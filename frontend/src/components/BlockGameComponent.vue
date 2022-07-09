@@ -9,14 +9,14 @@ import ConfettiExplosion from "vue-confetti-explosion";
 const WIDTH=100;
 const HEIGHT=100;
 
-const PADGAPX=10;
-const PADWIDTH=1;
-const PADHEIGHT=25;
+const PADGAPX=5;
+const PADWIDTH=2;
+const PADHEIGHT=15;
 const P1PADX=PADGAPX;
 const P2PADX=WIDTH - PADGAPX;
 const PADY=HEIGHT/2;
 
-const BALLSIZE=5;
+const BALLSIZE=3;
 const BALLINITX=WIDTH/2;
 const BALLINITY=HEIGHT/2; 
 
@@ -26,16 +26,17 @@ const PADYDRAWSHIFT=PADHEIGHT/2;
 
 const userStore = useUserStore();
 let canvasRef = ref<HTMLCanvasElement | null>(null);
-let width = ref<number>((window.innerWidth * 80) / 100);
-let height = ref<number>((window.innerHeight * 80) / 100);
+let size = ref<number>(Math.min(window.innerWidth, window.innerHeight));
+let width = ref<number>(size.value * 0.8);
+let height = ref<number>(size.value * 0.8);
 let ratioX = ref<number>(width.value / WIDTH);
 let ratioY = ref<number>(height.value / HEIGHT);
-let ballPosX = ref<number>(BALLINITX * ratioX.value);
-let ballPosY = ref<number>(BALLINITY * ratioY.value);
-let padAx = ref<number>(P1PADX * ratioX.value);
-let padAy = ref<number>(PADY * ratioY.value);
-let padBx = ref<number>(P2PADX * ratioX.value);
-let padBy = ref<number>(PADY * ratioY.value);
+let ballPosX = ref<number>(BALLINITX);
+let ballPosY = ref<number>(BALLINITY);
+let padAx = ref<number>(P1PADX);
+let padAy = ref<number>(PADY);
+let padBx = ref<number>(P2PADX);
+let padBy = ref<number>(PADY);
 let scoreA = ref<number>(0);
 let scoreB = ref<number>(0);
 let playerWin = ref<boolean>(false);
@@ -85,17 +86,33 @@ function draw_shape(x: number, y: number, width: number, height: number): void {
   ctx.value?.fillRect(x - width * 0.5, y - height * 0.5, width, height);
 }
 
+function draw_shape_ratio(x: number, y: number, width: number, height: number): void {
+  const ctx = ref(canvasRef.value?.getContext("2d"));
+  if (userStore.gameMode === "monkey") {
+    ctx.value!.fillStyle = "#000000";
+  } else if (userStore.gameMode === "vice") {
+    ctx.value!.fillStyle = "#e63380";
+  } else {
+    ctx.value!.fillStyle = "#FFFFFF";
+  }
+  width *= ratioX.value;
+  height *= ratioY.value;
+  x *= ratioX.value;
+  y *= ratioY.value;
+  ctx.value?.fillRect(x - width * 0.5, y - height * 0.5, width, height);
+}
+
 function draw(): void {
   //console.log(ballPosX.value + ", " + ballPosY.value);
   //console.log(padAy.value + ", " + padAx.value);
   //console.log(padBy.value + ", " + padBx.value);
-  width.value = (window.innerWidth * 80) / 100;
-  height.value = (window.innerHeight * 80) / 100;
+  //width.value = (window.innerWidth * 80) / 100;
+  //height.value = (window.innerHeight * 80) / 100;
   const ctx = ref(canvasRef.value?.getContext("2d"));
   ctx.value?.clearRect(0, 0, width.value, height.value);
-  draw_shape(ballPosX.value, ballPosY.value, BALLSIZE, BALLSIZE);
-  draw_shape(padAx.value, padAy.value, PADWIDTH, PADHEIGHT);
-  draw_shape(padBx.value, padBy.value, PADWIDTH, PADHEIGHT);
+  draw_shape_ratio(ballPosX.value, ballPosY.value, BALLSIZE, BALLSIZE);
+  draw_shape_ratio(padAx.value, padAy.value, PADWIDTH, PADHEIGHT);
+  draw_shape_ratio(padBx.value, padBy.value, PADWIDTH, PADHEIGHT);
   for (
     let middle_line_height = height.value;
     middle_line_height > 0;
@@ -106,10 +123,10 @@ function draw(): void {
 }
 
 userStore.gameSocket.on("gameState", (gameStatePayload) => {
-  padAy.value = gameStatePayload.playerOneY * ratioY.value;
-  padBy.value = gameStatePayload.playerTwoY * ratioY.value;
-  ballPosX.value = gameStatePayload.ballX * ratioX.value;
-  ballPosY.value = gameStatePayload.ballY * ratioY.value;
+  padAy.value = gameStatePayload.playerOneY;
+  padBy.value = gameStatePayload.playerTwoY;
+  ballPosX.value = gameStatePayload.ballX;
+  ballPosY.value = gameStatePayload.ballY;
   draw();
 });
 
@@ -133,15 +150,16 @@ userStore.gameSocket.on("endGame", (endGamePayload) => {
 });
 
 async function handleResize() {
-  width.value = (window.innerWidth * 80) / 100;
-  height.value = (window.innerHeight * 80) / 100;
-  ratioX.value = width.value / 100;
-  ratioY.value = height.value / 100;
-  ballPosX.value = 50 * ratioX.value;
-  ballPosY.value = 50 * ratioY.value;
-  padAy.value = (50 + 30) * ratioY.value;
-  padBx.value = width.value - 40;
-  padBy.value = (50 + 30) * ratioY.value;
+  size.value = Math.min(window.innerWidth, window.innerHeight);
+  width.value = size.value * 0.8;
+  height.value = size.value * 0.8;
+  ratioX.value = width.value / WIDTH;
+  ratioY.value = height.value / HEIGHT;
+  //ballPosX.value = 50 * ratioX.value;
+  //ballPosY.value = 50 * ratioY.value;
+  //padAy.value = (50 + 30) * ratioY.value;
+  //padBx.value = width.value - 40;
+  //padBy.value = (50 + 30) * ratioY.value;
   await nextTick();
   draw();
 }
