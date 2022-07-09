@@ -4,25 +4,25 @@ import { useUserStore } from "@/stores/auth";
 import ConfettiExplosion from "vue-confetti-explosion";
 
 /*
-** Backend constants
-*/
-const WIDTH=100;
-const HEIGHT=100;
+ ** Backend constants
+ */
+const WIDTH = 100;
+const HEIGHT = 100;
 
-const PADGAPX=5;
-const PADWIDTH=2;
-const PADHEIGHT=15;
-const P1PADX=PADGAPX;
-const P2PADX=WIDTH - PADGAPX;
-const PADY=HEIGHT/2;
+const PAD_GA_PX = 5;
+const PAD_WIDTH = 2;
+const PAD_HEIGHT = 15;
+const P1_PAD_X = PAD_GA_PX;
+const P2_PAD_X = WIDTH - PAD_GA_PX;
+const PAD_Y = HEIGHT / 2;
 
-const BALLSIZE=3;
-const BALLINITX=WIDTH/2;
-const BALLINITY=HEIGHT/2; 
+const BALL_SIZE = 3;
+const BALL_INIT_X = WIDTH / 2;
+const BALL_INIT_Y = HEIGHT / 2;
 
-const BALLDRAWSHIFT=BALLSIZE/2;
-const PADXDRAWSHIFT=PADWIDTH/2;
-const PADYDRAWSHIFT=PADHEIGHT/2;
+//const MATERIALDRAWER = BALL_SIZE / 2;
+//const PAD_X_DRAW_SHIFT = PAD_WIDTH / 2;
+//const PAD_Y_DRAW_SHIFT = PAD_HEIGHT / 2;
 
 const userStore = useUserStore();
 let canvasRef = ref<HTMLCanvasElement | null>(null);
@@ -31,12 +31,12 @@ let width = ref<number>(size.value * 0.8);
 let height = ref<number>(size.value * 0.8);
 let ratioX = ref<number>(width.value / WIDTH);
 let ratioY = ref<number>(height.value / HEIGHT);
-let ballPosX = ref<number>(BALLINITX);
-let ballPosY = ref<number>(BALLINITY);
-let padAx = ref<number>(P1PADX);
-let padAy = ref<number>(PADY);
-let padBx = ref<number>(P2PADX);
-let padBy = ref<number>(PADY);
+let ballPosX = ref<number>(BALL_INIT_X);
+let ballPosY = ref<number>(BALL_INIT_Y);
+let padAx = ref<number>(P1_PAD_X);
+let padAy = ref<number>(PAD_Y);
+let padBx = ref<number>(P2_PAD_X);
+let padBy = ref<number>(PAD_Y);
 let scoreA = ref<number>(0);
 let scoreB = ref<number>(0);
 let playerWin = ref<boolean>(false);
@@ -86,7 +86,12 @@ function draw_shape(x: number, y: number, width: number, height: number): void {
   ctx.value?.fillRect(x - width * 0.5, y - height * 0.5, width, height);
 }
 
-function draw_shape_ratio(x: number, y: number, width: number, height: number): void {
+function draw_shape_ratio(
+  x: number,
+  y: number,
+  width: number,
+  height: number
+): void {
   const ctx = ref(canvasRef.value?.getContext("2d"));
   if (userStore.gameMode === "monkey") {
     ctx.value!.fillStyle = "#000000";
@@ -110,9 +115,9 @@ function draw(): void {
   //height.value = (window.innerHeight * 80) / 100;
   const ctx = ref(canvasRef.value?.getContext("2d"));
   ctx.value?.clearRect(0, 0, width.value, height.value);
-  draw_shape_ratio(ballPosX.value, ballPosY.value, BALLSIZE, BALLSIZE);
-  draw_shape_ratio(padAx.value, padAy.value, PADWIDTH, PADHEIGHT);
-  draw_shape_ratio(padBx.value, padBy.value, PADWIDTH, PADHEIGHT);
+  draw_shape_ratio(ballPosX.value, ballPosY.value, BALL_SIZE, BALL_SIZE);
+  draw_shape_ratio(padAx.value, padAy.value, PAD_WIDTH, PAD_HEIGHT);
+  draw_shape_ratio(padBx.value, padBy.value, PAD_WIDTH, PAD_HEIGHT);
   for (
     let middle_line_height = height.value;
     middle_line_height > 0;
@@ -205,7 +210,7 @@ onMounted(() => {
       tabindex="0"
       class="inline"
       :class="userStore.gameMode"
-      ref="canvasRef"
+      id="canvasRef"
       :width="width"
       :height="height"
     >
