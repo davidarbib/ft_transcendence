@@ -25,7 +25,8 @@ const BALL_INIT_Y = HEIGHT / 2;
 //const PAD_Y_DRAW_SHIFT = PAD_HEIGHT / 2;
 
 const userStore = useUserStore();
-let canvasRef = ref<HTMLCanvasElement | null>(null);
+let canvas = ref<HTMLCanvasElement>();
+let context = ref<CanvasRenderingContext2D>();
 let size = ref<number>(Math.min(window.innerWidth, window.innerHeight));
 let width = ref<number>(size.value * 0.8);
 let height = ref<number>(size.value * 0.8);
@@ -75,15 +76,15 @@ let gameEnded = ref<boolean>(false);
 //}
 
 function draw_shape(x: number, y: number, width: number, height: number): void {
-  const ctx = ref(canvasRef.value?.getContext("2d"));
+  context.value = canvas.value?.getContext("2d") as CanvasRenderingContext2D;
   if (userStore.gameMode === "monkey") {
-    ctx.value!.fillStyle = "#000000";
+    context.value.fillStyle = "#000000";
   } else if (userStore.gameMode === "vice") {
-    ctx.value!.fillStyle = "#e63380";
+    context.value.fillStyle = "#e63380";
   } else {
-    ctx.value!.fillStyle = "#FFFFFF";
+    context.value.fillStyle = "#FFFFFF";
   }
-  ctx.value?.fillRect(x - width * 0.5, y - height * 0.5, width, height);
+  context.value?.fillRect(x - width * 0.5, y - height * 0.5, width, height);
 }
 
 function draw_shape_ratio(
@@ -92,19 +93,19 @@ function draw_shape_ratio(
   width: number,
   height: number
 ): void {
-  const ctx = ref(canvasRef.value?.getContext("2d"));
+  context.value = canvas.value?.getContext("2d") as CanvasRenderingContext2D;
   if (userStore.gameMode === "monkey") {
-    ctx.value!.fillStyle = "#000000";
+    context.value.fillStyle = "#000000";
   } else if (userStore.gameMode === "vice") {
-    ctx.value!.fillStyle = "#e63380";
+    context.value.fillStyle = "#e63380";
   } else {
-    ctx.value!.fillStyle = "#FFFFFF";
+    context.value.fillStyle = "#FFFFFF";
   }
   width *= ratioX.value;
   height *= ratioY.value;
   x *= ratioX.value;
   y *= ratioY.value;
-  ctx.value?.fillRect(x - width * 0.5, y - height * 0.5, width, height);
+  context.value?.fillRect(x - width * 0.5, y - height * 0.5, width, height);
 }
 
 function draw(): void {
@@ -113,8 +114,8 @@ function draw(): void {
   //console.log(padBy.value + ", " + padBx.value);
   //width.value = (window.innerWidth * 80) / 100;
   //height.value = (window.innerHeight * 80) / 100;
-  const ctx = ref(canvasRef.value?.getContext("2d"));
-  ctx.value?.clearRect(0, 0, width.value, height.value);
+  //const ctx = ref(canvasRef.value?.getContext("2d"));
+  context.value?.clearRect(0, 0, width.value, height.value);
   draw_shape_ratio(ballPosX.value, ballPosY.value, BALL_SIZE, BALL_SIZE);
   draw_shape_ratio(padAx.value, padAy.value, PAD_WIDTH, PAD_HEIGHT);
   draw_shape_ratio(padBx.value, padBy.value, PAD_WIDTH, PAD_HEIGHT);
@@ -170,6 +171,9 @@ async function handleResize() {
 }
 
 onMounted(() => {
+  canvas.value = document.getElementById("canvasRef") as HTMLCanvasElement;
+  context.value = canvas.value?.getContext("2d") as CanvasRenderingContext2D;
+  context.value?.clearRect(0, 0, width.value, height.value);
   window.addEventListener("resize", handleResize);
   window.addEventListener("keydown", (e) => {
     console.log("key press");
