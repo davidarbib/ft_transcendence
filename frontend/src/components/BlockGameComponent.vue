@@ -4,39 +4,40 @@ import { useUserStore } from "@/stores/auth";
 import ConfettiExplosion from "vue-confetti-explosion";
 
 /*
-** Backend constants
-*/
-const WIDTH=100;
-const HEIGHT=100;
+ ** Backend constants
+ */
+const WIDTH = 100;
+const HEIGHT = 100;
 
-const PADGAPX=5;
-const PADWIDTH=2;
-const PADHEIGHT=15;
-const P1PADX=PADGAPX;
-const P2PADX=WIDTH - PADGAPX;
-const PADY=HEIGHT/2;
+const PAD_GA_PX = 5;
+const PAD_WIDTH = 2;
+const PAD_HEIGHT = 15;
+const P1_PAD_X = PAD_GA_PX;
+const P2_PAD_X = WIDTH - PAD_GA_PX;
+const PAD_Y = HEIGHT / 2;
 
-const BALLSIZE=3;
-const BALLINITX=WIDTH/2;
-const BALLINITY=HEIGHT/2; 
+const BALL_SIZE = 3;
+const BALL_INIT_X = WIDTH / 2;
+const BALL_INIT_Y = HEIGHT / 2;
 
-const BALLDRAWSHIFT=BALLSIZE/2;
-const PADXDRAWSHIFT=PADWIDTH/2;
-const PADYDRAWSHIFT=PADHEIGHT/2;
+//const MATERIALDRAWER = BALL_SIZE / 2;
+//const PAD_X_DRAW_SHIFT = PAD_WIDTH / 2;
+//const PAD_Y_DRAW_SHIFT = PAD_HEIGHT / 2;
 
 const userStore = useUserStore();
-let canvasRef = ref<HTMLCanvasElement | null>(null);
+let canvas = ref<HTMLCanvasElement>();
+let context = ref<CanvasRenderingContext2D>();
 let size = ref<number>(Math.min(window.innerWidth, window.innerHeight));
 let width = ref<number>(size.value * 0.8);
 let height = ref<number>(size.value * 0.8);
 let ratioX = ref<number>(width.value / WIDTH);
 let ratioY = ref<number>(height.value / HEIGHT);
-let ballPosX = ref<number>(BALLINITX);
-let ballPosY = ref<number>(BALLINITY);
-let padAx = ref<number>(P1PADX);
-let padAy = ref<number>(PADY);
-let padBx = ref<number>(P2PADX);
-let padBy = ref<number>(PADY);
+let ballPosX = ref<number>(BALL_INIT_X);
+let ballPosY = ref<number>(BALL_INIT_Y);
+let padAx = ref<number>(P1_PAD_X);
+let padAy = ref<number>(PAD_Y);
+let padBx = ref<number>(P2_PAD_X);
+let padBy = ref<number>(PAD_Y);
 let scoreA = ref<number>(0);
 let scoreB = ref<number>(0);
 let playerWin = ref<boolean>(false);
@@ -75,31 +76,36 @@ let gameEnded = ref<boolean>(false);
 //}
 
 function draw_shape(x: number, y: number, width: number, height: number): void {
-  const ctx = ref(canvasRef.value?.getContext("2d"));
+  context.value = canvas.value?.getContext("2d") as CanvasRenderingContext2D;
   if (userStore.gameMode === "monkey") {
-    ctx.value!.fillStyle = "#000000";
+    context.value.fillStyle = "#000000";
   } else if (userStore.gameMode === "vice") {
-    ctx.value!.fillStyle = "#e63380";
+    context.value.fillStyle = "#e63380";
   } else {
-    ctx.value!.fillStyle = "#FFFFFF";
+    context.value.fillStyle = "#FFFFFF";
   }
-  ctx.value?.fillRect(x - width * 0.5, y - height * 0.5, width, height);
+  context.value?.fillRect(x - width * 0.5, y - height * 0.5, width, height);
 }
 
-function draw_shape_ratio(x: number, y: number, width: number, height: number): void {
-  const ctx = ref(canvasRef.value?.getContext("2d"));
+function draw_shape_ratio(
+  x: number,
+  y: number,
+  width: number,
+  height: number
+): void {
+  context.value = canvas.value?.getContext("2d") as CanvasRenderingContext2D;
   if (userStore.gameMode === "monkey") {
-    ctx.value!.fillStyle = "#000000";
+    context.value.fillStyle = "#000000";
   } else if (userStore.gameMode === "vice") {
-    ctx.value!.fillStyle = "#e63380";
+    context.value.fillStyle = "#e63380";
   } else {
-    ctx.value!.fillStyle = "#FFFFFF";
+    context.value.fillStyle = "#FFFFFF";
   }
   width *= ratioX.value;
   height *= ratioY.value;
   x *= ratioX.value;
   y *= ratioY.value;
-  ctx.value?.fillRect(x - width * 0.5, y - height * 0.5, width, height);
+  context.value?.fillRect(x - width * 0.5, y - height * 0.5, width, height);
 }
 
 function draw(): void {
@@ -108,11 +114,11 @@ function draw(): void {
   //console.log(padBy.value + ", " + padBx.value);
   //width.value = (window.innerWidth * 80) / 100;
   //height.value = (window.innerHeight * 80) / 100;
-  const ctx = ref(canvasRef.value?.getContext("2d"));
-  ctx.value?.clearRect(0, 0, width.value, height.value);
-  draw_shape_ratio(ballPosX.value, ballPosY.value, BALLSIZE, BALLSIZE);
-  draw_shape_ratio(padAx.value, padAy.value, PADWIDTH, PADHEIGHT);
-  draw_shape_ratio(padBx.value, padBy.value, PADWIDTH, PADHEIGHT);
+  //const ctx = ref(canvasRef.value?.getContext("2d"));
+  context.value?.clearRect(0, 0, width.value, height.value);
+  draw_shape_ratio(ballPosX.value, ballPosY.value, BALL_SIZE, BALL_SIZE);
+  draw_shape_ratio(padAx.value, padAy.value, PAD_WIDTH, PAD_HEIGHT);
+  draw_shape_ratio(padBx.value, padBy.value, PAD_WIDTH, PAD_HEIGHT);
   for (
     let middle_line_height = height.value;
     middle_line_height > 0;
@@ -138,6 +144,7 @@ userStore.gameSocket.on("score", (scorePayload: boolean) => {
 });
 
 userStore.gameSocket.on("endGame", (endGamePayload) => {
+  window.removeEventListener("keydown", movePad);
   if (
     (endGamePayload.didPlayerOneWin && userStore.gameInfos.isP1) ||
     (!endGamePayload.didPlayerOneWin && !userStore.gameInfos.isP1)
@@ -164,23 +171,27 @@ async function handleResize() {
   draw();
 }
 
+const movePad = (e: KeyboardEvent) => {
+  if (e.key === "ArrowUp") {
+    userStore.gameSocket.emit("padUp", {
+      gameId: userStore.gameInfos.gameId,
+      playerId: userStore.gameInfos.playerId,
+    });
+  }
+  if (e.key === "ArrowDown") {
+    userStore.gameSocket.emit("padDown", {
+      gameId: userStore.gameInfos.gameId,
+      playerId: userStore.gameInfos.playerId,
+    });
+  }
+};
+
 onMounted(() => {
+  canvas.value = document.getElementById("canvasRef") as HTMLCanvasElement;
+  context.value = canvas.value?.getContext("2d") as CanvasRenderingContext2D;
+  context.value?.clearRect(0, 0, width.value, height.value);
   window.addEventListener("resize", handleResize);
-  window.addEventListener("keydown", (e) => {
-    console.log("key press");
-    if (e.key === "ArrowUp") {
-      userStore.gameSocket.emit("padUp", {
-        gameId: userStore.gameInfos.gameId,
-        playerId: userStore.gameInfos.playerId,
-      });
-    }
-    if (e.key === "ArrowDown") {
-      userStore.gameSocket.emit("padDown", {
-        gameId: userStore.gameInfos.gameId,
-        playerId: userStore.gameInfos.playerId,
-      });
-    }
-  });
+  window.addEventListener("keydown", movePad);
   draw();
 });
 </script>
@@ -205,7 +216,7 @@ onMounted(() => {
       tabindex="0"
       class="inline"
       :class="userStore.gameMode"
-      ref="canvasRef"
+      id="canvasRef"
       :width="width"
       :height="height"
     >
@@ -239,6 +250,7 @@ onMounted(() => {
 }
 
 .monkey {
+  background-color: white;
   background-image: url("@/assets/monkey-bg.jpg");
   background-repeat: no-repeat;
   background-attachment: fixed;

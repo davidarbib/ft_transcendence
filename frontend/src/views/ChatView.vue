@@ -4,8 +4,10 @@ import Channel from "@/components/ChannelComponent.vue";
 import PubChannel from "@/components/PubChannelComponent.vue";
 import { ref, watch } from "vue";
 import { useUserStore } from "@/stores/auth";
+import { useRouter } from "vue-router";
 import axios from "axios";
 
+const router = useRouter();
 let getName = ref("");
 const userStore = useUserStore();
 let messages = ref([]);
@@ -18,7 +20,6 @@ const isAdmin = ref(false);
 axios.defaults.withCredentials = true;
 
 userStore.gameSocket.on("inviteCreated", (invite) => {
-  console.log("INVITATION CREER");
   inviteUid.value = invite;
   userStore.chatsocket.emit(
     "createMessage",
@@ -32,6 +33,7 @@ userStore.gameSocket.on("inviteCreated", (invite) => {
       myInput.value = "";
     }
   );
+  router.push("lobby");
 });
 
 function isUserAdmin(login: never) {
