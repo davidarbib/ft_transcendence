@@ -144,6 +144,7 @@ userStore.gameSocket.on("score", (scorePayload: boolean) => {
 });
 
 userStore.gameSocket.on("endGame", (endGamePayload) => {
+  window.removeEventListener("keydown", movePad);
   if (
     (endGamePayload.didPlayerOneWin && userStore.gameInfos.isP1) ||
     (!endGamePayload.didPlayerOneWin && !userStore.gameInfos.isP1)
@@ -170,26 +171,27 @@ async function handleResize() {
   draw();
 }
 
+const movePad = (e: KeyboardEvent) => {
+  if (e.key === "ArrowUp") {
+    userStore.gameSocket.emit("padUp", {
+      gameId: userStore.gameInfos.gameId,
+      playerId: userStore.gameInfos.playerId,
+    });
+  }
+  if (e.key === "ArrowDown") {
+    userStore.gameSocket.emit("padDown", {
+      gameId: userStore.gameInfos.gameId,
+      playerId: userStore.gameInfos.playerId,
+    });
+  }
+};
+
 onMounted(() => {
   canvas.value = document.getElementById("canvasRef") as HTMLCanvasElement;
   context.value = canvas.value?.getContext("2d") as CanvasRenderingContext2D;
   context.value?.clearRect(0, 0, width.value, height.value);
   window.addEventListener("resize", handleResize);
-  window.addEventListener("keydown", (e) => {
-    console.log("key press");
-    if (e.key === "ArrowUp") {
-      userStore.gameSocket.emit("padUp", {
-        gameId: userStore.gameInfos.gameId,
-        playerId: userStore.gameInfos.playerId,
-      });
-    }
-    if (e.key === "ArrowDown") {
-      userStore.gameSocket.emit("padDown", {
-        gameId: userStore.gameInfos.gameId,
-        playerId: userStore.gameInfos.playerId,
-      });
-    }
-  });
+  window.addEventListener("keydown", movePad);
   draw();
 });
 </script>
@@ -248,6 +250,7 @@ onMounted(() => {
 }
 
 .monkey {
+  background-color: white;
   background-image: url("@/assets/monkey-bg.jpg");
   background-repeat: no-repeat;
   background-attachment: fixed;
