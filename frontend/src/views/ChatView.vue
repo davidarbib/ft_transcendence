@@ -19,16 +19,7 @@ const isAdmin = ref(false);
 
 axios.defaults.withCredentials = true;
 
-userStore.gameSocket.on("gameReady", function (game) {
-  console.log("game is ready");
-  userStore.gameInfos.gameId = game.gameId;
-  userStore.gameInfos.playerId = game.playerId;
-  userStore.gameInfos.isP1 = game.isP1;
-  router.push("pong");
-});
-
 userStore.gameSocket.on("inviteCreated", (invite) => {
-  console.log("INVITATION CREER");
   inviteUid.value = invite;
   userStore.chatsocket.emit(
     "createMessage",
@@ -42,6 +33,7 @@ userStore.gameSocket.on("inviteCreated", (invite) => {
       myInput.value = "";
     }
   );
+  router.push("lobby");
 });
 
 function isUserAdmin(login: never) {

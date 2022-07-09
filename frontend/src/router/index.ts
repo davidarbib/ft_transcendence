@@ -9,6 +9,7 @@ import ProfileView from "@/views/ProfilView.vue";
 import MyProfileView from "@/views/MyProfilView.vue";
 import Auth2faView from "@/views/Auth2faView.vue";
 import PrivateGameView from "@/views/PrivateGame.vue";
+import LobbyView from "@/views/LobbyView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -55,6 +56,11 @@ const router = createRouter({
       path: "/auth2fa",
       name: "auth2fa",
       component: Auth2faView,
+    },
+    {
+      path: "/lobby",
+      name: "lobby",
+      component: LobbyView,
     },
     {
       path: "/:catchAll(.*)",
