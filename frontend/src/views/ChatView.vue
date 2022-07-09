@@ -27,7 +27,7 @@ function isUserAdmin(login: any) {
   // return false;
 }
 
-const isOwner = ref(true);
+const ownerName = ref("");
 const isBan = ref(false);
 const isMute = ref(false);
 const selectUser = ref("");
@@ -114,6 +114,7 @@ function addFriend(login: any) {
 
 // avoir la liste de tout les admins
 function getAdmins() {
+  console.log("data >");
   userStore.chatsocket.emit(
     "userAdmin",
     { name: getName.value },
@@ -122,24 +123,28 @@ function getAdmins() {
       allAdmins.value = data;
     }
   );
+  console.log("< data");
+}
+
+function getOwner() {
+  console.log("owner >");
+  userStore.chatsocket.emit("Owner", { name: getName.value }, (data) => {
+    ownerName.value = data;
+    console.log(ownerName.value);
+  });
+  console.log("owner <");
 }
 
 function playGame() {
   console.log("matchmaking");
 }
 
-function getOwner() {
-  userStore.chatsocket.emit("Owner", { name: getName.value }, (data) => {
-    // mettre la data ou tu ve
-  });
-}
-
 function userStatus() {
   userStore.chatsocket.emit(
     "userChanStatus",
     { name: getName.value, login: userStore.user.login },
-    (data) => {
-      // mettre data ou tu ve
+    (data:any) => {
+      console.log(data.value);
     }
   );
   console.log("bool string status");
