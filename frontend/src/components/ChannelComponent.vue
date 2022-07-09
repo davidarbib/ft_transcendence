@@ -1,12 +1,10 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
+import { ref, onMounted } from "vue";
 import axios from "axios";
 import { useUserStore } from "@/stores/auth";
 
 const userStore = useUserStore();
-const searched = ref("");
 const chan = ref([]);
-const messages = ref([]);
 const channelOptions = ref(false);
 const channelSelected = ref(-1);
 const channelName = ref("");
@@ -15,9 +13,8 @@ function toggleChannelMenu(id: number) {
   channelSelected.value = id;
   channelOptions.value = !channelOptions.value;
 }
-
-userStore.chatsocket.on('join', (data : never) => {
-  chan.value.push(data);
+ userStore.chatsocket.on('join', (data) => {
+   chan.value.push(data);
 })
 
 onMounted(() => {

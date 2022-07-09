@@ -3,20 +3,20 @@ import historic from "@/assets/data_hist.json";
 </script>
 
 <template>
-  <div class="historic-section">
+  <div class="overflow-scroll h-[92vh]">
     <div
-      class="match-card rounded my-2 bg-black bg-opacity-10 font-medium hover:bg-opacity-30 transition duration-300"
+      class="text-white flex flex-row flex-nowrap justify-around items-center rounded my-2 bg-black bg-opacity-10 font-medium hover:bg-opacity-30 transition duration-300"
       v-for="match in historic"
       :key="match.id"
     >
       <div class="match-result">
-        <h2>Victory</h2>
+        <h2 class="text-green-600 leading-4">Victory</h2>
         <p>vs ia</p>
       </div>
-      <div class="match-score">
+      <div class="text-lg tracking-wider">
         <p>10/8</p>
       </div>
-      <div class="match-infos">
+      <div>
         <h3>Custom</h3>
         <p>{{ match.date_time }}</p>
       </div>
@@ -27,27 +27,7 @@ import historic from "@/assets/data_hist.json";
 <style scoped lang="scss">
 @use "../assets/variables.scss" as v;
 
-.historic-section {
-  overflow: scroll;
-  height: 92vh;
-}
 .match-card {
-  display: flex;
-  flex-flow: row nowrap;
-  justify-content: space-around;
-  align-items: center;
   color: rgba(255, 255, 255, 0.706);
-
-  .match-result {
-    h2 {
-      color: green;
-      line-height: 1rem;
-    }
-  }
-
-  .match-score {
-    font-size: 1.2rem;
-    letter-spacing: 0.5rem;
-  }
 }
 </style>

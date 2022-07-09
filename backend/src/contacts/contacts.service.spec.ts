@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { Repository } from 'typeorm';
 import { ContactsService } from './contacts.service';
 
 describe('ContactsService', () => {
@@ -6,7 +7,10 @@ describe('ContactsService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [ContactsService],
+      providers: [
+        ContactsService,
+        Repository,
+      ],
     }).compile();
 
     service = module.get<ContactsService>(ContactsService);

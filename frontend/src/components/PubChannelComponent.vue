@@ -58,8 +58,9 @@ onMounted(() => {
     });
 });
 
+const emit = defineEmits(['name']);
 function joinChan(name: string) {
-  userStore.chatsocket.emit("joinchan", { login: userStore.user.login, name: name });
+  userStore.chatsocket.emit("joinchan", { user: userStore.user, name: name });
 }
 </script>
 

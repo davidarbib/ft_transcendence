@@ -71,9 +71,9 @@ uploadFile(@UploadedFile() file , @Request()  req) : any {
   findAll() {
     return this.usersService.findAll();
   }
-  @Get(':login')
+  @Get('login/:login')
   async findName(@Param('login') login: string) {
-    return this.usersService.findOne(login);
+    return this.usersService.findName(login);
   }
 
   @Get(':login/profil-image')

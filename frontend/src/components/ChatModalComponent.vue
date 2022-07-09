@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import axios from "axios";
-import { io } from "socket.io-client";
-
 import { useUserStore } from "@/stores/auth";
 
 const userStore = useUserStore();
@@ -16,7 +14,7 @@ const emit = defineEmits(["response"]);
 function createChannel() {
   open.value = false;
   userStore.chatsocket.emit("createChannel", {
-    login: userStore.user.login,
+    user: userStore.user,
     name: createChanName.value,
     type: chan_setting.value,
     password: createChanPass.value,
@@ -24,16 +22,16 @@ function createChannel() {
 }
 
 userStore.chatsocket.on("join", (data) => {
-  userStore.chatsocket.emit("ourchan", {user:userStore.user} , (data1) => {
+  userStore.chatsocket.emit("ourchan", { user: userStore.user }, (data1) => {
     chan.value = data1;
-  }
-  );
-  })
+  });
+});
 
 onMounted(() => {
-  userStore.chatsocket.emit("ourchan", { user: userStore.user }, (data) => {
-    chan.value = data;
-  });
+  userStore.chatsocket.emit("ourchan", { user: userStore.user }, (data: never) => {
+      chan.value = data;
+    }
+  );
 });
 /* axios.defaults.withCredentials = true;
   axios

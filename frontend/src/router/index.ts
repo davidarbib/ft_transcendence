@@ -2,7 +2,6 @@ import { createRouter, createWebHistory } from "vue-router";
 import { is2faAuthenticated, is2faEnabled, isLoggedIn } from "@/utils/auth";
 import ChatView from "@/views/ChatView.vue";
 import ErrorView from "@/views/ErrorView.vue";
-import GameModeView from "@/views/GameModeView.vue";
 import HomeView from "@/views/HomeView.vue";
 import MainView from "@/views/MainView.vue";
 import PongView from "@/views/PongView.vue";
@@ -45,12 +44,6 @@ const router = createRouter({
       path: "/profile/:pseudo",
       name: "profile",
       component: ProfileView,
-      props: true,
-    },
-    {
-      path: "/mode",
-      name: "game_mode",
-      component: GameModeView,
     },
     {
       path: "/auth2fa",

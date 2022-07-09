@@ -2,15 +2,13 @@
 import NavbarItem from "@/components/NavbarItemComponent.vue";
 import Channel from "@/components/ChannelComponent.vue";
 import PubChannel from "@/components/PubChannelComponent.vue";
-import { ref, watch } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { useUserStore } from "@/stores/auth";
 import axios from "axios";
-import { useRouter } from "vue-router"
-const getName = ref("");
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const router = useRouter();
+
+let getName = ref("");
 const userStore = useUserStore();
-let messages: any = ref([]);
+let messages = ref([]);
 const messageText = ref("");
 const myInput = ref("");
 let userIn = ref([]);
@@ -18,53 +16,54 @@ axios.defaults.withCredentials = true;
 
 const isAdmin = ref(false);
 
-function isUserAdmin(login: any) {
+onMounted(() =>
+{
+  userStore.chatsocket.emit("setConnexion", {user: userStore.user})
+})
+function isUserAdmin(login: never) {
   for (let i in allAdmins.value) {
     if (i.login === login) {
-     isAdmin.value = true;
-     return true;
+      isAdmin.value = true;
+      return true;
+    }
   }
- }
-   isAdmin.value = false;
-   return false;
+  isAdmin.value = false;
+  return false;
 }
 
 const isOwner = ref(false);
-  const owner = ref();
-function isUserOwner(login: any) {
-  if (owner.value)
-  {
-  if (owner.value.login == userStore.user.login)
-  {
-    isOwner.value  = true;
-  }
-  else
-  {
-  isOwner.value = false;
+const owner = ref();
+
+function isUserOwner() {
+  if (owner.value) {
+    isOwner.value = owner.value.login == userStore.user.login;
   }
 }
-}
+
 const isBan = ref(false);
-const isMute = ref(false);
-const selectUser = ref("");
 const allAdmins = ref([]);
+
 interface Messages {
   [room: string]: string;
+
   room: string;
-  stock_msg;
+  stock_msg: never;
 }
+
 let test: Messages[] = [];
 
 userStore.chatsocket.on("connection", (socket) => {
   console.log(socket.id);
 });
-userStore.chatsocket.on("message", (message: never) => {
-  messages.value.push(message);
+userStore.chatsocket.on("message", (message, chan) => {
+  console.log(message);
+  if (chan.name == getName.value)
+    return messages.value.push(message);
 });
 
-userStore.chatsocket.on("newUser", (usr: never) => {
-  userIn.value.push(usr);
-  console.log(usr);
+userStore.chatsocket.on("newUser", (usr: never, chan) => {
+  if (chan.name == getName.value)
+     userIn.value.push(usr);
 });
 
 function getUserInChan() {
@@ -108,29 +107,23 @@ watch(getName, () => {
   );
 });
 
-function muteClient(login :any) {
+function muteClient(login: any) {
   console.log("TEST TO MUTE");
   userStore.chatsocket.emit(
     "MuteBanUser",
     { name: getName.value, user: userStore.user, target: login, mute: true },
-    (data) => {
+    (data: never) => {
       console.log(data);
       //data
     }
   );
 }
 
-function viewProfil(login:any)
-{
-  //router.push({name: 'profile', pseudo: login})
-  console.log("view profil");
-}
-
-function addFriend(login: any) {
+function addFriend(login: never) {
   axios
     .post(`http://localhost:8090/contacts/${getName.value}`, {
       userLogin: userStore.user.login,
-      followedlogin: login,
+      followedLogin: login,
     })
     .then((response) => {
       console.log(response.data);
@@ -141,11 +134,11 @@ function addFriend(login: any) {
   console.log("friend");
 }
 
-// avoir la liste de tout les admins
+// get all admins
 function getAdmins() {
-    axios
+  axios
     .get(`http://localhost:8090/chan-participants/admin/${getName.value}`, {
-      name: getName.value
+      name: getName.value,
     })
     .then((response) => {
       allAdmins.value = response.data;
@@ -160,9 +153,9 @@ function playGame() {
 }
 
 function getOwner() {
-    axios
+  axios
     .get(`http://localhost:8090/chan-participants/owner/${getName.value}`, {
-      name: getName.value
+      name: getName.value,
     })
     .then((response) => {
       owner.value = response.data;
@@ -235,9 +228,12 @@ function banUser(login: any) {
         </div>
         <div class="icon">
           <!--        view profil-->
-          <p class="common-icons" @click="viewProfil(login.login)">
-            <i class="fa-solid fa-profil mx-1"></i>
-          </p>
+          <router-link
+            class="common-icons"
+            :to="{ name: 'profile', params: { pseudo: login.login } }"
+          >
+            <i class="fa-solid fa-profil mx-1"></i
+          ></router-link>
           <!--        add friend-->
           <p class="common-icons" @click="addFriend(login.login)">
             <i class="fa-solid fa-heart mx-1"></i>
@@ -259,7 +255,11 @@ function banUser(login: any) {
             <i class="fa-solid fa-ban mx-1"></i>
           </p>
           <!--        add admin-->
-          <p v-if="isAdmin || isOwner" class="admin-icons" @click="addAdmin(login.login)">
+          <p
+            v-if="isAdmin || isOwner"
+            class="admin-icons"
+            @click="addAdmin(login.login)"
+          >
             <i class="fa-solid fa-crown mx-1"></i>
           </p>
         </div>

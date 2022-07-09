@@ -1,20 +1,27 @@
 <script setup lang="ts">
 import BlockGame from "@/components/BlockGameComponent.vue";
+import { useUserStore } from "@/stores/auth";
+import { onMounted } from "vue";
+import MusicLoop from "@/components/MusicLoopComponent.vue";
+
+const userStore = useUserStore();
+
+onMounted(() => {
+  userStore.gameSocket.emit("canvasReady", userStore.gameInfos);
+});
 </script>
 
 <template>
-  <div class="about">
+  <div class="sound"><MusicLoop :music="userStore.gameMode" /></div>
+  <div class="flex flex-col items-center min-h-screen">
     <BlockGame />
   </div>
 </template>
 
 <style scoped lang="scss">
-@use "../assets/variables.scss" as v;
-@media (min-width: 1024px) {
-  .about {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-  }
+.sound {
+  position: absolute;
+  top: 0;
+  right: 1rem;
 }
 </style>
