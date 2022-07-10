@@ -7,13 +7,24 @@ import { useUserStore } from "@/stores/auth";
 import { useRouter } from "vue-router";
 import axios from "axios";
 
+interface Message {
+  content: string;
+  time: string;
+  login: string;
+}
+
+interface User {
+  login: string;
+  id: string;
+}
+
 const router = useRouter();
-let getName = ref("");
+let getName = ref<string>("");
 const userStore = useUserStore();
-let messages = ref([]);
+let messages = ref<Message[]>([]);
 const messageText = ref("");
 const myInput = ref("");
-let userIn = ref([]);
+let userIn = ref<User[]>([]);
 let inviteUid = ref<string>("");
 const isAdmin = ref(false);
 
@@ -26,7 +37,7 @@ userStore.gameSocket.on("inviteCreated", (invite) => {
     {
       name: getName.value,
       login: userStore.user.login,
-      content: `http://localhost:8000/privateGame/${inviteUid.value}`,
+      content: inviteUid.value,
     },
     () => {
       messageText.value = "";
@@ -36,7 +47,7 @@ userStore.gameSocket.on("inviteCreated", (invite) => {
   router.push("lobby");
 });
 
-function isUserAdmin(login: never) {
+function isUserAdmin(login: string) {
   for (let i in allAdmins.value) {
     if (i.login === login) {
       isAdmin.value = true;
@@ -58,15 +69,6 @@ function isUserOwner() {
 
 const isBan = ref(false);
 const allAdmins = ref([]);
-
-interface Messages {
-  [room: string]: string;
-
-  room: string;
-  stock_msg: never;
-}
-
-let test: Messages[] = [];
 
 userStore.chatsocket.on("connection", (socket) => {
   console.log(socket.id);
@@ -116,7 +118,7 @@ watch(getName, () => {
   );
 });
 
-function muteClient(login: any) {
+function muteClient(login: string) {
   console.log("TEST TO MUTE");
   userStore.chatsocket.emit(
     "MuteBanUser",
@@ -128,7 +130,7 @@ function muteClient(login: any) {
   );
 }
 
-function addFriend(login: never) {
+function addFriend(login: string) {
   axios
     .post(`http://localhost:8090/contacts/${getName.value}`, {
       userLogin: userStore.user.login,
@@ -179,15 +181,15 @@ function userStatus() {
   userStore.chatsocket.emit(
     "userChanStatus",
     { name: getName.value, login: userStore.user.login },
-    (data) => {
-      // mettre data ou tu ve
+    (data: never) => {
+      console.log(data);
     }
   );
   console.log("bool string status");
 }
 
 // add admin (addAdmin(login))
-function addAdmin(login: any) {
+function addAdmin(login: string) {
   userStore.chatsocket.emit("addAdmin", {
     name: getName.value,
     user: userStore.user,
@@ -196,7 +198,7 @@ function addAdmin(login: any) {
   console.log("add admin");
 }
 
-function banUser(login: any) {
+function banUser(login: string) {
   userStore.chatsocket.emit("MuteBanUser", {
     name: getName.value,
     user: userStore.user,
@@ -227,7 +229,7 @@ function banUser(login: any) {
           {{ login.login }}
           <div class="user-icons">
             <!--          is owner icon-->
-            <p v-if="isUserOwner(login.login)" class="owner-status">
+            <p v-if="isUserOwner" class="owner-status">
               <i class="fa-solid fa-star"></i>
             </p>
             <!--          is admin icon-->
@@ -237,7 +239,7 @@ function banUser(login: any) {
           </div>
         </div>
         <div class="icon">
-          <!--        view profil-->
+          <!--        view profile-->
           <router-link
             class="common-icons"
             :to="{ name: 'profile', params: { pseudo: login.login } }"
@@ -282,11 +284,20 @@ function banUser(login: any) {
         v-for="message in messages"
         :key="message"
       >
-        <span>
+        <router-link
+          v-if="inviteUid === message.content"
+          :to="{
+            name: 'privateGame',
+            params: { inviteId: inviteUid },
+          }"
+          class="secondary-button"
+          >Play a pong game ? 🌚</router-link
+        >
+        <span v-else>
           {{ message.login }} :
           {{ message.time }}
+          <p>{{ message.content }}</p>
         </span>
-        <p>{{ message.content }}</p>
       </div>
     </div>
     <div class="message-input">
