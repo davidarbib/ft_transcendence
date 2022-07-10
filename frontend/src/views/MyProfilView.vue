@@ -6,7 +6,7 @@ import NotificationMessage from "@/components/NotificationMessageComponent.vue";
 import axios from "axios";
 import { useUserStore } from "@/stores/auth";
 import { apiStore } from "@/stores/api";
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { logoutUser } from "@/utils/auth";
 
@@ -141,6 +141,17 @@ const turnoff2fa = () => {
       is2faEnabled.value = false;
     });
 };
+
+onMounted(() => {
+  axios
+    .get("http://localhost:8090/auth/current")
+    .then((response) => {
+      userStore.user = response.data;
+    })
+    .catch(() => {
+      console.log("Error");
+    });
+});
 </script>
 
 <template>
@@ -172,7 +183,9 @@ const turnoff2fa = () => {
       <div class="stats">
         <ul>
           <li>
-            <p class="stat-nb">0</p>
+            <p class="stat-nb">
+              {{ userStore.user.winCount - userStore.user.lossCount }}
+            </p>
             <p class="stats-value">Games</p>
           </li>
           <li class="mx-6">
