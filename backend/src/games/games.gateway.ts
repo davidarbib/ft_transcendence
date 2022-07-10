@@ -221,10 +221,20 @@ export class GamesGateway {
       client.emit("inviteImpossible");
     else
     {
-      const uuid = this.gamesService.addInvit(userId, client);
+      const uuid = this.gamesService.addInvite(userId, client);
       client.emit("inviteCreated", uuid);
       console.log(`inviteId : ${uuid}`);
     }
+  }
+
+  @SubscribeMessage('cancelInvite')
+  async cancelInvite
+  (
+    @MessageBody('userId') hostId: string,
+    @ConnectedSocket() client: Socket,
+  )
+  {
+    this.gamesService.delInvite(hostId);
   }
 
   @SubscribeMessage('acceptInvite')
@@ -265,6 +275,7 @@ export class GamesGateway {
           playerTwoName: user2.username,
         }
         client.emit("gameReady", payload);
+        this.gamesService.delInvite(hostId);
       })
       .catch(() => {
         console.log("problem in match creation");
