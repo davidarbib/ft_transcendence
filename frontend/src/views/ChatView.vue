@@ -19,7 +19,6 @@ interface User {
 }
 
 function isUid(str: string): boolean {
-  console.log(str);
   return str.length === 36 ? (str.match(/-/g) || []).length === 4 : false;
 }
 
@@ -249,7 +248,11 @@ function banUser(login: string) {
             <i class="fa-solid fa-heart mx-1"></i>
           </p>
           <!--        play game-->
-          <p class="common-icons" @click="playGame()">
+          <p
+            v-if="userStore.user.login !== login.login"
+            class="common-icons"
+            @click="playGame()"
+          >
             <i class="fa-solid fa-gamepad mx-1"></i>
           </p>
           <!--        mute-->
