@@ -77,9 +77,23 @@ export class GamesService {
       }
       this.userWhoWaitMatch.splice(1);
       this.userWhoWaitMatch.splice(0);
-      return { match, clients, playerOneId, playerTwoId };
+      return { 
+        match,
+        clients,
+        playerOneId,
+        playerTwoId,
+        playerOneName: this.userWhoWaitMatch[0].user.username,
+        playerTwoName: this.userWhoWaitMatch[1].user.username
+      };
     }
-    return { match: null, clients: null, playerOneId: null, playerTwoId: null };
+    return {
+      match: null,
+      clients: null,
+      playerOneId: null,
+      playerTwoId: null,
+      playerOneName: null,
+      playerTwoName: null
+    };
   }
 
   async findOne(id: string) {
@@ -118,17 +132,31 @@ export class GamesService {
     return this.games[gameId].getState();
   }
 
+  getPlayerOneName(gameId: string) : string
+  {
+    return this.getState(gameId).player1.name;
+  }
+
+  getPlayerTwoName(gameId: string) : string
+  {
+    return this.getState(gameId).player2.name;
+  }
+
   createGame
   (
     gameId: string,
     playerOneId: string,
+    playerOneName: string,
     playerTwoId: string,
+    playerTwoName: string,
   )
   {
     let game : Game = new Game(
       gameId,
       playerOneId,
+      playerOneName,
       playerTwoId,
+      playerTwoName,
       undefined,
       undefined,
       undefined,

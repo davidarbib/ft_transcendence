@@ -18,6 +18,7 @@ export class BallState
 export class PlayerState
 {
     public id: string;
+    public name: string;
     //public socket: Socket;
     public isP1: boolean;
     public ready: boolean;
