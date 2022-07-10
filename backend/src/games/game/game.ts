@@ -200,11 +200,11 @@ export class Game
         {
             case PadCmd.UP:
                 finalPos = playerState.yPos - velocity;
-                playerState.yPos = Math.max(finalPos, 0);
+                playerState.yPos = Math.max(finalPos, param.HALFPAD + param.PADGAPY);
                 break;
             case PadCmd.DOWN:
                 finalPos = playerState.yPos + velocity;
-                playerState.yPos = Math.min(finalPos, this.state.height);
+                playerState.yPos = Math.min(finalPos, this.state.height - param.HALFPAD - param.PADGAPY);
                 break;
             default:
                 throw new InternalServerErrorException("Bad command");
@@ -293,22 +293,22 @@ export class Game
 
     private touchWall() : Wall
     {
-        if (this.state.ball.yPos >= this.state.height)
+        if (this.state.ball.yPos + param.HALFBALL >= this.state.height)
             return Wall.DOWN;
-        if (this.state.ball.yPos <= 0)
+        if (this.state.ball.yPos - param.HALFBALL <= 0)
             return Wall.UP;
         return Wall.NONE;
     }
 
     private touchPad() : Pad
     {
-        if (this.state.ball.xPos <= this.state.player1.xPos
-            && this.state.ball.yPos >= this.padUpEdge(this.state.player1)
-            && this.state.ball.yPos <= this.padDownEdge(this.state.player1))
+        if (this.state.ball.xPos - param.HALFBALL <= this.state.player1.xPos
+            && this.state.ball.yPos + param.HALFBALL >= this.padUpEdge(this.state.player1)
+            && this.state.ball.yPos - param.HALFBALL <= this.padDownEdge(this.state.player1))
             return Pad.P1;
-        if (this.state.ball.xPos >= this.state.player2.xPos
-            && this.state.ball.yPos >= this.padUpEdge(this.state.player2)
-            && this.state.ball.yPos <= this.padDownEdge(this.state.player2))
+        if (this.state.ball.xPos + param.HALFBALL >= this.state.player2.xPos
+            && this.state.ball.yPos + param.HALFBALL >= this.padUpEdge(this.state.player2)
+            && this.state.ball.yPos - param.HALFBALL <= this.padDownEdge(this.state.player2))
             return Pad.P2;
         return Pad.NONE;
     }
@@ -396,9 +396,9 @@ export class Game
         else
         {
             if (this.state.ball.yPos <= boundaries.up)    
-                this.state.ball.direction = new Vector2D(normal.x, 2);
-            else
                 this.state.ball.direction = new Vector2D(normal.x, -2);
+            else
+                this.state.ball.direction = new Vector2D(normal.x, 2);
         }
         this.state.ball.direction = normalize(this.state.ball.direction);
     }
@@ -453,8 +453,8 @@ export class Game
         this.state.ball.xPos = this.state.width/2;
         this.state.ball.yPos = this.state.height/2;
 
-        this.state.player1.yPos = this.state.height/2;
-        this.state.player2.yPos = this.state.height/2;
+        //this.state.player1.yPos = this.state.height/2;
+        //this.state.player2.yPos = this.state.height/2;
         return false;
     }
 }
