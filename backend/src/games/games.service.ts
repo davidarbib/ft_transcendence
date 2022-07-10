@@ -75,6 +75,8 @@ export class GamesService {
         clientOne: this.userWhoWaitMatch[0].socket,
         clientTwo: this.userWhoWaitMatch[1].socket,
       }
+      const playerOneName = this.userWhoWaitMatch[0].user.username;
+      const playerTwoName = this.userWhoWaitMatch[1].user.username;
       this.userWhoWaitMatch.splice(1);
       this.userWhoWaitMatch.splice(0);
       return { 
@@ -82,8 +84,8 @@ export class GamesService {
         clients,
         playerOneId,
         playerTwoId,
-        playerOneName: this.userWhoWaitMatch[0].user.username,
-        playerTwoName: this.userWhoWaitMatch[1].user.username
+        playerOneName: playerOneName,
+        playerTwoName: playerTwoName
       };
     }
     return {
@@ -193,7 +195,7 @@ export class GamesService {
 
   delInvite(userId: string)
   {
-    const uuid = this.userInvit[userId];
+    const uuid = this.userInvit.get(userId);
     this.userInvit.delete(userId);
     this.invitUser.delete(uuid);
     this.hostSocket.delete(userId);
@@ -210,11 +212,12 @@ export class GamesService {
     //console.log(`hostId stored ${this.invitUser[inviteId]}`);
     //console.log(this.invitUser.has(inviteId));
     //console.log(this.invitUser.has('xxxxxxxxxxxxxxxx'));
-    //console.log("----------1231212----------");
-    //this.invitUser.set('test', 'lol');
-    //this.invitUser['test2'] = 'lol';
-    //console.log(this.invitUser.has('test'));
-    //console.log(this.invitUser.has('test2'));
+    console.log("----------1231212----------");
+    this.invitUser.set('test', 'lol');
+    console.log(this.invitUser.has('test'));
+    this.invitUser.delete('test');
+    console.log("after deletion");
+    console.log(this.invitUser.has('test'));
     return (this.invitUser.has(inviteId));
   }
 

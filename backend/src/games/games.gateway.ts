@@ -211,7 +211,7 @@ export class GamesGateway {
     {
       const uuid = this.gamesService.addInvite(userId, client);
       client.emit("inviteCreated", uuid);
-      console.log(`inviteId : ${uuid}`);
+      console.log("invitCreated sent to front")
     }
   }
 
@@ -221,7 +221,12 @@ export class GamesGateway {
     @MessageBody('userId') hostId: string,
   )
   {
+    console.log("host want to cancel");
+    //debug:
+    const inviteId = this.gamesService.userInvit.get(hostId);
+    //-----------------
     this.gamesService.delInvite(hostId);
+    console.log(`invite ${inviteId} exist : ${this.gamesService.userInvit.get(hostId)}`);
   }
 
   @SubscribeMessage('acceptInvite')
@@ -232,6 +237,7 @@ export class GamesGateway {
     @ConnectedSocket() client: Socket,
   )
   {
+    console.log(`invitId ${inviteId} exist in acceptInvite : ${this.gamesService.doesInvitExist(inviteId)}`);
     if (!this.gamesService.doesInvitExist(inviteId))
       client.emit("inviteNotFound");
     else
@@ -248,6 +254,7 @@ export class GamesGateway {
           match.id, playerOneId, user1.username, playerTwoId, user2.username
         );
         console.log("game created by invite");
+        console.log(`match id : ${match.id}`);
         let payload : GameReadyPayload = {
           gameId: match.id,
           playerId: playerOneId,
@@ -274,7 +281,6 @@ export class GamesGateway {
 
   async handlePoint(gameId: string, playerId: string, isP1: boolean)
   {
-    console.log('handle point');
     const player = await myDataSource.getRepository(Player).findOne({where : { id : playerId}})
     this.playerService.incrementScore(player);
     this.server.to(gameId).emit('score', isP1);
@@ -326,7 +332,6 @@ export class GamesGateway {
     this.server.to(gameId).emit("gameState", loopPayload);
     if (details.score)
     {
-      console.log(`isP1score : ${details.isP1Score}`);
       let playerId : string;
       if (details.isP1Score)
         playerId = gameState.player1.id;
@@ -363,7 +368,8 @@ export class GamesGateway {
         this.server.in(gameId).socketsLeave(gameId);
       }
     //}, 10); //~90fps for debugging
-    }, 33); //~30fps
+    //}, 33); //~30fps
+    }, 25); //40fps
     //}, 10000); //slow for debugging
   }
 }

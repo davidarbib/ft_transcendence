@@ -14,6 +14,7 @@ userStore.gameSocket.on("gameReady", function (game) {
 });
 
 const cancelLobby = () => {
+  console.log("try to cancel lobby");
   userStore.gameSocket.emit("cancelInvite", { userId: userStore.user.id });
 };
 </script>

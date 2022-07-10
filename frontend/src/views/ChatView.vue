@@ -39,13 +39,14 @@ function isUid(str: string): boolean {
 }
 
 userStore.gameSocket.on("inviteCreated", (invite) => {
+  console.log("transfer invite to chat");
   inviteUid.value = invite;
   userStore.chatsocket.emit("createMessage", {
     name: getName.value,
     login: userStore.user.login,
     content: inviteUid.value,
   });
-  router.push("lobby");
+  //router.push("lobby");
 });
 
 function playGame() {
