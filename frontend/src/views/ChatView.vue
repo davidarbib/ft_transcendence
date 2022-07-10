@@ -282,8 +282,10 @@ function banUser(login: any) {
         v-for="message in messages"
         :key="message"
       >
-        {{ message.login }} :
-        {{ message.time }}
+        <span>
+          {{ message.login }} :
+          {{ message.time }}
+        </span>
         <p>{{ message.content }}</p>
       </div>
     </div>
