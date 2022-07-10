@@ -14,11 +14,13 @@ onMounted(() => {
 });
 
 userStore.gameSocket.on("inviteImpossible", () => {
-  router.push("main");
+  console.log("InviteImpossible");
+  router.push({ path: "/main" });
 });
 
 userStore.gameSocket.on("inviteNotFound", () => {
-  router.push("main");
+  console.log("InviteNotFound");
+  router.push({ path: "/main" });
 });
 
 userStore.gameSocket.on("gameReady", function (game) {

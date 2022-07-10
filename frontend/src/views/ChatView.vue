@@ -18,6 +18,11 @@ interface User {
   id: string;
 }
 
+function compareStrings(str1: string, str2: string): boolean {
+  console.log(`Str1 = ${str1} and Str2 = ${str2}`);
+  return str1 === str2;
+}
+
 const router = useRouter();
 let getName = ref<string>("");
 const userStore = useUserStore();
@@ -285,7 +290,7 @@ function banUser(login: string) {
         :key="message"
       >
         <router-link
-          v-if="inviteUid === message.content"
+          v-if="compareStrings(inviteUid, message.content)"
           :to="{
             name: 'privateGame',
             params: { inviteId: inviteUid },
