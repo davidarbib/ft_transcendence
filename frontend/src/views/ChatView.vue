@@ -8,6 +8,7 @@ import { useRouter } from "vue-router";
 import axios from "axios";
 
 interface Message {
+  id: string;
   content: string;
   time: string;
   login: string;
@@ -18,22 +19,24 @@ interface User {
   id: string;
 }
 
+const router = useRouter();
+const getName = ref<string>("");
+const userStore = useUserStore();
+let messages = ref<Message[]>([]);
+const messageText = ref<string>("");
+const myInput = ref<string>("");
+let userIn = ref<User[]>([]);
+let inviteUid = ref<string>("");
+const isAdmin = ref<boolean>(false);
+const allAdmins = ref<User[]>([]);
+const isOwner = ref<boolean>(false);
+const owner = ref();
+
+axios.defaults.withCredentials = true;
+
 function isUid(str: string): boolean {
   return str.length === 36 ? (str.match(/-/g) || []).length === 4 : false;
 }
-
-const router = useRouter();
-let getName = ref<string>("");
-const userStore = useUserStore();
-let messages = ref<Message[]>([]);
-const messageText = ref("");
-const myInput = ref("");
-let userIn = ref<User[]>([]);
-let inviteUid = ref<string>("");
-const isAdmin = ref(false);
-const allAdmins = ref<User[]>([]);
-
-axios.defaults.withCredentials = true;
 
 userStore.gameSocket.on("inviteCreated", (invite) => {
   inviteUid.value = invite;
@@ -61,9 +64,6 @@ function isUserAdmin(login: string): boolean {
   return false;
 }
 
-const isOwner = ref<boolean>(false);
-const owner = ref();
-
 function isUserOwner() {
   if (owner.value) {
     isOwner.value = owner.value.login == userStore.user.login;
@@ -75,6 +75,7 @@ const isBan = ref(false);
 userStore.chatsocket.on("connection", (socket) => {
   console.log(socket.id);
 });
+
 userStore.chatsocket.on("message", (message) => {
   return messages.value.push(message);
 });
@@ -342,7 +343,6 @@ function banUser(login: string) {
     grid-area: 2 / 2 / 4 / 3;
     overflow: scroll;
     border: none;
-    overflow-y: hidden;
     overflow-x: hidden;
 
     .message {
