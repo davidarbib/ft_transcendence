@@ -17,6 +17,15 @@ let userIn = ref([]);
 let inviteUid = ref<string>("");
 const isAdmin = ref(false);
 
+function isInvite(url: string): boolean {
+  console.log(
+    `isInvite : ${url.includes(
+      "http://localhost:8000/privateGame"
+    )} message content : ${url}`
+  );
+  return url.includes("http://localhost:8000/privateGame");
+}
+
 axios.defaults.withCredentials = true;
 
 userStore.gameSocket.on("inviteCreated", (invite) => {
@@ -282,7 +291,13 @@ function banUser(login: any) {
         v-for="message in messages"
         :key="message"
       >
-        <span>
+        <router-link
+          v-if="isInvite(message.content)"
+          to="main"
+          class="secondary-button"
+          >Play a pong game ? 🌚 {{ messages.content }}</router-link
+        >
+        <span v-else>
           {{ message.login }} :
           {{ message.time }}
         </span>

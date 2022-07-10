@@ -12,12 +12,16 @@ userStore.gameSocket.on("gameReady", function (game) {
   userStore.gameInfos.isP1 = game.isP1;
   router.push("pong");
 });
+
+const cancelLobby = () => {
+  userStore.gameSocket.emit("cancelInvite", { userId: userStore.user.id });
+};
 </script>
 
 <template>
   <div class="lobby-content">
     <div class="loader"></div>
-    <router-link class="primary-button" to="/main">Cancel game</router-link>
+    <router-link @click="cancelLobby" class="primary-button" to="/main">Cancel game</router-link>
   </div>
 </template>
 
