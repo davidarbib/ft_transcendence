@@ -18,9 +18,9 @@ interface User {
   id: string;
 }
 
-function compareStrings(str1: string, str2: string): boolean {
-  console.log(`Str1 = ${str1} and Str2 = ${str2}`);
-  return str1 === str2;
+function isUid(str: string): boolean {
+  console.log(str);
+  return str.length === 36 ? (str.match(/-/g) || []).length === 4 : false;
 }
 
 const router = useRouter();
@@ -38,20 +38,18 @@ axios.defaults.withCredentials = true;
 
 userStore.gameSocket.on("inviteCreated", (invite) => {
   inviteUid.value = invite;
-  userStore.chatsocket.emit(
-    "createMessage",
-    {
-      name: getName.value,
-      login: userStore.user.login,
-      content: inviteUid.value,
-    },
-    () => {
-      messageText.value = "";
-      myInput.value = "";
-    }
-  );
+  userStore.chatsocket.emit("createMessage", {
+    name: getName.value,
+    login: userStore.user.login,
+    content: inviteUid.value,
+  });
   router.push("lobby");
 });
+
+function playGame() {
+  console.log("create game");
+  userStore.gameSocket.emit("createInvite", { userId: userStore.user.id });
+}
 
 function isUserAdmin(login: string): boolean {
   allAdmins.value.forEach((user) => {
@@ -64,7 +62,7 @@ function isUserAdmin(login: string): boolean {
   return false;
 }
 
-const isOwner = ref(false);
+const isOwner = ref<boolean>(false);
 const owner = ref();
 
 function isUserOwner() {
@@ -162,11 +160,6 @@ function getAdmins() {
     .catch((error) => {
       console.log(error);
     });
-}
-
-function playGame() {
-  console.log("create game");
-  userStore.gameSocket.emit("createInvite", { userId: userStore.user.id });
 }
 
 function getOwner() {
@@ -290,10 +283,10 @@ function banUser(login: string) {
         :key="message"
       >
         <router-link
-          v-if="compareStrings(inviteUid, message.content)"
+          v-if="isUid(message.content)"
           :to="{
             name: 'privateGame',
-            params: { inviteId: inviteUid },
+            params: { inviteId: message.content },
           }"
           class="secondary-button"
           >Play a pong game ? 🌚</router-link
