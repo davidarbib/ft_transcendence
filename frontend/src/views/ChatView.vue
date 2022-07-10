@@ -27,6 +27,7 @@ const myInput = ref("");
 let userIn = ref<User[]>([]);
 let inviteUid = ref<string>("");
 const isAdmin = ref(false);
+const allAdmins = ref<User[]>([]);
 
 axios.defaults.withCredentials = true;
 
@@ -47,13 +48,13 @@ userStore.gameSocket.on("inviteCreated", (invite) => {
   router.push("lobby");
 });
 
-function isUserAdmin(login: string) {
-  for (let i in allAdmins.value) {
-    if (i.login === login) {
+function isUserAdmin(login: string): boolean {
+  allAdmins.value.forEach((user) => {
+    if (user.login === login) {
       isAdmin.value = true;
       return true;
     }
-  }
+  });
   isAdmin.value = false;
   return false;
 }
@@ -68,7 +69,6 @@ function isUserOwner() {
 }
 
 const isBan = ref(false);
-const allAdmins = ref([]);
 
 userStore.chatsocket.on("connection", (socket) => {
   console.log(socket.id);
