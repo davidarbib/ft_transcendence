@@ -8,6 +8,7 @@ import { useRouter } from "vue-router";
 import axios from "axios";
 
 interface Message {
+  id: string;
   content: string;
   time: string;
   login: string;
@@ -19,47 +20,49 @@ interface User {
 }
 
 const router = useRouter();
-let getName = ref<string>("");
+const getName = ref<string>("");
 const userStore = useUserStore();
 let messages = ref<Message[]>([]);
-const messageText = ref("");
-const myInput = ref("");
+const messageText = ref<string>("");
+const myInput = ref<string>("");
 let userIn = ref<User[]>([]);
 let inviteUid = ref<string>("");
-const isAdmin = ref(false);
+const isAdmin = ref<boolean>(false);
+const allAdmins = ref<User[]>([]);
+const isOwner = ref<boolean>(false);
+const owner = ref();
 
 axios.defaults.withCredentials = true;
 
+function isUid(str: string): boolean {
+  return str.length === 36 ? (str.match(/-/g) || []).length === 4 : false;
+}
+
 userStore.gameSocket.on("inviteCreated", (invite) => {
   inviteUid.value = invite;
-  userStore.chatsocket.emit(
-    "createMessage",
-    {
-      name: getName.value,
-      login: userStore.user.login,
-      content: inviteUid.value,
-    },
-    () => {
-      messageText.value = "";
-      myInput.value = "";
-    }
-  );
+  userStore.chatsocket.emit("createMessage", {
+    name: getName.value,
+    login: userStore.user.login,
+    content: inviteUid.value,
+  });
   router.push("lobby");
 });
 
-function isUserAdmin(login: string) {
-  for (let i in allAdmins.value) {
-    if (i.login === login) {
+function playGame() {
+  console.log("create game");
+  userStore.gameSocket.emit("createInvite", { userId: userStore.user.id });
+}
+
+function isUserAdmin(login: string): boolean {
+  allAdmins.value.forEach((user) => {
+    if (user.login === login) {
       isAdmin.value = true;
       return true;
     }
-  }
+  });
   isAdmin.value = false;
   return false;
 }
-
-const isOwner = ref(false);
-const owner = ref();
 
 function isUserOwner() {
   if (owner.value) {
@@ -68,11 +71,11 @@ function isUserOwner() {
 }
 
 const isBan = ref(false);
-const allAdmins = ref([]);
 
 userStore.chatsocket.on("connection", (socket) => {
   console.log(socket.id);
 });
+
 userStore.chatsocket.on("message", (message) => {
   return messages.value.push(message);
 });
@@ -157,11 +160,6 @@ function getAdmins() {
     .catch((error) => {
       console.log(error);
     });
-}
-
-function playGame() {
-  console.log("create game");
-  userStore.gameSocket.emit("createInvite", { userId: userStore.user.id });
 }
 
 function getOwner() {
@@ -251,7 +249,11 @@ function banUser(login: string) {
             <i class="fa-solid fa-heart mx-1"></i>
           </p>
           <!--        play game-->
-          <p class="common-icons" @click="playGame()">
+          <p
+            v-if="userStore.user.login !== login.login"
+            class="common-icons"
+            @click="playGame()"
+          >
             <i class="fa-solid fa-gamepad mx-1"></i>
           </p>
           <!--        mute-->
@@ -285,10 +287,10 @@ function banUser(login: string) {
         :key="message"
       >
         <router-link
-          v-if="inviteUid === message.content"
+          v-if="isUid(message.content)"
           :to="{
             name: 'privateGame',
-            params: { inviteId: inviteUid },
+            params: { inviteId: message.content },
           }"
           class="secondary-button"
           >Play a pong game ? 🌚</router-link
@@ -341,7 +343,6 @@ function banUser(login: string) {
     grid-area: 2 / 2 / 4 / 3;
     overflow: scroll;
     border: none;
-    overflow-y: hidden;
     overflow-x: hidden;
 
     .message {

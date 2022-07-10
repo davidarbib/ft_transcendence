@@ -21,7 +21,9 @@ const cancelLobby = () => {
 <template>
   <div class="lobby-content">
     <div class="loader"></div>
-    <router-link @click="cancelLobby" class="primary-button" to="/main">Cancel game</router-link>
+    <router-link @click="cancelLobby" class="primary-button" to="/main"
+      >Cancel game</router-link
+    >
   </div>
 </template>
 

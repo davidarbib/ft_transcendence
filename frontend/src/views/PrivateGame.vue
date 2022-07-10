@@ -14,11 +14,13 @@ onMounted(() => {
 });
 
 userStore.gameSocket.on("inviteImpossible", () => {
-  router.push("main");
+  console.log("InviteImpossible");
+  router.push({ path: "/main" });
 });
 
 userStore.gameSocket.on("inviteNotFound", () => {
-  router.push("main");
+  console.log("InviteNotFound");
+  router.push({ path: "/main" });
 });
 
 userStore.gameSocket.on("gameReady", function (game) {
@@ -26,12 +28,10 @@ userStore.gameSocket.on("gameReady", function (game) {
   userStore.gameInfos.gameId = game.gameId;
   userStore.gameInfos.playerId = game.playerId;
   userStore.gameInfos.isP1 = game.isP1;
-  router.push("pong");
+  router.push({ path: "/pong" });
 });
 </script>
 
 <template>
   <h1>Invitation accepted</h1>
 </template>
-
-<style scoped></style>
