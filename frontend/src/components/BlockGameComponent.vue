@@ -139,21 +139,15 @@ userStore.gameSocket.on("gameState", (gameStatePayload) => {
 userStore.gameSocket.on("score", (scorePayload: boolean) => {
   if (scorePayload) scoreA.value++;
   else scoreB.value++;
-  console.log("score : ");
-  console.log(scoreA.value + ", " + scoreB.value);
 });
 
 userStore.gameSocket.on("endGame", (endGamePayload) => {
   window.removeEventListener("keydown", movePad);
-  if (
+  playerWin.value = !!(
     (endGamePayload.didPlayerOneWin && userStore.gameInfos.isP1) ||
     (!endGamePayload.didPlayerOneWin && !userStore.gameInfos.isP1)
-  )
-    playerWin.value = true;
+  );
   gameEnded.value = true;
-  userStore.gameInfos.gameId = "";
-  userStore.gameInfos.playerId = "";
-  userStore.gameInfos.isP1 = false;
 });
 
 async function handleResize() {
@@ -187,6 +181,8 @@ const movePad = (e: KeyboardEvent) => {
 };
 
 onMounted(() => {
+  gameEnded.value = false;
+  playerWin.value = false;
   canvas.value = document.getElementById("canvasRef") as HTMLCanvasElement;
   context.value = canvas.value?.getContext("2d") as CanvasRenderingContext2D;
   context.value?.clearRect(0, 0, width.value, height.value);
@@ -201,7 +197,7 @@ onMounted(() => {
     <div v-if="gameEnded" class="modal">
       <div class="modal-inner bg-black bg-opacity-100">
         <h1 v-if="playerWin" class="text-white">Victory</h1>
-        <h1 v-else class="text-white">Defeat</h1>
+        <h1 v-else-if="!playerWin" class="text-white">Defeat</h1>
         <router-link to="/main" class="secondary-button">
           Go back home
         </router-link>
