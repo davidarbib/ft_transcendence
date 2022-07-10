@@ -293,15 +293,18 @@ function banUser(login: any) {
       >
         <router-link
           v-if="isInvite(message.content)"
-          to="main"
+          :to="{
+            name: 'privateGame',
+            params: { inviteId: message.content.substring(34) },
+          }"
           class="secondary-button"
-          >Play a pong game ? 🌚 {{ messages.content }}</router-link
+          >Play a pong game ? 🌚</router-link
         >
         <span v-else>
           {{ message.login }} :
           {{ message.time }}
+          <p>{{ message.content }}</p>
         </span>
-        <p>{{ message.content }}</p>
       </div>
     </div>
     <div class="message-input">
