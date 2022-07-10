@@ -9,11 +9,11 @@ import ConfettiExplosion from "vue-confetti-explosion";
 const WIDTH = 100;
 const HEIGHT = 100;
 
-const PAD_GA_PX = 5;
+const PAD_GAP_X = 5;
 const PAD_WIDTH = 2;
 const PAD_HEIGHT = 15;
-const P1_PAD_X = PAD_GA_PX;
-const P2_PAD_X = WIDTH - PAD_GA_PX;
+const P1_PAD_X = PAD_GAP_X;
+const P2_PAD_X = WIDTH - PAD_GAP_X;
 const PAD_Y = HEIGHT / 2;
 
 const BALL_SIZE = 3;
@@ -42,38 +42,6 @@ let scoreA = ref<number>(0);
 let scoreB = ref<number>(0);
 let playerWin = ref<boolean>(false);
 let gameEnded = ref<boolean>(false);
-
-//function draw_shape(x: number, y: number, width: number, height: number): void {
-//  const ctx = ref(canvasRef.value?.getContext("2d"));
-//  if (userStore.gameMode === "monkey") {
-//    ctx.value!.fillStyle = "#000000";
-//  } else if (userStore.gameMode === "vice") {
-//    ctx.value!.fillStyle = "#e63380";
-//  } else {
-//    ctx.value!.fillStyle = "#FFFFFF";
-//  }
-//  ctx.value?.fillRect(x, y, width, height);
-//}
-//
-//function draw(): void {
-//  //console.log(ballPosX.value + ", " + ballPosY.value);
-//  //console.log(padAy.value + ", " + padAx.value);
-//  //console.log(padBy.value + ", " + padBx.value);
-//  width.value = (window.innerWidth * 80) / 100;
-//  height.value = (window.innerHeight * 80) / 100;
-//  const ctx = ref(canvasRef.value?.getContext("2d"));
-//  ctx.value?.clearRect(0, 0, width.value, height.value);
-//  draw_shape(ballPosX.value, ballPosY.value, 20, 20);
-//  draw_shape(padAx.value, padAy.value, 10, 60);
-//  draw_shape(padBx.value, padBy.value, 10, 60);
-//  for (
-//    let middle_line_height = height.value;
-//    middle_line_height > 0;
-//    middle_line_height -= 20
-//  ) {
-//    draw_shape(width.value / 2, middle_line_height, 10, 10);
-//  }
-//}
 
 function draw_shape(x: number, y: number, width: number, height: number): void {
   context.value = canvas.value?.getContext("2d") as CanvasRenderingContext2D;
@@ -109,12 +77,6 @@ function draw_shape_ratio(
 }
 
 function draw(): void {
-  //console.log(ballPosX.value + ", " + ballPosY.value);
-  //console.log(padAy.value + ", " + padAx.value);
-  //console.log(padBy.value + ", " + padBx.value);
-  //width.value = (window.innerWidth * 80) / 100;
-  //height.value = (window.innerHeight * 80) / 100;
-  //const ctx = ref(canvasRef.value?.getContext("2d"));
   context.value?.clearRect(0, 0, width.value, height.value);
   draw_shape_ratio(ballPosX.value, ballPosY.value, BALL_SIZE, BALL_SIZE);
   draw_shape_ratio(padAx.value, padAy.value, PAD_WIDTH, PAD_HEIGHT);
@@ -156,11 +118,6 @@ async function handleResize() {
   height.value = size.value * 0.8;
   ratioX.value = width.value / WIDTH;
   ratioY.value = height.value / HEIGHT;
-  //ballPosX.value = 50 * ratioX.value;
-  //ballPosY.value = 50 * ratioY.value;
-  //padAy.value = (50 + 30) * ratioY.value;
-  //padBx.value = width.value - 40;
-  //padBy.value = (50 + 30) * ratioY.value;
   await nextTick();
   draw();
 }
