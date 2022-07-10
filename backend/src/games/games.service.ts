@@ -153,7 +153,7 @@ export class GamesService {
     return match.id;
   }
 
-  addInvit(userId: string, client: Socket) : string
+  addInvite(userId: string, client: Socket) : string
   {
     this.hostSocket.set(userId, client);
     const uuid : string = randomUUID();
@@ -163,7 +163,7 @@ export class GamesService {
     return uuid;
   }
 
-  delInvit(userId: string)
+  delInvite(userId: string)
   {
     const uuid = this.userInvit[userId];
     this.userInvit.delete(userId);
