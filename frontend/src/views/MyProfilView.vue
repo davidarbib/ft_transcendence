@@ -146,6 +146,7 @@ onMounted(() => {
   axios
     .get("http://localhost:8090/auth/current")
     .then((response) => {
+      console.log(response.data);
       userStore.user = response.data;
     })
     .catch(() => {
@@ -184,7 +185,10 @@ onMounted(() => {
         <ul>
           <li>
             <p class="stat-nb">
-              {{ userStore.user.winCount - userStore.user.lossCount }}
+              {{
+                parseInt(userStore.user.winCount) +
+                parseInt(userStore.user.lossCount)
+              }}
             </p>
             <p class="stats-value">Games</p>
           </li>
