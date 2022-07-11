@@ -118,28 +118,10 @@ export class MessagesGateway
     })
   }
   @SubscribeMessage('MuteBanUser')
-  async MuteBanUser( @MessageBody('name') name:string, @MessageBody('user') usr:User, @MessageBody('target') target:string , @MessageBody() updateChanParticipantDto: UpdateChanParticipantDto) {
+  async MuteBanUser( @MessageBody('name') name:string, @MessageBody('user') usr:User, @MessageBody('target') target:string , @MessageBody() updateChanParticipantDto: UpdateChanParticipantDto, @ConnectedSocket() client:Socket) {
 
-      const arr = await myDataSource.getRepository(ChanParticipant).find({relations:['participant', 'chan']});
-      arr.forEach(element => {
-          if (element.chan && element.participant)
-          {
-            if ( element.chan.name == name)
-            { 
-              if (element.participant.login == usr.login && element.chan.name == name)
-              {
-                if (element.privilege == ChanPartStatus.NORMAL){
-                throw new HttpException({
-                status: HttpStatus.FORBIDDEN,
-                error: 'NOT ALLOWED',
-             }, HttpStatus.FORBIDDEN);
-            }
-  // socket.on bc  en mode warning il est mute
-             return this.messageService.muteBanUser(name, updateChanParticipantDto, target);
-              }
-            }
-          }
-      })
+    const {arg, bool, chan} = await this.messageService.muteBanUser(name, updateChanParticipantDto, target);
+    this.server.emit("UsernewStatus", {status:arg, bool:bool, chan :chan});
   }
   @SubscribeMessage('userAdmin')
   async ListOfAdmin( @MessageBody('name') name:string)
@@ -186,6 +168,7 @@ export class MessagesGateway
   async addAdmin( @MessageBody('name') name:string, @MessageBody('user') user:User, @MessageBody('login') login:string )
   {
     const list = await myDataSource.getRepository(ChanParticipant).find({relations : ['participant', 'chan']});
+    const chan = await myDataSource.getRepository(Channel).findOne({where : {name:name}})
     list.forEach( element => {
 
       if (element.chan && element.participant)
@@ -206,6 +189,7 @@ export class MessagesGateway
         }
       }
     })
+    this.server.emit("UsernewStatus", {status:"admin", bool:true, chan :chan});
   }
   
   // @SubscribeMessage('addfriend')
