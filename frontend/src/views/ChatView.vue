@@ -37,48 +37,51 @@ userStore.chatsocket.on("newUser", (usr: never, chan) => {
   if (chan.name == getName.value) userIn.value.push(usr);
 });
 /* event le user est devenu admin dans le chan */
-userStore.chatsocket.on("newadmin", (chan: never, user:never) => { 
-//  if (chan.name == getName.value)
-      // need to put data in tab of admin
+userStore.chatsocket.on("newadmin", (chan: never, user: never) => {
+  //  if (chan.name == getName.value)
+  // need to put data in tab of admin
 });
 
-function ListMute(){
-  userStore.chatsocket.emit("getMuteInChan",{name:getName.value}, (data) =>{
-
-  }
+function ListMute() {
+  userStore.chatsocket.emit(
+    "getMuteInChan",
+    { name: getName.value },
+    (data) => {}
     // NEED TO PUT DATA IN LIST
-  )
+  );
 }
-function ListBan(){
-  userStore.chatsocket.emit("getBanInChan",{name:getName.value}, (data) => {}
+function ListBan() {
+  userStore.chatsocket.emit(
+    "getBanInChan",
+    { name: getName.value },
+    (data) => {}
     // NEED TO PUT DATA IN LIST
-  )
+  );
 }
 /* AS TON BESOIN D'UN MDP POUR CE CHAN */
 function NeedPassword() {
-  userStore.chatsocket.emit("needPassword", {name:getName.value}, (data) =>{
+  userStore.chatsocket.emit("needPassword", { name: getName.value }, (data) => {
     // LA DATA return true or false
-  })
+  });
 }
 /* EST CE QUE LE PASSWORD  EST BON */
-function isGoodPassword( password:string) {
-  userStore.chatsocket.emit("isPassword", {name:getName.value, password:password}, (data) =>{
-    //BOOL 
-  })
+function isGoodPassword(password: string) {
+  userStore.chatsocket.emit(
+    "isPassword",
+    { name: getName.value, password: password },
+    (data) => {
+      //BOOL
+    }
+  );
 }
 /* CHANGER LE PASSWORD*/
-function changePassword(password:string){
-   userStore.chatsocket.emit("changePassword", {name:getName.value, password: password} , () =>{})
+function changePassword(password: string) {
+  userStore.chatsocket.emit(
+    "changePassword",
+    { name: getName.value, password: password },
+    () => {}
+  );
 }
-  function isUserAdmin(login: never) {  
-    for (let i in allAdmins.value) {
-      if (i.login === login) {
-        isAdmin.value = true;
-        return true;
-      }
-    }
-    isAdmin.value = false;
-    return false;
 
 // /* event pour savoir le new status ddu user */
 // userStore.chatsocket.on(
@@ -251,14 +254,9 @@ function banUser(login: string) {
 }
 
 watch(getName, () => {
-  //permet de mettre a j les infos quand on change de channel
-  getAdmins(); // all admins in allAdmins list
-  // console.log("admins");
-  // console.log(allAdmins.value);
-  getOwner(); // return owner name
-  // console.log(owner.value);
+  getAdmins();
+  getOwner();
   getUserInChan();
-  // console.log(isOwner.value);
   messages.value = [];
   userStore.chatsocket.emit(
     "findMessageFromChan",
