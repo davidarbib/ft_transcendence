@@ -152,6 +152,7 @@ export class GamesGateway {
     //find game played par user
     this.gamesService.getGamePlayedByUser(userId)
     .then((gameId) => {
+      console.log(`game to spectate : ${gameId}`);
       const playerOneName = this.gamesService.getPlayerOneName(gameId);
       const playerTwoName = this.gamesService.getPlayerTwoName(gameId);
       const payload : GameReadyPayload = {
@@ -174,9 +175,11 @@ export class GamesGateway {
   async endSpectate 
   (
     @MessageBody('gameId') gameId: string,
+    @MessageBody('userId') userId: string,
     @ConnectedSocket() client: Socket,
   )
   {
+    this.gamesService.setEndGameStatus(userId)
     client.leave(gameId);
   }
 
@@ -313,12 +316,14 @@ export class GamesGateway {
     const loser = await this.playerService.findOne(loserId);
     this.matchesService.finish(match);
     this.playerService.setWinner(winner);
-    let user:User = winner.userRef;
-    user.winCount++;
-    myDataSource.getRepository(User).save(user); 
-    user = loser.userRef;
-    user.lossCount++;
-    myDataSource.getRepository(User).save(user); 
+    let userWinner:User = winner.userRef;
+    let userLoser:User = loser.userRef;
+    userWinner.winCount++;
+    userLoser.lossCount++;
+    this.gamesService.setEndGameStatus(userWinner.id);
+    this.gamesService.setEndGameStatus(userLoser.id);
+    myDataSource.getRepository(User).save(userWinner); 
+    myDataSource.getRepository(User).save(userLoser); 
   }
   
   async handleLoopOutput(gameId: string, details: LoopDetails)
@@ -375,7 +380,8 @@ export class GamesGateway {
       }
     //}, 10); //~90fps for debugging
     //}, 33); //~30fps
-    }, 25); //40fps
+    //}, 25); //40fps
+    }, 20); //50fps
     //}, 10000); //slow for debugging
   }
 }

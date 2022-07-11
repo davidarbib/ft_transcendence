@@ -175,9 +175,9 @@ export class GamesService {
     .createQueryBuilder('match')
     .select('match.id')
     .leftJoin(Player, 'player',
-      "'player'.'userRefId' = :userId AND 'match'.'id' = 'player'.'matchRefId'",
+      "'player.userRefId' = :userId AND 'match.id' = 'player.matchRefId'",
       { 'userId': userId })
-    .where("'match'.'active' = :active",
+    .where("'match.active' = :active",
       { 'active': true })
     .getOne();
     if (!match)
@@ -231,5 +231,10 @@ export class GamesService {
   setSpectateStatus(userId: string)
   {
     this.usersGateway.handleStatusSwitch(userId, UserStatus.SPECTATE);
+  }
+
+  setEndGameStatus(userId: string)
+  {
+    this.usersGateway.handleStatusSwitch(userId, UserStatus.ONLINE);
   }
 }
