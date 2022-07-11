@@ -4,22 +4,38 @@ import Channel from "@/components/ChannelComponent.vue";
 import PubChannel from "@/components/PubChannelComponent.vue";
 import { onMounted, ref, watch } from "vue";
 import { useUserStore } from "@/stores/auth";
+import { useRouter } from "vue-router";
 import axios from "axios";
-
-let getName = ref(""); // name of the channel
-const userStore = useUserStore();
-
-let messages = ref([]); // list of every messages
-const messageText = ref(""); // message wrote in input bar
-const myInput = ref(""); // input
 
 axios.defaults.withCredentials = true;
 
-const userIn = ref([]); // list of users in channel
-const owner = ref(""); // string for owner name
-const allAdmins = ref([]); // list admins
-const allMuted = ref([]); // list muted user
-const allBanned = ref([]); // list banned user
+  interface Message {
+    id: string;
+    content: string;
+    time: string;
+    login: string;
+  }
+
+  interface User {
+    login: string;
+    id: string;
+  }
+
+const router = useRouter();
+const userStore = useUserStore();
+const getName = ref<string>("");
+let messages = ref<Message[]>([]);
+const messageText = ref<string>("");
+const myInput = ref<string>("");
+let inviteUid = ref<string>("");
+const isAdmin = ref<boolean>(false);
+const userIn = ref<User[]>([]); // list of users in channel
+const owner = ref<string>(""); // string for owner name
+const allAdmins = ref<User[]>([]); // There are all admins inside
+const isOwner = ref<boolean>(false);
+const lobbyToggle = ref<boolean>(false);
+const allMuted = ref<User[]>([]); // list muted user
+const allBanned = ref<User[]>([]); // list banned user
 
 /* permet de Set la connexion quand ca refresh essentiel pour les dm */
 onMounted(() => {
@@ -100,7 +116,39 @@ function isUserAdmin(login: string): boolean {
     let i = allAdmins.value[x];
     if (i.login === login) return true;
   }
-  return false;
+}
+
+function isUid(str: string): boolean {
+  return str.length === 36 ? (str.match(/-/g) || []).length === 4 : false;
+}
+
+userStore.gameSocket.on("gameReady", function (game) {
+  console.log("game is ready");
+  userStore.gameInfos.gameId = game.gameId;
+  userStore.gameInfos.playerId = game.playerId;
+  userStore.gameInfos.isP1 = game.isP1;
+  router.push("pong");
+});
+
+const cancelLobby = () => {
+  userStore.gameSocket.emit("cancelInvite", { userId: userStore.user.id });
+  lobbyToggle.value = false;
+};
+
+userStore.gameSocket.on("inviteCreated", (invite) => {
+  console.log("transfer invite to chat");
+  inviteUid.value = invite;
+  userStore.chatsocket.emit("createMessage", {
+    name: getName.value,
+    login: userStore.user.login,
+    content: inviteUid.value,
+  });
+  lobbyToggle.value = true;
+});
+
+function playGame() {
+  console.log("create game");
+  userStore.gameSocket.emit("createInvite", { userId: userStore.user.id });
 }
 
 function isUserBanned(login: string): boolean {
@@ -167,8 +215,7 @@ function muteClient(login: string) {
   );
 }
 
-function addFriend(login: never) {
-  // pour ajouter en amie
+function addFriend(login: string) {
   axios
     .post(`http://localhost:8090/contacts/${getName.value}`, {
       userLogin: userStore.user.login,
@@ -213,24 +260,19 @@ function getOwner() {
     });
 }
 
-function playGame() {
-  console.log("matchmaking");
+function userStatus() {
+  userStore.chatsocket.emit(
+    "userChanStatus",
+    { name: getName.value, login: userStore.user.login },
+    (data: never) => {
+      console.log(data);
+    }
+  );
+  console.log("bool string status");
 }
 
-// function userStatus() {
-//   // le status du current user
-//   userStore.chatsocket.emit(
-//     "userChanStatus",
-//     { name: getName.value, login: userStore.user.login },
-//     (data: any) => {
-//       console.log(data.value);
-//     }
-//   );
-//   console.log("bool string status");
-// }
-
+// add admin (addAdmin(login))
 function addAdmin(login: string) {
-  // add admin
   userStore.chatsocket.emit("addAdmin", {
     name: getName.value,
     user: userStore.user,
@@ -244,7 +286,6 @@ function itsMe(login: string): boolean {
 }
 
 function banUser(login: string) {
-  //ban user
   userStore.chatsocket.emit("MuteBanUser", {
     name: getName.value,
     user: userStore.user,
@@ -269,6 +310,16 @@ watch(getName, () => {
 </script>
 
 <template>
+  <Teleport to="body">
+    <div v-if="lobbyToggle" class="modal">
+      <div class="modal-inner">
+        <div class="loader"></div>
+        <button @click="cancelLobby" class="secondary-button">
+          Cancel invite
+        </button>
+      </div>
+    </div>
+  </Teleport>
   <div class="chat-section">
     <div class="navbar-item">
       <NavbarItem />
@@ -289,7 +340,7 @@ watch(getName, () => {
           {{ login.login }}
           <div class="user-icons">
             <!--          is owner icon-->
-            <p v-if="isUserOwner(login.login)" class="owner-status">
+            <p v-if="isUserOwner" class="owner-status">
               <i class="fa-solid fa-star"></i>
             </p>
             <!--          is admin icon-->
@@ -311,7 +362,11 @@ watch(getName, () => {
             <i class="fa-solid fa-heart mx-1"></i>
           </p>
           <!--        play game-->
-          <p class="common-icons" @click="playGame()">
+          <p
+            v-if="userStore.user.login !== login.login"
+            class="common-icons"
+            @click="playGame"
+          >
             <i class="fa-solid fa-gamepad mx-1"></i>
           </p>
           <!--        mute (admin + owner)-->
@@ -354,9 +409,20 @@ watch(getName, () => {
         v-for="message in messages"
         :key="message"
       >
-        {{ message.login }} :
-        {{ message.time }}
-        <p>{{ message.content }}</p>
+        <router-link
+          v-if="isUid(message.content)"
+          :to="{
+            name: 'privateGame',
+            params: { inviteId: message.content },
+          }"
+          class="secondary-button"
+          >Play a pong game ? 🌚</router-link
+        >
+        <span v-else>
+          {{ message.login }} :
+          {{ message.time }}
+          <p>{{ message.content }}</p>
+        </span>
       </div>
     </div>
     <div class="message-input">
@@ -400,7 +466,6 @@ watch(getName, () => {
     grid-area: 2 / 2 / 4 / 3;
     overflow: scroll;
     border: none;
-    overflow-y: hidden;
     overflow-x: hidden;
 
     .message {
@@ -466,6 +531,53 @@ watch(getName, () => {
       color: v.$dark-blue;
       font-size: 2.5rem;
     }
+  }
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 999;
+  background-color: rgba(0, 0, 0, 0.3);
+  display: grid;
+  justify-content: center;
+  align-items: center;
+
+  .modal-inner {
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(v.$primary, v.$dark-blue) fixed;
+    width: 40rem;
+    height: 20rem;
+    padding: 1rem;
+    border-radius: 0.375rem;
+
+    button {
+      width: 60%;
+      margin: auto;
+    }
+  }
+}
+
+.loader {
+  border: 1rem solid #f3f3f3; /* Light grey */
+  border-top: 1rem solid #e63380;
+  border-radius: 50%;
+  width: 10rem;
+  height: 10rem;
+  margin: auto;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
   }
 }
 </style>

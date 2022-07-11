@@ -2,7 +2,7 @@
 import NavbarItem from "@/components/NavbarItemComponent.vue";
 import Contact from "@/components/ContactComponent.vue";
 import Title from "@/components/TitleComponent.vue";
-import { ref, watch } from "vue";
+import { ref, watch, onMounted } from "vue";
 import { computed } from "@vue/reactivity";
 import { useUserStore } from "@/stores/auth";
 import { useRouter } from "vue-router";
@@ -62,6 +62,10 @@ userStore.gameSocket.on("gameReady", function (game) {
   userStore.gameInfos.playerId = game.playerId;
   userStore.gameInfos.isP1 = game.isP1;
   router.push("pong");
+});
+
+onMounted(() => {
+  userStore.gameMode = "default";
 });
 </script>
 

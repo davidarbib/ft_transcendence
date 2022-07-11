@@ -3,46 +3,84 @@ import { ref, onMounted, nextTick } from "vue";
 import { useUserStore } from "@/stores/auth";
 import ConfettiExplosion from "vue-confetti-explosion";
 
+/*
+ ** Backend constants
+ */
+const WIDTH = 100;
+const HEIGHT = 100;
+
+const PAD_GAP_X = 5;
+const PAD_WIDTH = 2;
+const PAD_HEIGHT = 15;
+const P1_PAD_X = PAD_GAP_X;
+const P2_PAD_X = WIDTH - PAD_GAP_X;
+const PAD_Y = HEIGHT / 2;
+
+const BALL_SIZE = 3;
+const BALL_INIT_X = WIDTH / 2;
+const BALL_INIT_Y = HEIGHT / 2;
+
+//const MATERIALDRAWER = BALL_SIZE / 2;
+//const PAD_X_DRAW_SHIFT = PAD_WIDTH / 2;
+//const PAD_Y_DRAW_SHIFT = PAD_HEIGHT / 2;
+
 const userStore = useUserStore();
-let canvasRef = ref<HTMLCanvasElement | null>(null);
-let width = ref<number>((window.innerWidth * 80) / 100);
-let height = ref<number>((window.innerHeight * 80) / 100);
-let ratioX = ref<number>(width.value / 100);
-let ratioY = ref<number>(height.value / 100);
-let ballPosX = ref<number>(50 * ratioX.value);
-let ballPosY = ref<number>(50 * ratioY.value);
-let padAx = ref<number>(30);
-let padAy = ref<number>((50 + 30) * ratioY.value);
-let padBx = ref<number>(width.value - 40);
-let padBy = ref<number>((50 + 30) * ratioY.value);
+let canvas = ref<HTMLCanvasElement>();
+let context = ref<CanvasRenderingContext2D>();
+let size = ref<number>(Math.min(window.innerWidth, window.innerHeight));
+let width = ref<number>(size.value * 0.8);
+let height = ref<number>(size.value * 0.8);
+let ratioX = ref<number>(width.value / WIDTH);
+let ratioY = ref<number>(height.value / HEIGHT);
+let ballPosX = ref<number>(BALL_INIT_X);
+let ballPosY = ref<number>(BALL_INIT_Y);
+let padAx = ref<number>(P1_PAD_X);
+let padAy = ref<number>(PAD_Y);
+let padBx = ref<number>(P2_PAD_X);
+let padBy = ref<number>(PAD_Y);
 let scoreA = ref<number>(0);
 let scoreB = ref<number>(0);
 let playerWin = ref<boolean>(false);
 let gameEnded = ref<boolean>(false);
 
 function draw_shape(x: number, y: number, width: number, height: number): void {
-  const ctx = ref(canvasRef.value?.getContext("2d"));
+  context.value = canvas.value?.getContext("2d") as CanvasRenderingContext2D;
   if (userStore.gameMode === "monkey") {
-    ctx.value!.fillStyle = "#000000";
+    context.value.fillStyle = "#000000";
   } else if (userStore.gameMode === "vice") {
-    ctx.value!.fillStyle = "#e63380";
+    context.value.fillStyle = "#e63380";
   } else {
-    ctx.value!.fillStyle = "#FFFFFF";
+    context.value.fillStyle = "#FFFFFF";
   }
-  ctx.value?.fillRect(x, y, width, height);
+  context.value?.fillRect(x - width * 0.5, y - height * 0.5, width, height);
+}
+
+function draw_shape_ratio(
+  x: number,
+  y: number,
+  width: number,
+  height: number
+): void {
+  context.value = canvas.value?.getContext("2d") as CanvasRenderingContext2D;
+  if (userStore.gameMode === "monkey") {
+    context.value.fillStyle = "#000000";
+  } else if (userStore.gameMode === "vice") {
+    context.value.fillStyle = "#e63380";
+  } else {
+    context.value.fillStyle = "#FFFFFF";
+  }
+  width *= ratioX.value;
+  height *= ratioY.value;
+  x *= ratioX.value;
+  y *= ratioY.value;
+  context.value?.fillRect(x - width * 0.5, y - height * 0.5, width, height);
 }
 
 function draw(): void {
-  //console.log(ballPosX.value + ", " + ballPosY.value);
-  //console.log(padAy.value + ", " + padAx.value);
-  //console.log(padBy.value + ", " + padBx.value);
-  width.value = (window.innerWidth * 80) / 100;
-  height.value = (window.innerHeight * 80) / 100;
-  const ctx = ref(canvasRef.value?.getContext("2d"));
-  ctx.value?.clearRect(0, 0, width.value, height.value);
-  draw_shape(ballPosX.value, ballPosY.value, 20, 20);
-  draw_shape(padAx.value, padAy.value, 10, 60);
-  draw_shape(padBx.value, padBy.value, 10, 60);
+  context.value?.clearRect(0, 0, width.value, height.value);
+  draw_shape_ratio(ballPosX.value, ballPosY.value, BALL_SIZE, BALL_SIZE);
+  draw_shape_ratio(padAx.value, padAy.value, PAD_WIDTH, PAD_HEIGHT);
+  draw_shape_ratio(padBx.value, padBy.value, PAD_WIDTH, PAD_HEIGHT);
   for (
     let middle_line_height = height.value;
     middle_line_height > 0;
@@ -53,62 +91,60 @@ function draw(): void {
 }
 
 userStore.gameSocket.on("gameState", (gameStatePayload) => {
-  padAy.value = gameStatePayload.playerOneY * ratioY.value;
-  padBy.value = gameStatePayload.playerTwoY * ratioY.value;
-  ballPosX.value = gameStatePayload.ballX * ratioX.value;
-  ballPosY.value = gameStatePayload.ballY * ratioY.value;
+  padAy.value = gameStatePayload.playerOneY;
+  padBy.value = gameStatePayload.playerTwoY;
+  ballPosX.value = gameStatePayload.ballX;
+  ballPosY.value = gameStatePayload.ballY;
   draw();
 });
 
 userStore.gameSocket.on("score", (scorePayload: boolean) => {
   if (scorePayload) scoreA.value++;
   else scoreB.value++;
-  console.log("score : ");
-  console.log(scoreA.value + ", " + scoreB.value);
 });
 
 userStore.gameSocket.on("endGame", (endGamePayload) => {
-  if (
+  window.removeEventListener("keydown", movePad);
+  playerWin.value = !!(
     (endGamePayload.didPlayerOneWin && userStore.gameInfos.isP1) ||
     (!endGamePayload.didPlayerOneWin && !userStore.gameInfos.isP1)
-  )
-    playerWin.value = true;
+  );
   gameEnded.value = true;
-  userStore.gameInfos.gameId = "";
-  userStore.gameInfos.playerId = "";
-  userStore.gameInfos.isP1 = false;
 });
 
 async function handleResize() {
-  width.value = (window.innerWidth * 80) / 100;
-  height.value = (window.innerHeight * 80) / 100;
-  ratioX.value = width.value / 100;
-  ratioY.value = height.value / 100;
-  ballPosX.value = 50 * ratioX.value;
-  ballPosY.value = 50 * ratioY.value;
-  padAy.value = (50 + 30) * ratioY.value;
-  padBx.value = width.value - 40;
-  padBy.value = (50 + 30) * ratioY.value;
+  size.value = Math.min(window.innerWidth, window.innerHeight);
+  width.value = size.value * 0.8;
+  height.value = size.value * 0.8;
+  ratioX.value = width.value / WIDTH;
+  ratioY.value = height.value / HEIGHT;
   await nextTick();
   draw();
 }
 
+const movePad = (e: KeyboardEvent) => {
+  if (e.key === "ArrowUp") {
+    userStore.gameSocket.emit("padUp", {
+      gameId: userStore.gameInfos.gameId,
+      playerId: userStore.gameInfos.playerId,
+    });
+  }
+  if (e.key === "ArrowDown") {
+    userStore.gameSocket.emit("padDown", {
+      gameId: userStore.gameInfos.gameId,
+      playerId: userStore.gameInfos.playerId,
+    });
+  }
+};
+
 onMounted(() => {
+  gameEnded.value = false;
+  playerWin.value = false;
+  canvas.value = document.getElementById("canvasRef") as HTMLCanvasElement;
+  context.value = canvas.value?.getContext("2d") as CanvasRenderingContext2D;
+  context.value?.clearRect(0, 0, width.value, height.value);
   window.addEventListener("resize", handleResize);
-  window.addEventListener("keypress", (e) => {
-    if (e.key === "ArrowUp") {
-      userStore.gameSocket.emit("padUp", {
-        gameId: userStore.gameInfos.gameId,
-        playerId: userStore.gameInfos.playerId,
-      });
-    }
-    if (e.key === "ArrowDown") {
-      userStore.gameSocket.emit("padDown", {
-        gameId: userStore.gameInfos.gameId,
-        playerId: userStore.gameInfos.playerId,
-      });
-    }
-  });
+  window.addEventListener("keydown", movePad);
   draw();
 });
 </script>
@@ -118,7 +154,7 @@ onMounted(() => {
     <div v-if="gameEnded" class="modal">
       <div class="modal-inner bg-black bg-opacity-100">
         <h1 v-if="playerWin" class="text-white">Victory</h1>
-        <h1 v-else class="text-white">Defeat</h1>
+        <h1 v-else-if="!playerWin" class="text-white">Defeat</h1>
         <router-link to="/main" class="secondary-button">
           Go back home
         </router-link>
@@ -133,7 +169,7 @@ onMounted(() => {
       tabindex="0"
       class="inline"
       :class="userStore.gameMode"
-      ref="canvasRef"
+      id="canvasRef"
       :width="width"
       :height="height"
     >
@@ -167,6 +203,7 @@ onMounted(() => {
 }
 
 .monkey {
+  background-color: white;
   background-image: url("@/assets/monkey-bg.jpg");
   background-repeat: no-repeat;
   background-attachment: fixed;

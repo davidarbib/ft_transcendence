@@ -8,7 +8,7 @@ export class Player {
     @PrimaryGeneratedColumn("uuid")
     id: string;
 
-    @ManyToOne(() => User, (user : User) => user.games)
+    @ManyToOne(() => User, (user : User) => user.games, {eager : true})
     userRef: User;
 
     @ManyToOne(() => Match, (match : Match) => match.players)

@@ -99,7 +99,7 @@ export class AuthController {
 
     @HttpCode(200)
     @Post('logout')
-    @UseGuards(JwtGuard)
+    @UseGuards(JwtTwoFaGuard)
     logout
     (
         @Req() request: Request,
@@ -107,7 +107,7 @@ export class AuthController {
     ): string
     {
         //update user status
-        this.authService.generateCookie(response, "xxxxxxxxxxx");
+        //this.authService.generateCookie(response, "xxxxxxxxxxx");
         return "Logout successful";
     }
 

@@ -20,7 +20,8 @@ interface GameReadyPayload
   gameId: string,
   playerId: string,
   isP1: boolean,
-    
+  playerOneName: string,
+  playerTwoName: string,
 }
 
 interface GameStatePayload
@@ -64,22 +65,6 @@ export class GamesGateway {
     return await this.gamesService.findOne(id);
   }
 
-  /*
-  @SubscribeMessage('findAllGames')
-  findAll() {
-    return this.gamesService.findAll();
-  }*/
-
-  //@SubscribeMessage('createGame')
-  //async create
-  //(
-  //  @MessageBody('player1') user: User,
-  //  @MessageBody('player2') user1: User
-  //)
-  //{
-  // return this.gamesService.create(user, user1);
-  //}
-
   @SubscribeMessage('joinMM')
   async userWaiting
   (
@@ -90,7 +75,7 @@ export class GamesGateway {
     console.log('try to join');
 
     this.gamesService.userWaiting(usr, client);
-    const { match, clients, playerOneId, playerTwoId } =
+    const { match, clients, playerOneId, playerTwoId, playerOneName, playerTwoName } =
       await this.gamesService.matchmaking()
     if (match)
     {
@@ -98,13 +83,17 @@ export class GamesGateway {
       this.gamesService.createGame(
         match.id,
         playerOneId,
+        playerOneName,
         playerTwoId,
+        playerTwoName,
       )
 
       let payload : GameReadyPayload = {
         gameId: match.id,
         playerId: playerOneId,
         isP1: true,
+        playerOneName: playerOneName,
+        playerTwoName: playerTwoName,
       };
       clients.clientOne.emit("gameReady", payload);
       
@@ -112,6 +101,8 @@ export class GamesGateway {
         gameId: match.id,
         playerId: playerTwoId,
         isP1: false,
+        playerOneName: playerOneName,
+        playerTwoName: playerTwoName,
       }
       clients.clientTwo.emit("gameReady", payload);
     };
@@ -151,11 +142,28 @@ export class GamesGateway {
   @SubscribeMessage('spectate')
   async spectate
   (
-    @MessageBody('gameId') gameId: string,
+    @MessageBody('userId') userId: string,
     @ConnectedSocket() client: Socket,
   )
   {
-    client.join(gameId);
+    //find game played par user
+    this.gamesService.getGamePlayedByUser(userId)
+    .then((gameId) => {
+      const playerOneName = this.gamesService.getPlayerOneName(gameId);
+      const playerTwoName = this.gamesService.getPlayerTwoName(gameId);
+      const payload : GameReadyPayload = {
+        gameId: gameId,
+        playerId: null,
+        isP1: false,
+        playerOneName: playerOneName,
+        playerTwoName: playerTwoName,
+      }
+      client.join(gameId); 
+      client.emit('gameReady', payload);
+    })
+    .catch((error) => {
+      client.emit('spectateFailure', error);
+    });
   }
 
   @SubscribeMessage('endSpectate')
@@ -175,6 +183,7 @@ export class GamesGateway {
     @MessageBody('playerId') playerId: string,
   )
   {
+    //console.log("move up");
     this.gamesService.getGame(gameId).movePad(playerId, PadCmd.UP);
   }
 
@@ -185,6 +194,7 @@ export class GamesGateway {
     @MessageBody('playerId') playerId: string,
   )
   {
+    //console.log("move down");
     this.gamesService.getGame(gameId).movePad(playerId, PadCmd.DOWN);
   }
 
@@ -196,93 +206,85 @@ export class GamesGateway {
   )
   {
     if (this.gamesService.isAlreadyInviting(userId))
-      client.emit("invitImpossible");
+      client.emit("inviteImpossible");
     else
     {
-      const uuid = this.gamesService.addInvit(userId, client);
-      client.emit("invitCreated", uuid);
+      const uuid = this.gamesService.addInvite(userId, client);
+      client.emit("inviteCreated", uuid);
+      console.log("invitCreated sent to front")
     }
   }
 
+  @SubscribeMessage('cancelInvite')
+  async cancelInvite
+  (
+    @MessageBody('userId') hostId: string,
+  )
+  {
+    console.log("host want to cancel");
+    //debug:
+    const inviteId = this.gamesService.userInvit.get(hostId);
+    //-----------------
+    this.gamesService.delInvite(hostId);
+    console.log(`invite ${inviteId} exist : ${this.gamesService.userInvit.get(hostId)}`);
+  }
+
   @SubscribeMessage('acceptInvite')
-  acceptInvite
+  async acceptInvite
   (
     @MessageBody('userId') userId: string,
-    @MessageBody('invitId') invitId: string,
+    @MessageBody('inviteId') inviteId: string,
     @ConnectedSocket() client: Socket,
   )
   {
-    if (!this.gamesService.doesInvitExist(invitId))
-      client.emit("invitNotFound");
+    console.log(`invitId ${inviteId} exist in acceptInvite : ${this.gamesService.doesInvitExist(inviteId)}`);
+    if (!this.gamesService.doesInvitExist(inviteId))
+      client.emit("inviteNotFound");
     else
     {
-      const hostId = this.gamesService.getInvitHost(invitId);
+      console.log("invite found");
+      const hostId = this.gamesService.getInvitHost(inviteId);
       let hostSocket : Socket = this.gamesService.getHostSocket(hostId)
       let user1, user2 : User;
-      this.usersService.findOne(hostId)
-      .then((user) => {
-        user1 = user;
-      });
-      this.usersService.findOne(userId)
-      .then((user) => {
-        user2 = user;
-      });
+      user1 = await this.usersService.findOne(hostId);
+      user2 = await this.usersService.findOne(userId);
       this.gamesService.create(user1, user2)
       .then(({ match, playerOneId, playerTwoId }) => {
-        this.gamesService.createGame(match.id, playerOneId, playerTwoId);
+        this.gamesService.createGame(
+          match.id, playerOneId, user1.username, playerTwoId, user2.username
+        );
+        console.log("game created by invite");
+        console.log(`match id : ${match.id}`);
         let payload : GameReadyPayload = {
           gameId: match.id,
           playerId: playerOneId,
           isP1: true,
+          playerOneName: user1.username,
+          playerTwoName: user2.username,
         }
         hostSocket.emit("gameReady", payload);
         payload = {
           gameId: match.id,
           playerId: playerTwoId,
           isP1: false,
+          playerOneName: user1.username,
+          playerTwoName: user2.username,
         }
-        hostSocket.emit("gameReady", payload);
+        client.emit("gameReady", payload);
+        this.gamesService.delInvite(hostId);
+      })
+      .catch(() => {
+        console.log("problem in match creation");
       });
     }
   }
 
- // @OnEvent('score' , {async: true})
- // async handlePoint(payload: ScoreEvent)
- // {
- //   console.log('score event');
- //   const player = await myDataSource.getRepository(Player).findOne({where : { id : payload.playerId}})
- //   this.playerService.incrementScore(player);
- //   this.server.to(payload.gameId).emit('score', payload.p1);
- // }
-
   async handlePoint(gameId: string, playerId: string, isP1: boolean)
   {
-    console.log('handle point');
     const player = await myDataSource.getRepository(Player).findOne({where : { id : playerId}})
     this.playerService.incrementScore(player);
     this.server.to(gameId).emit('score', isP1);
   }
-
-  //@OnEvent('game_finished' , {async: true} )
-  //async handlefinishGame(payload: GameFinishEvent)
-  //{
-  //  let endPayload : EndGamePayload;
-  //  endPayload.gameId = payload.gameId;
-  //  endPayload.didPlayerOneWin = payload.didPlayerOneWin;
-  //  this.server.to(payload.gameId).emit("endGame", endPayload);
-
-  //  const match = await this.matchesService.findOne(payload.gameId);
-  //  const winner = await this.playerService.findOne(payload.winnerId);
-  //  const loser = await this.playerService.findOne(payload.loserId);
-  //  this.matchesService.finish(match);
-  //  this.playerService.setWinner(winner);
-  //  let usr:User = winner.userRef;
-  //  usr.winCount++;
-  //  myDataSource.getRepository(User).save(usr); 
-  //  usr = loser.userRef;
-  //  usr.lossCount++;
-  //  myDataSource.getRepository(User).save(usr); 
-  //}
 
   async handleFinishGame
   (
@@ -305,10 +307,7 @@ export class GamesGateway {
     const loser = await this.playerService.findOne(loserId);
     this.matchesService.finish(match);
     this.playerService.setWinner(winner);
-    console.log(`winner : ${winner.id}`);
-    console.log(`winner ref : ${winner.userRef}`);
-    let user:User = await winner.userRef;
-    console.log(`user : ${user}`)
+    let user:User = winner.userRef;
     user.winCount++;
     myDataSource.getRepository(User).save(user); 
     user = loser.userRef;
@@ -333,7 +332,6 @@ export class GamesGateway {
     this.server.to(gameId).emit("gameState", loopPayload);
     if (details.score)
     {
-      console.log(`isP1score : ${details.isP1Score}`);
       let playerId : string;
       if (details.isP1Score)
         playerId = gameState.player1.id;
@@ -369,8 +367,9 @@ export class GamesGateway {
         this.handleFinishGame(gameId, winnerId, loserId, isP1Win);
         this.server.in(gameId).socketsLeave(gameId);
       }
-    }, 10); //~90fps
-    //}, 33); //30fps
+    //}, 10); //~90fps for debugging
+    //}, 33); //~30fps
+    }, 25); //40fps
     //}, 10000); //slow for debugging
   }
 }

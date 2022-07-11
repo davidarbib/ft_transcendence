@@ -75,11 +75,27 @@ export class GamesService {
         clientOne: this.userWhoWaitMatch[0].socket,
         clientTwo: this.userWhoWaitMatch[1].socket,
       }
+      const playerOneName = this.userWhoWaitMatch[0].user.username;
+      const playerTwoName = this.userWhoWaitMatch[1].user.username;
       this.userWhoWaitMatch.splice(1);
       this.userWhoWaitMatch.splice(0);
-      return { match, clients, playerOneId, playerTwoId };
+      return { 
+        match,
+        clients,
+        playerOneId,
+        playerTwoId,
+        playerOneName: playerOneName,
+        playerTwoName: playerTwoName
+      };
     }
-    return { match: null, clients: null, playerOneId: null, playerTwoId: null };
+    return {
+      match: null,
+      clients: null,
+      playerOneId: null,
+      playerTwoId: null,
+      playerOneName: null,
+      playerTwoName: null
+    };
   }
 
   async findOne(id: string) {
@@ -118,17 +134,31 @@ export class GamesService {
     return this.games[gameId].getState();
   }
 
+  getPlayerOneName(gameId: string) : string
+  {
+    return this.getState(gameId).player1.name;
+  }
+
+  getPlayerTwoName(gameId: string) : string
+  {
+    return this.getState(gameId).player2.name;
+  }
+
   createGame
   (
     gameId: string,
     playerOneId: string,
+    playerOneName: string,
     playerTwoId: string,
+    playerTwoName: string,
   )
   {
     let game : Game = new Game(
       gameId,
       playerOneId,
+      playerOneName,
       playerTwoId,
+      playerTwoName,
       undefined,
       undefined,
       undefined,
@@ -136,21 +166,39 @@ export class GamesService {
     this.games[gameId] = game;
   }
 
-  addInvit(userId: string, client: Socket) : string
+  async getGamePlayedByUser(userId: string) : Promise<string>
   {
-    this.hostSocket[userId] = client;
+    const match: Match = await myDataSource
+    .getRepository(Match)
+    .createQueryBuilder('match')
+    .select('match.id')
+    .leftJoin(Player, 'player',
+      "'player'.'userRefId' = :userId AND 'match'.'id' = 'player'.'matchRefId'",
+      { 'userId': userId })
+    .where("'match'.'active' = :active",
+      { 'active': true })
+    .getOne();
+    if (!match)
+      throw("game not found");
+    return match.id;
+  }
+
+  addInvite(userId: string, client: Socket) : string
+  {
+    this.hostSocket.set(userId, client);
     const uuid : string = randomUUID();
-    this.invitUser[uuid] = userId;
-    this.userInvit[userId] = userId;
+    this.invitUser.set(uuid, userId);
+    this.userInvit.set(userId, uuid);
+    console.log(`hostId: ${userId}`)
     return uuid;
   }
 
-  delInvit(userId: string)
+  delInvite(userId: string)
   {
-    const uuid = this.userInvit[userId];
-    this.userInvit.delete[userId];
-    this.invitUser.delete[uuid];
-    this.hostSocket.delete[userId];
+    const uuid = this.userInvit.get(userId);
+    this.userInvit.delete(userId);
+    this.invitUser.delete(uuid);
+    this.hostSocket.delete(userId);
   }
 
   isAlreadyInviting(userId: string) : boolean
@@ -158,18 +206,18 @@ export class GamesService {
     return (this.userInvit.has(userId));
   }
 
-  doesInvitExist(invitId: string) : boolean
+  doesInvitExist(inviteId: string) : boolean
   {
-    return (this.invitUser.has(invitId));
+    return (this.invitUser.has(inviteId));
   }
 
-  getInvitHost(invitId: string) : string
+  getInvitHost(inviteId: string) : string
   {
-    return (this.invitUser[invitId]);
+    return (this.invitUser.get(inviteId));
   }
 
   getHostSocket(userId: string)
   {
-    return (this.hostSocket[userId]);
+    return (this.hostSocket.get(userId));
   }
 }
