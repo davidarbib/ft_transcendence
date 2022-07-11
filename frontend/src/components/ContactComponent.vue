@@ -24,11 +24,12 @@ const userStore = useUserStore();
 const friends = ref<User[]>([]);
 let users = ref<User[]>([]);
 
-userStore.chatsocket.on("switchStatus", (payload) => {
+userStore.statusSocket.on("switchStatus", (payload) => {
   console.log("status change triggered !");
   let index_users = users.value.findIndex((e) => e.id === payload.id);
   if (index_users !== -1) {
     users.value[index_users].status = payload.status;
+    console.log("updated the status of the guys !");
   }
   let index_friend = friends.value.findIndex((e) => e.id === payload.id);
   if (index_friend !== -1) {
