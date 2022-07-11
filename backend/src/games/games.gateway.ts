@@ -75,25 +75,28 @@ export class GamesGateway {
     console.log('try to join');
 
     this.gamesService.userWaiting(usr, client);
-    const { match, clients, playerOneId, playerTwoId, playerOneName, playerTwoName } =
-      await this.gamesService.matchmaking()
+    const { match, clients,
+            playerOneId, playerTwoId,
+            playerOneUserRef, playerTwoUserRef
+          } = await this.gamesService.matchmaking()
     if (match)
     {
       console.log("match created");
       this.gamesService.createGame(
         match.id,
         playerOneId,
-        playerOneName,
+        playerOneUserRef.username,
         playerTwoId,
-        playerTwoName,
+        playerTwoUserRef.username,
       )
-
+      this.gamesService.setIngameStatus(playerOneUserRef.id);
+      this.gamesService.setIngameStatus(playerTwoUserRef.id);
       let payload : GameReadyPayload = {
         gameId: match.id,
         playerId: playerOneId,
         isP1: true,
-        playerOneName: playerOneName,
-        playerTwoName: playerTwoName,
+        playerOneName: playerOneUserRef.username,
+        playerTwoName: playerTwoUserRef.username,
       };
       clients.clientOne.emit("gameReady", payload);
       
@@ -101,8 +104,8 @@ export class GamesGateway {
         gameId: match.id,
         playerId: playerTwoId,
         isP1: false,
-        playerOneName: playerOneName,
-        playerTwoName: playerTwoName,
+        playerOneName: playerOneUserRef.username,
+        playerTwoName: playerTwoUserRef.username,
       }
       clients.clientTwo.emit("gameReady", payload);
     };
@@ -158,6 +161,7 @@ export class GamesGateway {
         playerOneName: playerOneName,
         playerTwoName: playerTwoName,
       }
+      this.gamesService.setSpectateStatus(userId);
       client.join(gameId); 
       client.emit('gameReady', payload);
     })
@@ -255,6 +259,8 @@ export class GamesGateway {
         );
         console.log("game created by invite");
         console.log(`match id : ${match.id}`);
+        this.gamesService.setIngameStatus(user1.id);
+        this.gamesService.setIngameStatus(user2.id);
         let payload : GameReadyPayload = {
           gameId: match.id,
           playerId: playerOneId,

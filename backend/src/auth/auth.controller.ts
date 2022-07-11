@@ -91,8 +91,6 @@ export class AuthController {
         const user : User = await this.usersService.findOne(req.user.id);
         const { accessToken } = await this.authService.login(req.user, user.twoFactorEnabled);
         this.authService.generateCookie(response, accessToken);
-        //return req.user;
-        //return accessToken; //uncomment to obtain bearer token for curl/postman tests
         this.usersGateway.handleStatusSwitch(user.id, UserStatus.ONLINE);
         return response.redirect('http://localhost:8000');
         //return "Logged with Discord";
@@ -115,6 +113,8 @@ export class AuthController {
     ): string
     {
         //update user status
+        console.log("id in logout : ");
+        console.log(request.user.id);
         this.usersGateway.handleStatusSwitch(request.user.id, UserStatus.OFFLINE);
         return "Logout successful";
     }

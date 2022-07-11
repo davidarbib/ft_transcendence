@@ -26,6 +26,7 @@ let users = ref<User[]>([]);
 
 userStore.chatsocket.on("switchStatus", (payload) => {
   console.log("status change triggered !");
+  console.log(`new status ${payload.status}`);
   let index_users = users.value.findIndex((e) => e.id === payload.id);
   if (index_users !== -1) {
     users.value[index_users].status = payload.status;

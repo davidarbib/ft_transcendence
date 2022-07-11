@@ -12,8 +12,6 @@ export enum UserStatus
     SPECTATE = 'spectate'
 }
 
-// PASSPORT / PASSPORT42 //PASSPORTJWT  // JWT NESTJS
-//pour auth 42 cree un module expres pour ca, apres dans API (dans 42)
 @Entity()
 export class User extends BaseEntity
 {
