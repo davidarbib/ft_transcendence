@@ -106,6 +106,14 @@ function toggleFriendMenu(id: string) {
   .offline {
     color: gray;
   }
+
+  .ingame {
+    color: deepskyblue;
+  }
+
+  .spectate {
+    color: yellow;
+  }
 }
 
 .slide-fade-enter-active {
