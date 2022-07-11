@@ -144,7 +144,8 @@ onMounted(() => {
   context.value = canvas.value?.getContext("2d") as CanvasRenderingContext2D;
   context.value?.clearRect(0, 0, width.value, height.value);
   window.addEventListener("resize", handleResize);
-  window.addEventListener("keydown", movePad);
+  if (userStore.gameInfos.playerId !== null)
+    window.addEventListener("keydown", movePad);
   draw();
 });
 </script>
