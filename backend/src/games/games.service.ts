@@ -208,16 +208,6 @@ export class GamesService {
 
   doesInvitExist(inviteId: string) : boolean
   {
-    //console.log(`check invit : ${inviteId}`);
-    //console.log(`hostId stored ${this.invitUser[inviteId]}`);
-    //console.log(this.invitUser.has(inviteId));
-    //console.log(this.invitUser.has('xxxxxxxxxxxxxxxx'));
-    console.log("----------1231212----------");
-    this.invitUser.set('test', 'lol');
-    console.log(this.invitUser.has('test'));
-    this.invitUser.delete('test');
-    console.log("after deletion");
-    console.log(this.invitUser.has('test'));
     return (this.invitUser.has(inviteId));
   }
 
