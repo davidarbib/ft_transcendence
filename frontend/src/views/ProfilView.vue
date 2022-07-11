@@ -29,6 +29,11 @@ function private_msg(target:any) {
     userStore.chatsocket.emit("createDM", {user: userStore.user, target:target}, (data) =>{
     })
   }
+  function block_user(target:never)
+  {
+     userStore.chatsocket.emit("blockUser", {user: userStore.user, target:target}, () =>{
+    })
+  }
 
 onMounted(() => {
   axios.defaults.withCredentials = true;
@@ -61,7 +66,7 @@ onMounted(() => {
     </div>
     <div class="profile-card bg-black bg-opacity-10">
       <header>
-        <div class="secondary-button">
+        <div class="secondary-button" @click="block_user(user)">
           <button>Block user</button>
         </div>
         <div v-if="user.avatarRef === null" class="profile-picture h-36 w-36">
@@ -97,7 +102,7 @@ onMounted(() => {
           <h1>
             {{ user.username }}
           </h1>
-          <div class="secondary-button">
+          <div class="secondary-button" @click="private_msg(user)">
             <router-link to="/chat">Send message</router-link>
           </div>
         </div>

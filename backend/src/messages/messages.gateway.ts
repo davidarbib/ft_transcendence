@@ -7,14 +7,15 @@ import { Server, Socket } from 'socket.io';
 import { MessagesService } from './messages.service';
 import {HttpException, HttpStatus} from '@nestjs/common'
 import { Messages } from './entities/message.entity';
+import { Contact} from 'src/contacts/entities/contact.entity' ;
 import { CreateChannelDto } from 'src/channels/dto/create-channel.dto';
 import { ChanParticipant } from 'src/chan-participants/entities/chan-participant.entity';
 import { ChanPartStatus } from 'src/chan-participants/entities/chan-participant.entity';
 import { myDataSource } from 'src/app-data-source';
 import { Channel, ChanType } from 'src/channels/entities/channel.entity';
 import { UpdateChanParticipantDto } from 'src/chan-participants/dto/update-chan-participant.dto';
-import bcrypt from 'bcryptjs'
-var bcrypt = require('bcryptjs');
+import {bcrypt} from 'bcryptjs'
+//var bcrypt = require('bcryptjs');
 
 @WebSocketGateway({
   cors:{
@@ -57,6 +58,32 @@ export class MessagesGateway
     const chan = await this.messageService.findChan(user);
     this.server.emit('chan', chan);
     return  chan ;
+  }
+  @SubscribeMessage('blockUser')
+  async BlockUser( @MessageBody('user') user:User, @MessageBody('target') target:User )
+  {
+    const contact = await myDataSource.getRepository(Contact).find();
+    let friendship;
+    contact.forEach(element => {
+      if ( element.userLogin == user.login && element.followedLogin == target.login)
+        friendship = element;
+    })
+    if (friendship)
+    {
+        friendship.block = true;
+        await myDataSource.getRepository(Contact).save(friendship);
+        return ;
+    }
+    else 
+    {
+      friendship = new Contact();
+      friendship.userLogin = user.login;
+      friendship.followedLogin = target.login;
+      friendship.block = true;
+      await myDataSource.getRepository(Contact).save(friendship);
+
+
+    }
   }
 
   @SubscribeMessage('createChannel')
@@ -210,6 +237,7 @@ export class MessagesGateway
   @SubscribeMessage('createDM')
   async createDM( @MessageBody('user') user:User, @MessageBody('target') target:User, @ConnectedSocket() client:Socket)
   {
+    console.log("oui c ok poru les dm");
     // tcheker si il est blocker  dans les deux sens 
     const { chan, targetsocket} = await this.messageService.createDM(user, target)
     if (chan && targetsocket)
