@@ -13,7 +13,8 @@ import { ChanPartStatus } from 'src/chan-participants/entities/chan-participant.
 import { myDataSource } from 'src/app-data-source';
 import { Channel, ChanType } from 'src/channels/entities/channel.entity';
 import { UpdateChanParticipantDto } from 'src/chan-participants/dto/update-chan-participant.dto';
-
+import bcrypt from 'bcryptjs'
+var bcrypt = require('bcryptjs');
 
 @WebSocketGateway({
   cors:{
@@ -98,6 +99,7 @@ export class MessagesGateway
     }
   })
   }
+  
   @SubscribeMessage('userChanStatus')
   async userchanStatus( @MessageBody('name') name:string, @MessageBody('login') login:string )
   {
@@ -122,6 +124,32 @@ export class MessagesGateway
 
     const {arg, bool, chan} = await this.messageService.muteBanUser(name, updateChanParticipantDto, target);
     this.server.emit("UsernewStatus", {status:arg, bool:bool, chan :chan});
+  }
+
+  @SubscribeMessage('needPassword')
+  async needPassword(@MessageBody('name') name:string)
+  {
+    const chan = await myDataSource.getRepository(Channel).findOne({where:{name:name}});
+    if ( chan.password)
+      return true;
+    return false;
+  }
+  @SubscribeMessage('isPassword')
+  async isPassword(@MessageBody('name') name:string, @MessageBody('password') password:string)
+  {
+    const chan = await myDataSource.getRepository(Channel).findOne({where:{name:name}});
+    if (bcrypt.compareSync(password, chan.password) == true)
+      return true;
+    return false;
+  }
+  
+  @SubscribeMessage('changePassword')
+  async changePassword(@MessageBody('name') name:string, @MessageBody('password') password:string)
+  {
+    const chan = await myDataSource.getRepository(Channel).findOne({where:{name:name}});
+    var hash = bcrypt.hashSync(password, 8);
+    chan.password = hash;
+    await myDataSource.getRepository(Channel).save(chan);
   }
   @SubscribeMessage('userAdmin')
   async ListOfAdmin( @MessageBody('name') name:string)
@@ -150,6 +178,35 @@ export class MessagesGateway
       }
     })
   }
+  @SubscribeMessage('getMuteInChan')
+  async getMuteChan( @MessageBody('name') name:string)
+  {
+    const arr:User[] = [];
+    const list = await myDataSource.getRepository(ChanParticipant).find({relations : ['participant', 'chan']});
+    list.forEach( element => {
+      if (element.chan && element.participant)
+      {
+        if (element.chan.name == name && element.mute == true)
+          arr.push( element.participant);
+      }
+    })
+    return arr;
+  }
+  @SubscribeMessage('getBanInChan')
+  async getBanChan( @MessageBody('name') name:string)
+  {
+    const arr:User[] = [];
+    const list = await myDataSource.getRepository(ChanParticipant).find({relations : ['participant', 'chan']});
+    list.forEach( element => {
+      if (element.chan && element.participant)
+      {
+        if (element.chan.name == name && element.ban == true)
+          arr.push( element.participant);
+      }
+    })
+    return arr;
+  }
+
   @SubscribeMessage('createDM')
   async createDM( @MessageBody('user') user:User, @MessageBody('target') target:User, @ConnectedSocket() client:Socket)
   {
@@ -165,10 +222,11 @@ export class MessagesGateway
     }
   }
   @SubscribeMessage('addAdmin')
-  async addAdmin( @MessageBody('name') name:string, @MessageBody('user') user:User, @MessageBody('login') login:string )
+  async addAdmin( @MessageBody('name') name:string, @MessageBody('user') user:User, @MessageBody('login') login:string, @ConnectedSocket() client:Socket)
   {
     const list = await myDataSource.getRepository(ChanParticipant).find({relations : ['participant', 'chan']});
     const chan = await myDataSource.getRepository(Channel).findOne({where : {name:name}})
+    let chanPart;
     list.forEach( element => {
 
       if (element.chan && element.participant)
@@ -178,7 +236,7 @@ export class MessagesGateway
           list.forEach(async element1 => {
             if (element1.chan.name == name &&  element1.participant.login== login)
             {
-              const chanPart = element1;
+              chanPart = element1;
               chanPart.privilege = ChanPartStatus.ADMIN;
               await myDataSource.getRepository(ChanParticipant).save(chanPart);
               return;
@@ -189,7 +247,7 @@ export class MessagesGateway
         }
       }
     })
-    this.server.emit("UsernewStatus", {status:"admin", bool:true, chan :chan});
+    this.server.in(client.id).emit('newadmin', chan, chanPart.participant);
   }
   
   // @SubscribeMessage('addfriend')
