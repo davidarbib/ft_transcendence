@@ -25,6 +25,11 @@ let user = ref({
   lossCount: "",
 });
 
+function private_msg(target:any) {
+    userStore.chatsocket.emit("createDM", {user: userStore.user, target:target}, (data) =>{
+    })
+  }
+
 onMounted(() => {
   axios.defaults.withCredentials = true;
   login.value = router.currentRoute.value.params.pseudo;
@@ -57,7 +62,7 @@ onMounted(() => {
     <div class="profile-card bg-black bg-opacity-10">
       <header>
         <div class="secondary-button">
-          <router-link to="/chat"> send message </router-link>
+          <button>Block user</button>
         </div>
         <div v-if="user.avatarRef === null" class="profile-picture h-36 w-36">
           <img src="@/assets/sphere_mini.png" alt="user profile picture" />
@@ -66,7 +71,7 @@ onMounted(() => {
           <img :src="user.avatarRef" alt="user profile picture" />
         </div>
         <div class="secondary-button">
-          <router-link to="/"> + add friend </router-link>
+          <button>+ add friend</button>
         </div>
       </header>
       <div class="stats">
@@ -92,6 +97,9 @@ onMounted(() => {
           <h1>
             {{ user.username }}
           </h1>
+          <div class="secondary-button">
+            <router-link to="/chat">Send message</router-link>
+          </div>
         </div>
       </div>
     </div>
@@ -168,11 +176,16 @@ onMounted(() => {
     }
     .input-update {
       display: flex;
-      flex-direction: row;
-      justify-content: space-around;
+      flex-direction: column;
+      justify-content: center;
       margin-bottom: 2rem;
       font-size: 3rem;
       text-transform: capitalize;
+      h1 {
+        text-align: center;
+        color: white;
+        margin-bottom: 1rem;
+      }
     }
     .update-user-infos {
       width: 60%;

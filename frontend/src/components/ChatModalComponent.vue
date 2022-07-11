@@ -14,7 +14,7 @@ const emit = defineEmits(["response"]);
 function createChannel() {
   open.value = false;
   userStore.chatsocket.emit("createChannel", {
-    login: userStore.user.login,
+    user: userStore.user,
     name: createChanName.value,
     type: chan_setting.value,
     password: createChanPass.value,

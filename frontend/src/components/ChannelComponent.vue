@@ -13,9 +13,8 @@ function toggleChannelMenu(id: number) {
   channelSelected.value = id;
   channelOptions.value = !channelOptions.value;
 }
-
-userStore.chatsocket.on('join', (data) => {
-  chan.value.push(data);
+ userStore.chatsocket.on('join', (data) => {
+   chan.value.push(data);
 })
 
 onMounted(() => {

@@ -62,8 +62,11 @@ export class ChannelsService {
     const test = await myDataSource.getRepository(ChanParticipant).find({ relations: ['participant', 'chan'] });
     let arr: any = [];
     test.forEach(element => {
+      if (element.participant && element.chan)
+      {
       if (element.participant.login == usr.login)
         arr.push(element.chan)
+      }
     });
     return arr;
   }

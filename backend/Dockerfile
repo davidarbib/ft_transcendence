@@ -5,7 +5,8 @@ WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm install --force
+RUN  apk add --update python3 py3-pip && npm install --force
+
 
 COPY . .
 

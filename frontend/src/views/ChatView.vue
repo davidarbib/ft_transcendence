@@ -2,38 +2,121 @@
 import NavbarItem from "@/components/NavbarItemComponent.vue";
 import Channel from "@/components/ChannelComponent.vue";
 import PubChannel from "@/components/PubChannelComponent.vue";
-import { ref, watch } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { useUserStore } from "@/stores/auth";
 import { useRouter } from "vue-router";
 import axios from "axios";
 
-interface Message {
-  id: string;
-  content: string;
-  time: string;
-  login: string;
-}
+axios.defaults.withCredentials = true;
 
-interface User {
-  login: string;
-  id: string;
-}
+  interface Message {
+    id: string;
+    content: string;
+    time: string;
+    login: string;
+  }
+
+  interface User {
+    login: string;
+    id: string;
+  }
 
 const router = useRouter();
-const getName = ref<string>("");
 const userStore = useUserStore();
+const getName = ref<string>("");
 let messages = ref<Message[]>([]);
 const messageText = ref<string>("");
 const myInput = ref<string>("");
-let userIn = ref<User[]>([]);
 let inviteUid = ref<string>("");
 const isAdmin = ref<boolean>(false);
-const allAdmins = ref<User[]>([]);
+const userIn = ref<User[]>([]); // list of users in channel
+const owner = ref<string>(""); // string for owner name
+const allAdmins = ref<User[]>([]); // There are all admins inside
 const isOwner = ref<boolean>(false);
 const lobbyToggle = ref<boolean>(false);
-const owner = ref();
+const allMuted = ref<User[]>([]); // list muted user
+const allBanned = ref<User[]>([]); // list banned user
 
-axios.defaults.withCredentials = true;
+/* permet de Set la connexion quand ca refresh essentiel pour les dm */
+onMounted(() => {
+  userStore.chatsocket.emit("setConnexion", { user: userStore.user });
+});
+
+/* pour recevoir les message envoye */
+userStore.chatsocket.on("message", (message, chan) => {
+  console.log(message);
+  if (chan.name == getName.value) return messages.value.push(message);
+});
+
+/* event il ya un new user dans le chan */
+userStore.chatsocket.on("newUser", (usr: never, chan) => {
+  if (chan.name == getName.value) userIn.value.push(usr);
+});
+/* event le user est devenu admin dans le chan */
+userStore.chatsocket.on("newadmin", (chan: never, user: never) => {
+  //  if (chan.name == getName.value)
+  // need to put data in tab of admin
+});
+
+function ListMute() {
+  userStore.chatsocket.emit(
+    "getMuteInChan",
+    { name: getName.value },
+    (data) => {}
+    // NEED TO PUT DATA IN LIST
+  );
+}
+function ListBan() {
+  userStore.chatsocket.emit(
+    "getBanInChan",
+    { name: getName.value },
+    (data) => {}
+    // NEED TO PUT DATA IN LIST
+  );
+}
+/* AS TON BESOIN D'UN MDP POUR CE CHAN */
+function NeedPassword() {
+  userStore.chatsocket.emit("needPassword", { name: getName.value }, (data) => {
+    // LA DATA return true or false
+  });
+}
+/* EST CE QUE LE PASSWORD  EST BON */
+function isGoodPassword(password: string) {
+  userStore.chatsocket.emit(
+    "isPassword",
+    { name: getName.value, password: password },
+    (data) => {
+      //BOOL
+    }
+  );
+}
+/* CHANGER LE PASSWORD*/
+function changePassword(password: string) {
+  userStore.chatsocket.emit(
+    "changePassword",
+    { name: getName.value, password: password },
+    () => {}
+  );
+}
+
+// /* event pour savoir le new status ddu user */
+// userStore.chatsocket.on(
+//   "UsernewStatus",
+//   (status: string, bool: boolean, chan) => {
+//     if (status.chan.name == getName.value) {
+//       if (status.status == "admin") isAdmin.value = status.bool;
+//       if (status.status == "ban") isBan.value = status.bool;
+//       if (status.status == "mute") isMute.value = status.bool;
+//     }
+//   }
+// );
+
+function isUserAdmin(login: string): boolean {
+  for (let x = 0; allAdmins.value[x]; x++) {
+    let i = allAdmins.value[x];
+    if (i.login === login) return true;
+  }
+}
 
 function isUid(str: string): boolean {
   return str.length === 36 ? (str.match(/-/g) || []).length === 4 : false;
@@ -68,34 +151,30 @@ function playGame() {
   userStore.gameSocket.emit("createInvite", { userId: userStore.user.id });
 }
 
-function isUserAdmin(login: string): boolean {
-  allAdmins.value.forEach((user) => {
-    if (user.login === login) {
-      isAdmin.value = true;
-      return true;
-    }
-  });
-  isAdmin.value = false;
+function isUserBanned(login: string): boolean {
+  for (let x = 0; allBanned.value[x]; x++) {
+    let i = allBanned.value[x];
+    if (i.login === login) return true;
+  }
   return false;
 }
 
-function isUserOwner() {
-  if (owner.value) {
-    isOwner.value = owner.value.login == userStore.user.login;
+function isUserMuted(login: string): boolean {
+  for (let x = 0; allMuted.value[x]; x++) {
+    let i = allMuted.value[x];
+    if (i.login === login) return true;
   }
+  return false;
 }
 
-const isBan = ref(false);
-
-userStore.chatsocket.on("connection", (socket) => {
-  console.log(socket.id);
-});
-
-userStore.chatsocket.on("message", (message) => {
-  return messages.value.push(message);
-});
+function isUserOwner(login: string): boolean {
+  // pour savoir si le user est un owner
+  // console.log(owner.value);
+  return owner.value === login;
+}
 
 function getUserInChan() {
+  // pour get tout les user chan
   axios
     .get(`http://localhost:8090/channels/${getName.value}`)
     .then((response) => {
@@ -108,6 +187,7 @@ function getUserInChan() {
 }
 
 function sendMessage() {
+  // pour envoyer des message
   userStore.chatsocket.emit(
     "createMessage",
     {
@@ -122,22 +202,9 @@ function sendMessage() {
   );
 }
 
-watch(getName, () => {
-  getAdmins(); // all admins in allAdmins list
-  getOwner();
-  getUserInChan();
-  messages.value = [];
-  userStore.chatsocket.emit(
-    "findMessageFromChan",
-    { name: getName.value, login: userStore.user.login },
-    (data: never) => {
-      messages.value = data;
-    }
-  );
-});
-
 function muteClient(login: string) {
-  console.log("TEST TO MUTE");
+  // EP pour mutes les users
+  // console.log("TEST TO MUTE");
   userStore.chatsocket.emit(
     "MuteBanUser",
     { name: getName.value, user: userStore.user, target: login, mute: true },
@@ -165,6 +232,7 @@ function addFriend(login: string) {
 
 // get all admins
 function getAdmins() {
+  // pour avoir tout les admin du serv
   axios
     .get(`http://localhost:8090/chan-participants/admin/${getName.value}`, {
       name: getName.value,
@@ -178,12 +246,14 @@ function getAdmins() {
 }
 
 function getOwner() {
+  // get owner of chan and put it in owner.value.
   axios
     .get(`http://localhost:8090/chan-participants/owner/${getName.value}`, {
       name: getName.value,
     })
     .then((response) => {
-      owner.value = response.data;
+      owner.value = response.data.login;
+      // console.log(owner.value);
     })
     .catch((error) => {
       console.log(error);
@@ -208,7 +278,11 @@ function addAdmin(login: string) {
     user: userStore.user,
     login: login,
   });
-  console.log("add admin");
+  // console.log("add admin");
+}
+
+function itsMe(login: string): boolean {
+  return !(userStore.user.login === login);
 }
 
 function banUser(login: string) {
@@ -219,6 +293,20 @@ function banUser(login: string) {
     ban: true,
   });
 }
+
+watch(getName, () => {
+  getAdmins();
+  getOwner();
+  getUserInChan();
+  messages.value = [];
+  userStore.chatsocket.emit(
+    "findMessageFromChan",
+    { name: getName.value, login: userStore.user.login },
+    (data: never) => {
+      messages.value = data;
+    }
+  );
+});
 </script>
 
 <template>
@@ -256,19 +344,19 @@ function banUser(login: string) {
               <i class="fa-solid fa-star"></i>
             </p>
             <!--          is admin icon-->
-            <p v-if="isUserAdmin(login.login) === true" class="admin-status">
+            <p v-if="isUserAdmin(login.login)" class="admin-status">
               <i class="fa-solid fa-crown"></i>
             </p>
           </div>
         </div>
-        <div class="icon">
-          <!--        view profile-->
+        <div v-if="itsMe(login.login)" class="icon">
+          <!--        view profil-->
           <router-link
             class="common-icons"
             :to="{ name: 'profile', params: { pseudo: login.login } }"
           >
-            <i class="fa-solid fa-user-large mx-1"></i>
-          </router-link>
+            <i class="fa-solid fa-user mx-1"></i
+          ></router-link>
           <!--        add friend-->
           <p class="common-icons" @click="addFriend(login.login)">
             <i class="fa-solid fa-heart mx-1"></i>
@@ -281,21 +369,31 @@ function banUser(login: string) {
           >
             <i class="fa-solid fa-gamepad mx-1"></i>
           </p>
-          <!--        mute-->
-          <p class="common-icons" @click="muteClient(login.login)">
+          <!--        mute (admin + owner)-->
+          <p
+            v-if="
+              isUserAdmin(userStore.user.login) ||
+              isUserOwner(userStore.user.login)
+            "
+            class="admin-icons"
+            @click="muteClient(login.login)"
+          >
             <i class="fa-solid fa-comment-slash mx-1"></i>
           </p>
-          <!--        ban -->
+          <!--        ban (admin + owner)-->
           <p
-            v-if="isAdmin || isOwner"
+            v-if="
+              isUserAdmin(userStore.user.login) ||
+              isUserOwner(userStore.user.login)
+            "
             class="admin-icons"
             @click="banUser(login.login)"
           >
             <i class="fa-solid fa-ban mx-1"></i>
           </p>
-          <!--        add admin-->
+          <!--        add admin (owner)-->
           <p
-            v-if="isAdmin || isOwner"
+            v-if="isUserOwner(userStore.user.login)"
             class="admin-icons"
             @click="addAdmin(login.login)"
           >
@@ -330,13 +428,13 @@ function banUser(login: string) {
     <div class="message-input">
       <input
         type="text"
-        v-if="!isBan"
+        v-if="true"
         v-on:keyup.enter="sendMessage"
         v-model="myInput"
         class="h-3/4 w-3/4 px-2 focus:outline-none border rounded border-gray-300"
       />
-      <button v-if="!isBan" @click="sendMessage" class="valid primary-button">
-        <i v-if="!isBan" class="fa-solid fa-paper-plane"></i>
+      <button v-if="true" @click="sendMessage" class="valid primary-button">
+        <i v-if="true" class="fa-solid fa-paper-plane"></i>
       </button>
     </div>
   </div>
@@ -394,9 +492,8 @@ function banUser(login: string) {
         flex-direction: row;
         color: v.$primary;
         .user-icons {
-          display: flex;
-          flex-direction: row;
-          margin-left: 3.5rem;
+          margin-left: auto;
+          margin-right: 0.5rem;
         }
       }
     }
