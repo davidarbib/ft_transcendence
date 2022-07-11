@@ -21,12 +21,12 @@ const allAdmins = ref([]); // list admins
 const allMuted = ref([]); // list muted user
 const allBanned = ref([]); // list banned user
 
-/* permet de Set la connexion quand ca refresh essentiel pour les dm */
+/* allow de Set la connexion when ca refresh essential pour les dm */
 onMounted(() => {
   userStore.chatsocket.emit("setConnexion", { user: userStore.user });
 });
 
-/* pour recevoir les message envoye */
+/* pour receive les message send */
 userStore.chatsocket.on("message", (message, chan) => {
   console.log(message);
   if (chan.name == getName.value) return messages.value.push(message);
@@ -36,18 +36,6 @@ userStore.chatsocket.on("message", (message, chan) => {
 userStore.chatsocket.on("newUser", (usr: never, chan) => {
   if (chan.name == getName.value) userIn.value.push(usr);
 });
-
-// /* event pour savoir le new status ddu user */
-// userStore.chatsocket.on(
-//   "UsernewStatus",
-//   (status: string, bool: boolean, chan) => {
-//     if (status.chan.name == getName.value) {
-//       if (status.status == "admin") isAdmin.value = status.bool;
-//       if (status.status == "ban") isBan.value = status.bool;
-//       if (status.status == "mute") isMute.value = status.bool;
-//     }
-//   }
-// );
 
 function isUserAdmin(login: string): boolean {
   for (let x = 0; allAdmins.value[x]; x++) {
@@ -122,7 +110,7 @@ function muteClient(login: string) {
 }
 
 function addFriend(login: never) {
-  // pour ajouter en amie
+  // pour add en amie
   axios
     .post(`http://localhost:8090/contacts/${getName.value}`, {
       userLogin: userStore.user.login,
@@ -139,7 +127,7 @@ function addFriend(login: never) {
 
 // get all admins
 function getAdmins() {
-  // pour avoir tout les admin du serv
+  // pour get tout les admin du serv
   axios
     .get(`http://localhost:8090/chan-participants/admin/${getName.value}`, {
       name: getName.value,
@@ -171,18 +159,6 @@ function playGame() {
   console.log("matchmaking");
 }
 
-// function userStatus() {
-//   // le status du current user
-//   userStore.chatsocket.emit(
-//     "userChanStatus",
-//     { name: getName.value, login: userStore.user.login },
-//     (data: any) => {
-//       console.log(data.value);
-//     }
-//   );
-//   console.log("bool string status");
-// }
-
 function addAdmin(login: string) {
   // add admin
   userStore.chatsocket.emit("addAdmin", {
@@ -208,7 +184,7 @@ function banUser(login: string) {
 }
 
 watch(getName, () => {
-  //permet de mettre a j les infos quand on change de channel
+  //allow update infos when on change de channel
   getAdmins(); // all admins in allAdmins list
   // console.log("admins");
   // console.log(allAdmins.value);
@@ -258,7 +234,7 @@ watch(getName, () => {
           </div>
         </div>
         <div v-if="itsMe(login.login)" class="icon">
-          <!--        view profil-->
+          <!--        view profile-->
           <router-link
             class="common-icons"
             :to="{ name: 'profile', params: { pseudo: login.login } }"
