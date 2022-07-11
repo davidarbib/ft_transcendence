@@ -55,7 +55,8 @@ function toggleFriendMenu(id: string) {
           <ul class="list">
             <li><router-link to="/chat">chat</router-link></li>
             <li>
-              <router-link :to="'/profile/' + user.username"
+              <router-link
+                :to="{ name: 'profile', params: { pseudo: user.login } }"
                 >profile</router-link
               >
             </li>
