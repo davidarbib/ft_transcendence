@@ -53,6 +53,7 @@ const cancelLobby = () => {
 };
 
 userStore.gameSocket.on("inviteCreated", (invite) => {
+  console.log("transfer invite to chat");
   inviteUid.value = invite;
   userStore.chatsocket.emit("createMessage", {
     name: getName.value,
