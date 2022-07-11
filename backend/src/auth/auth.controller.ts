@@ -115,11 +115,7 @@ export class AuthController {
     ): string
     {
         //update user status
-<<<<<<< HEAD
         this.usersGateway.handleStatusSwitch(request.user.id, UserStatus.OFFLINE);
-=======
-        //this.authService.generateCookie(response, "xxxxxxxxxxx");
->>>>>>> game_integration_total
         return "Logout successful";
     }
 
