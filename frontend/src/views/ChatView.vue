@@ -30,6 +30,7 @@ let inviteUid = ref<string>("");
 const isAdmin = ref<boolean>(false);
 const allAdmins = ref<User[]>([]);
 const isOwner = ref<boolean>(false);
+const lobbyToggle = ref<boolean>(false);
 const owner = ref();
 
 axios.defaults.withCredentials = true;
@@ -38,6 +39,19 @@ function isUid(str: string): boolean {
   return str.length === 36 ? (str.match(/-/g) || []).length === 4 : false;
 }
 
+userStore.gameSocket.on("gameReady", function (game) {
+  console.log("game is ready");
+  userStore.gameInfos.gameId = game.gameId;
+  userStore.gameInfos.playerId = game.playerId;
+  userStore.gameInfos.isP1 = game.isP1;
+  router.push("pong");
+});
+
+const cancelLobby = () => {
+  userStore.gameSocket.emit("cancelInvite", { userId: userStore.user.id });
+  lobbyToggle.value = false;
+};
+
 userStore.gameSocket.on("inviteCreated", (invite) => {
   inviteUid.value = invite;
   userStore.chatsocket.emit("createMessage", {
@@ -45,7 +59,7 @@ userStore.gameSocket.on("inviteCreated", (invite) => {
     login: userStore.user.login,
     content: inviteUid.value,
   });
-  router.push("lobby");
+  lobbyToggle.value = true;
 });
 
 function playGame() {
@@ -207,6 +221,16 @@ function banUser(login: string) {
 </script>
 
 <template>
+  <Teleport to="body">
+    <div v-if="lobbyToggle" class="modal">
+      <div class="modal-inner">
+        <div class="loader"></div>
+        <button @click="cancelLobby" class="secondary-button">
+          Cancel invite
+        </button>
+      </div>
+    </div>
+  </Teleport>
   <div class="chat-section">
     <div class="navbar-item">
       <NavbarItem />
@@ -252,7 +276,7 @@ function banUser(login: string) {
           <p
             v-if="userStore.user.login !== login.login"
             class="common-icons"
-            @click="playGame()"
+            @click="playGame"
           >
             <i class="fa-solid fa-gamepad mx-1"></i>
           </p>
@@ -409,6 +433,53 @@ function banUser(login: string) {
       color: v.$dark-blue;
       font-size: 2.5rem;
     }
+  }
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 999;
+  background-color: rgba(0, 0, 0, 0.3);
+  display: grid;
+  justify-content: center;
+  align-items: center;
+
+  .modal-inner {
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(v.$primary, v.$dark-blue) fixed;
+    width: 40rem;
+    height: 20rem;
+    padding: 1rem;
+    border-radius: 0.375rem;
+
+    button {
+      width: 60%;
+      margin: auto;
+    }
+  }
+}
+
+.loader {
+  border: 1rem solid #f3f3f3; /* Light grey */
+  border-top: 1rem solid #e63380;
+  border-radius: 50%;
+  width: 10rem;
+  height: 10rem;
+  margin: auto;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
   }
 }
 </style>

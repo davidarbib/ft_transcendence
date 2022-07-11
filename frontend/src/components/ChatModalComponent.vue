@@ -107,7 +107,6 @@ onMounted(() => {
       color: white;
     }
     background: rgb(237, 237, 237);
-    // v.$primary;
     width: 40rem;
     height: 20rem;
     padding: 1rem;
