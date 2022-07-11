@@ -13,7 +13,8 @@ import { Server, Socket } from 'socket.io';
 import { UpdateChanParticipantDto } from 'src/chan-participants/dto/update-chan-participant.dto';
 import { ChanPartStatus } from 'src/chan-participants/entities/chan-participant.entity';
 import { Contact } from 'src/contacts/entities/contact.entity';
-
+import bcrypt from 'bcryptjs'
+var bcrypt = require('bcryptjs');
 
 @Injectable()
 export class MessagesService {
@@ -51,7 +52,8 @@ export class MessagesService {
     const chan : Channel = new Channel;
     chan.name = name;
     chan.type = type;
-    chan.password = password;
+    var hash = bcrypt.hashSync(password, 8);
+    chan.password = hash;
     const tmp_chan = await myDataSource.getRepository(Channel).save(chan);
     chanPart.participant = usr;
     chanPart.chan = tmp_chan;

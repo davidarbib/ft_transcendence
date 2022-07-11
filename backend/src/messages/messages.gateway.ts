@@ -13,7 +13,8 @@ import { ChanPartStatus } from 'src/chan-participants/entities/chan-participant.
 import { myDataSource } from 'src/app-data-source';
 import { Channel, ChanType } from 'src/channels/entities/channel.entity';
 import { UpdateChanParticipantDto } from 'src/chan-participants/dto/update-chan-participant.dto';
-
+import bcrypt from 'bcryptjs'
+var bcrypt = require('bcryptjs');
 
 @WebSocketGateway({
   cors:{
@@ -98,6 +99,7 @@ export class MessagesGateway
     }
   })
   }
+  
   @SubscribeMessage('userChanStatus')
   async userchanStatus( @MessageBody('name') name:string, @MessageBody('login') login:string )
   {
@@ -124,10 +126,30 @@ export class MessagesGateway
     this.server.emit("UsernewStatus", {status:arg, bool:bool, chan :chan});
   }
 
+  @SubscribeMessage('needPassword')
+  async needPassword(@MessageBody('name') name:string)
+  {
+    const chan = await myDataSource.getRepository(Channel).findOne({where:{name:name}});
+    if ( chan.password)
+      return true;
+    return false;
+  }
   @SubscribeMessage('isPassword')
   async isPassword(@MessageBody('name') name:string, @MessageBody('password') password:string)
   {
-
+    const chan = await myDataSource.getRepository(Channel).findOne({where:{name:name}});
+    if (bcrypt.compareSync(password, chan.password) == true)
+      return true;
+    return false;
+  }
+  
+  @SubscribeMessage('changePassword')
+  async changePassword(@MessageBody('name') name:string, @MessageBody('password') password:string)
+  {
+    const chan = await myDataSource.getRepository(Channel).findOne({where:{name:name}});
+    var hash = bcrypt.hashSync(password, 8);
+    chan.password = hash;
+    await myDataSource.getRepository(Channel).save(chan);
   }
   @SubscribeMessage('userAdmin')
   async ListOfAdmin( @MessageBody('name') name:string)

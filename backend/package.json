@@ -42,7 +42,7 @@
     "express-session": "^1.17.3",
     "ml-matrix": "^6.10.1",
     "node-2fa": "^2.0.3",
-    "passport": "^0.6.0",
+    "passport": "^0.5.3",
     "passport-42": "^1.2.6",
     "passport-discord": "^0.1.4",
     "passport-jwt": "^4.0.0",
