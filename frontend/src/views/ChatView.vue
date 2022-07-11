@@ -13,60 +13,62 @@ const messageText = ref("");
 const myInput = ref("");
 let userIn = ref([]);
 axios.defaults.withCredentials = true;
-
+  const isOwner = ref(false);
+  const owner = ref();
 const isAdmin = ref(false);
+  const isBan = ref(false);
+  const isMute = ref(false);
+  const allAdmins = ref([]);
 
+/* permet de Set la connexion quand ca refresh essentiel pour les dm */
 onMounted(() =>
 {
   userStore.chatsocket.emit("setConnexion", {user: userStore.user})
 })
-function isUserAdmin(login: never) {
-  for (let i in allAdmins.value) {
-    if (i.login === login) {
-      isAdmin.value = true;
-      return true;
-    }
-  }
-  isAdmin.value = false;
-  return false;
-}
 
-const isOwner = ref(false);
-const owner = ref();
-
-function isUserOwner() {
-  if (owner.value) {
-    isOwner.value = owner.value.login == userStore.user.login;
-  }
-}
-
-const isBan = ref(false);
-const allAdmins = ref([]);
-
-interface Messages {
-  [room: string]: string;
-
-  room: string;
-  stock_msg: never;
-}
-
-let test: Messages[] = [];
-
-userStore.chatsocket.on("connection", (socket) => {
-  console.log(socket.id);
-});
-userStore.chatsocket.on("message", (message, chan) => {
+/* pour recevoir les message envoye */
+userStore.chatsocket.on("message", (message, chan) => { 
   console.log(message);
   if (chan.name == getName.value)
     return messages.value.push(message);
 });
 
-userStore.chatsocket.on("newUser", (usr: never, chan) => {
+/* event il ya un new user dans le chan */
+userStore.chatsocket.on("newUser", (usr: never, chan) => { 
   if (chan.name == getName.value)
      userIn.value.push(usr);
 });
+/* event pour savoir le new status ddu user */
+userStore.chatsocket.on("UsernewStatus", (status:string, bool: boolean, chan) =>{
+  if (status.chan.name ==  getName.value)
+    {
+  if (status.status == "admin" )
+    isAdmin.value = status.bool;
+  if (status.status == "ban")
+    isBan.value = status.bool;
+  if (status.status == 'mute')
+    isMute.value = status.bool;
+    }
+})
+  function isUserAdmin(login: never) {  
+    for (let i in allAdmins.value) {
+      if (i.login === login) {
+        isAdmin.value = true;
+        return true;
+      }
+    }
+    isAdmin.value = false;
+    return false;
+  }
+  
+  
+  function isUserOwner() { // pour savoir si le user est un owner
+    if (owner.value) {
+      isOwner.value = owner.value.login == userStore.user.login;
+    }
+  }
 
-function getUserInChan() {
+function getUserInChan() { // pour avoir tout les user d'un chan 
   axios
     .get(`http://localhost:8090/channels/${getName.value}`)
     .then((response) => {
@@ -78,7 +80,7 @@ function getUserInChan() {
   return userIn.value;
 }
 
-function sendMessage() {
+function sendMessage() { // pour envoyer des message
   userStore.chatsocket.emit(
     "createMessage",
     {
@@ -93,21 +95,8 @@ function sendMessage() {
   );
 }
 
-watch(getName, () => {
-  getAdmins(); // all admins in allAdmins list
-  getOwner();
-  getUserInChan();
-  messages.value = [];
-  userStore.chatsocket.emit(
-    "findMessageFromChan",
-    { name: getName.value, login: userStore.user.login },
-    (data: never) => {
-      messages.value = data;
-    }
-  );
-});
 
-function muteClient(login: any) {
+function muteClient(login: any) { // EP pour mutes les utilisateurs
   console.log("TEST TO MUTE");
   userStore.chatsocket.emit(
     "MuteBanUser",
@@ -119,7 +108,7 @@ function muteClient(login: any) {
   );
 }
 
-function addFriend(login: never) {
+function addFriend(login: never) { // pour ajouter en amie
   axios
     .post(`http://localhost:8090/contacts/${getName.value}`, {
       userLogin: userStore.user.login,
@@ -135,7 +124,7 @@ function addFriend(login: never) {
 }
 
 // get all admins
-function getAdmins() {
+function getAdmins() { // pour avoir tout les admin du serv
   axios
     .get(`http://localhost:8090/chan-participants/admin/${getName.value}`, {
       name: getName.value,
@@ -152,7 +141,7 @@ function playGame() {
   console.log("matchmaking");
 }
 
-function getOwner() {
+function getOwner() { // pour avoir l'owner 
   axios
     .get(`http://localhost:8090/chan-participants/owner/${getName.value}`, {
       name: getName.value,
@@ -165,7 +154,7 @@ function getOwner() {
     });
 }
 
-function userStatus() {
+function userStatus() { // le status du current user
   userStore.chatsocket.emit(
     "userChanStatus",
     { name: getName.value, login: userStore.user.login },
@@ -176,8 +165,7 @@ function userStatus() {
   console.log("bool string status");
 }
 
-// add admin (addAdmin(login))
-function addAdmin(login: any) {
+function addAdmin(login: any) { // add adnin
   userStore.chatsocket.emit("addAdmin", {
     name: getName.value,
     user: userStore.user,
@@ -186,7 +174,7 @@ function addAdmin(login: any) {
   console.log("add admin");
 }
 
-function banUser(login: any) {
+function banUser(login: any) { //banuser
   userStore.chatsocket.emit("MuteBanUser", {
     name: getName.value,
     user: userStore.user,
@@ -194,6 +182,19 @@ function banUser(login: any) {
     ban: true,
   });
 }
+    watch(getName, () => { //permet de mettre a j les infos quand on change de channel
+      getAdmins(); // all admins in allAdmins list
+      getOwner();
+      getUserInChan();
+      messages.value = [];
+      userStore.chatsocket.emit(
+        "findMessageFromChan",
+        { name: getName.value, login: userStore.user.login },
+        (data: never) => {
+          messages.value = data;
+        }
+      );
+    });
 </script>
 
 <template>

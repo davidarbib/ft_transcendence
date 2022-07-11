@@ -76,7 +76,9 @@ export class MessagesService {
  async muteBanUser( name: string,updateChanParticipantDto:UpdateChanParticipantDto, target :string)
   {
     let chanPart :ChanParticipant;
+    const chan = await myDataSource.getRepository(Channel).findOne({where: {name:name}})
     const arr = await myDataSource.getRepository(ChanParticipant).find({relations:['participant', 'chan']});
+    const {mute, ban} = updateChanParticipantDto;
     arr.forEach( async element => {
         if (element.chan && element.participant)
         {
@@ -87,7 +89,6 @@ export class MessagesService {
             chanPart = element;
                 let date =   new Date(Date.now());
                 date.setHours(date.getHours() +2);
-                const {mute, ban} = updateChanParticipantDto;
                  chanPart.mute = mute;
                  chanPart.ban = ban;
                  if ( mute == true  || ban == true)
@@ -99,7 +100,10 @@ export class MessagesService {
         }
         }
       })
-
+        if (ban)
+          return ({arg:"ban", bool: ban, chan :chan});
+          if (mute)
+          return ({arg:"mute", bool:mute, chan:chan });
   }
 
   async findAll() {
