@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import {ref, onMounted, watch} from "vue";
 import axios from "axios";
 import { apiStore } from "@/stores/api";
 import ListUserComponent from "@/components/ListUserComponent.vue";
@@ -24,17 +24,23 @@ const userStore = useUserStore();
 const friends = ref<User[]>([]);
 let users = ref<User[]>([]);
 
-userStore.chatsocket.on("switchStatus", (payload) => {
-  console.log("status change triggered !");
-  console.log(`new status ${payload.status}`);
-  let index_users = users.value.findIndex((e) => e.id === payload.id);
+function printUsers() {
+  for (let i = 0; i < users.value.length; i++) {
+    console.log(users.value[i]);
+  }
+}
+
+userStore.statusSocket.on("switchStatus", (payload) => {
+  let index_users = users.value.findIndex((e) => e.id === payload.userId);
   if (index_users !== -1) {
     users.value[index_users].status = payload.status;
   }
-  let index_friend = friends.value.findIndex((e) => e.id === payload.id);
+  let index_friend = friends.value.findIndex((e) => e.id === payload.userId);
   if (index_friend !== -1) {
     friends.value[index_friend].status = payload.status;
   }
+  console.log("After event print");
+  printUsers();
 });
 
 onMounted(() => {
@@ -55,6 +61,8 @@ onMounted(() => {
     .catch((error) => {
       console.log(error);
     });
+  console.log("Mounted print");
+  printUsers();
 });
 </script>
 

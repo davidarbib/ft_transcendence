@@ -1,5 +1,5 @@
 import jwt_decode from "jwt-decode";
-
+import axios from "axios";
 const AUTH_TOKEN_KEY = "pongJwt";
 
 interface jwt_data {
@@ -11,9 +11,15 @@ interface jwt_data {
   twoFactorEnabled: boolean;
 }
 
-export function logoutUser() {
-  localStorage.removeItem("user");
-  clearAuthToken();
+export async function logoutUser() {
+  axios.defaults.withCredentials = true;
+  try {
+    await axios.post("http://localhost:8090/auth/logout");
+    localStorage.removeItem("user");
+    clearAuthToken();
+  } catch (err) {
+    console.log(err);
+  }
 }
 
 export function getAuthToken(): jwt_data | null {
