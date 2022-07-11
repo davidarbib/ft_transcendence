@@ -6,37 +6,35 @@ import { onMounted, ref, watch } from "vue";
 import { useUserStore } from "@/stores/auth";
 import axios from "axios";
 
-let getName = ref("");
+let getName = ref(""); // name of the channel
 const userStore = useUserStore();
-let messages = ref([]);
-const messageText = ref("");
-const myInput = ref("");
-let userIn = ref([]);
+
+let messages = ref([]); // list of every messages
+const messageText = ref(""); // message wrote in input bar
+const myInput = ref(""); // input
+
 axios.defaults.withCredentials = true;
-  const isOwner = ref(false);
-  const owner = ref();
-const isAdmin = ref(false);
-  const isBan = ref(false);
-  const isMute = ref(false);
-  const allAdmins = ref([]);
+
+const userIn = ref([]); // list of users in channel
+const owner = ref(""); // string for owner name
+const allAdmins = ref([]); // list admins
+const allMuted = ref([]); // list muted user
+const allBanned = ref([]); // list banned user
 
 /* permet de Set la connexion quand ca refresh essentiel pour les dm */
-onMounted(() =>
-{
-  userStore.chatsocket.emit("setConnexion", {user: userStore.user})
-})
+onMounted(() => {
+  userStore.chatsocket.emit("setConnexion", { user: userStore.user });
+});
 
 /* pour recevoir les message envoye */
-userStore.chatsocket.on("message", (message, chan) => { 
+userStore.chatsocket.on("message", (message, chan) => {
   console.log(message);
-  if (chan.name == getName.value)
-    return messages.value.push(message);
+  if (chan.name == getName.value) return messages.value.push(message);
 });
 
 /* event il ya un new user dans le chan */
-userStore.chatsocket.on("newUser", (usr: never, chan) => { 
-  if (chan.name == getName.value)
-     userIn.value.push(usr);
+userStore.chatsocket.on("newUser", (usr: never, chan) => {
+  if (chan.name == getName.value) userIn.value.push(usr);
 });
 /* event le user est devenu admin dans le chan */
 userStore.chatsocket.on("newadmin", (chan: never, user:never) => { 
@@ -81,17 +79,51 @@ function changePassword(password:string){
     }
     isAdmin.value = false;
     return false;
-  }
-  
-  
-  function isUserOwner() { // pour savoir si le user est un owner
-    if (owner.value) {
-      isOwner.value = owner.value.login == userStore.user.login;
-    }
-  }
 
+// /* event pour savoir le new status ddu user */
+// userStore.chatsocket.on(
+//   "UsernewStatus",
+//   (status: string, bool: boolean, chan) => {
+//     if (status.chan.name == getName.value) {
+//       if (status.status == "admin") isAdmin.value = status.bool;
+//       if (status.status == "ban") isBan.value = status.bool;
+//       if (status.status == "mute") isMute.value = status.bool;
+//     }
+//   }
+// );
 
-function getUserInChan() { // pour avoir tout les user d'un chan 
+function isUserAdmin(login: string): boolean {
+  for (let x = 0; allAdmins.value[x]; x++) {
+    let i = allAdmins.value[x];
+    if (i.login === login) return true;
+  }
+  return false;
+}
+
+function isUserBanned(login: string): boolean {
+  for (let x = 0; allBanned.value[x]; x++) {
+    let i = allBanned.value[x];
+    if (i.login === login) return true;
+  }
+  return false;
+}
+
+function isUserMuted(login: string): boolean {
+  for (let x = 0; allMuted.value[x]; x++) {
+    let i = allMuted.value[x];
+    if (i.login === login) return true;
+  }
+  return false;
+}
+
+function isUserOwner(login: string): boolean {
+  // pour savoir si le user est un owner
+  // console.log(owner.value);
+  return owner.value === login;
+}
+
+function getUserInChan() {
+  // pour get tout les user chan
   axios
     .get(`http://localhost:8090/channels/${getName.value}`)
     .then((response) => {
@@ -103,7 +135,8 @@ function getUserInChan() { // pour avoir tout les user d'un chan
   return userIn.value;
 }
 
-function sendMessage() { // pour envoyer des message
+function sendMessage() {
+  // pour envoyer des message
   userStore.chatsocket.emit(
     "createMessage",
     {
@@ -118,9 +151,9 @@ function sendMessage() { // pour envoyer des message
   );
 }
 
-
-function muteClient(login: any) { // EP pour mutes les utilisateurs
-  console.log("TEST TO MUTE");
+function muteClient(login: string) {
+  // EP pour mutes les users
+  // console.log("TEST TO MUTE");
   userStore.chatsocket.emit(
     "MuteBanUser",
     { name: getName.value, user: userStore.user, target: login, mute: true },
@@ -131,7 +164,8 @@ function muteClient(login: any) { // EP pour mutes les utilisateurs
   );
 }
 
-function addFriend(login: never) { // pour ajouter en amie
+function addFriend(login: never) {
+  // pour ajouter en amie
   axios
     .post(`http://localhost:8090/contacts/${getName.value}`, {
       userLogin: userStore.user.login,
@@ -147,7 +181,8 @@ function addFriend(login: never) { // pour ajouter en amie
 }
 
 // get all admins
-function getAdmins() { // pour avoir tout les admin du serv
+function getAdmins() {
+  // pour avoir tout les admin du serv
   axios
     .get(`http://localhost:8090/chan-participants/admin/${getName.value}`, {
       name: getName.value,
@@ -160,44 +195,53 @@ function getAdmins() { // pour avoir tout les admin du serv
     });
 }
 
-function playGame() {
-  console.log("matchmaking");
-}
-
-function getOwner() { // pour avoir l'owner 
+function getOwner() {
+  // get owner of chan and put it in owner.value.
   axios
     .get(`http://localhost:8090/chan-participants/owner/${getName.value}`, {
       name: getName.value,
     })
     .then((response) => {
-      owner.value = response.data;
+      owner.value = response.data.login;
+      // console.log(owner.value);
     })
     .catch((error) => {
       console.log(error);
     });
 }
 
-function userStatus() { // le status du current user
-  userStore.chatsocket.emit(
-    "userChanStatus",
-    { name: getName.value, login: userStore.user.login },
-    (data) => {
-      // mettre data ou tu ve
-    }
-  );
-  console.log("bool string status");
+function playGame() {
+  console.log("matchmaking");
 }
 
-function addAdmin(login: any) { // add adnin
+// function userStatus() {
+//   // le status du current user
+//   userStore.chatsocket.emit(
+//     "userChanStatus",
+//     { name: getName.value, login: userStore.user.login },
+//     (data: any) => {
+//       console.log(data.value);
+//     }
+//   );
+//   console.log("bool string status");
+// }
+
+function addAdmin(login: string) {
+  // add admin
   userStore.chatsocket.emit("addAdmin", {
     name: getName.value,
     user: userStore.user,
     login: login,
   });
-  console.log("add admin");
+  // console.log("add admin");
 }
 
-function banUser(login: any) { //banuser
+function itsMe(login: string): boolean {
+  return !(userStore.user.login === login);
+}
+
+function banUser(login: string) {
+  //ban user
   userStore.chatsocket.emit("MuteBanUser", {
     name: getName.value,
     user: userStore.user,
@@ -205,19 +249,25 @@ function banUser(login: any) { //banuser
     ban: true,
   });
 }
-    watch(getName, () => { //permet de mettre a j les infos quand on change de channel
-      getAdmins(); // all admins in allAdmins list
-      getOwner();
-      getUserInChan();
-      messages.value = [];
-      userStore.chatsocket.emit(
-        "findMessageFromChan",
-        { name: getName.value, login: userStore.user.login },
-        (data: never) => {
-          messages.value = data;
-        }
-      );
-    });
+
+watch(getName, () => {
+  //permet de mettre a j les infos quand on change de channel
+  getAdmins(); // all admins in allAdmins list
+  // console.log("admins");
+  // console.log(allAdmins.value);
+  getOwner(); // return owner name
+  // console.log(owner.value);
+  getUserInChan();
+  // console.log(isOwner.value);
+  messages.value = [];
+  userStore.chatsocket.emit(
+    "findMessageFromChan",
+    { name: getName.value, login: userStore.user.login },
+    (data: never) => {
+      messages.value = data;
+    }
+  );
+});
 </script>
 
 <template>
@@ -245,18 +295,18 @@ function banUser(login: any) { //banuser
               <i class="fa-solid fa-star"></i>
             </p>
             <!--          is admin icon-->
-            <p v-if="isUserAdmin(login.login) === true" class="admin-status">
+            <p v-if="isUserAdmin(login.login)" class="admin-status">
               <i class="fa-solid fa-crown"></i>
             </p>
           </div>
         </div>
-        <div class="icon">
+        <div v-if="itsMe(login.login)" class="icon">
           <!--        view profil-->
           <router-link
             class="common-icons"
             :to="{ name: 'profile', params: { pseudo: login.login } }"
           >
-            <i class="fa-solid fa-profil mx-1"></i
+            <i class="fa-solid fa-user mx-1"></i
           ></router-link>
           <!--        add friend-->
           <p class="common-icons" @click="addFriend(login.login)">
@@ -266,21 +316,31 @@ function banUser(login: any) { //banuser
           <p class="common-icons" @click="playGame()">
             <i class="fa-solid fa-gamepad mx-1"></i>
           </p>
-          <!--        mute-->
-          <p class="common-icons" @click="muteClient(login.login)">
+          <!--        mute (admin + owner)-->
+          <p
+            v-if="
+              isUserAdmin(userStore.user.login) ||
+              isUserOwner(userStore.user.login)
+            "
+            class="admin-icons"
+            @click="muteClient(login.login)"
+          >
             <i class="fa-solid fa-comment-slash mx-1"></i>
           </p>
-          <!--        ban -->
+          <!--        ban (admin + owner)-->
           <p
-            v-if="isAdmin || isOwner"
+            v-if="
+              isUserAdmin(userStore.user.login) ||
+              isUserOwner(userStore.user.login)
+            "
             class="admin-icons"
             @click="banUser(login.login)"
           >
             <i class="fa-solid fa-ban mx-1"></i>
           </p>
-          <!--        add admin-->
+          <!--        add admin (owner)-->
           <p
-            v-if="isAdmin || isOwner"
+            v-if="isUserOwner(userStore.user.login)"
             class="admin-icons"
             @click="addAdmin(login.login)"
           >
@@ -304,13 +364,13 @@ function banUser(login: any) { //banuser
     <div class="message-input">
       <input
         type="text"
-        v-if="!isBan"
+        v-if="true"
         v-on:keyup.enter="sendMessage"
         v-model="myInput"
         class="h-3/4 w-3/4 px-2 focus:outline-none border rounded border-gray-300"
       />
-      <button v-if="!isBan" @click="sendMessage" class="valid primary-button">
-        <i v-if="!isBan" class="fa-solid fa-paper-plane"></i>
+      <button v-if="true" @click="sendMessage" class="valid primary-button">
+        <i v-if="true" class="fa-solid fa-paper-plane"></i>
       </button>
     </div>
   </div>
@@ -369,9 +429,8 @@ function banUser(login: any) { //banuser
         flex-direction: row;
         color: v.$primary;
         .user-icons {
-          display: flex;
-          flex-direction: row;
-          margin-left: 3.5rem;
+          margin-left: auto;
+          margin-right: 0.5rem;
         }
       }
     }

@@ -45,7 +45,7 @@ export class ChanParticipantsController {
         if (element.chan.name == name && element.privilege == ChanPartStatus.OWNER)
         {
             owner = element.participant;
-          }  
+          }
         }
       })
       return owner;
