@@ -1,5 +1,6 @@
 FROM node:17-buster-slim
 
+USER root
 WORKDIR /app
 
 ENV PATH /app/node_modules/.bin:$PATH
@@ -15,4 +16,6 @@ COPY . .
 
 EXPOSE 8000
 
-CMD ["npm", "run", "dev"]
+#CMD ["npm", "run", "dev"]
+CMD chmod 777 node_modules \
+	&& npm run dev

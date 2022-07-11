@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import * as passport from 'passport'
 import * as cookieParser from 'cookie-parser';
 import * as express from 'express';
 
@@ -30,6 +31,12 @@ async function bootstrap()
     origin: true,
     methods: "PUT, POST, GET, HEAD, DELETE, PATCH",
   });
+  //app.use(passport.initialize());
+
+  app.enableCors({
+    credentials:true,
+    origin:true
+  }); // pour connecter le back et le front !!!
 
   app.use(express.static('public'));
   await app.listen(PORT, () => console.log(`Running on Port : ${PORT}`));

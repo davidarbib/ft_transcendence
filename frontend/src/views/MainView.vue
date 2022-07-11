@@ -2,19 +2,22 @@
 import NavbarItem from "@/components/NavbarItemComponent.vue";
 import Contact from "@/components/ContactComponent.vue";
 import Title from "@/components/TitleComponent.vue";
-import { ref, onMounted } from "vue";
+import { ref, watch } from "vue";
 import { computed } from "@vue/reactivity";
-import { apiStore } from "@/stores/api";
 import { useUserStore } from "@/stores/auth";
-import axios from "axios";
+import { useRouter } from "vue-router";
 
-let game_mode = ref("default");
-let popupTriggers = ref(false);
-let elapsedTimeS = ref(0);
-let elapsedTimeM = ref(0);
+const router = useRouter();
+let game_mode = ref<string>("default");
+let popupTriggers = ref<boolean>(false);
+let elapsedTimeS = ref<number>(0);
+let elapsedTimeM = ref<number>(0);
 let timer = ref();
-const api = apiStore();
 const userStore = useUserStore();
+
+watch(game_mode, () => {
+  userStore.gameMode = game_mode.value;
+});
 
 const formattedElapsedTime = computed(() => {
   if (elapsedTimeS.value > 59) {
@@ -41,26 +44,47 @@ const TogglePopup = (): void => {
   }
   popupTriggers.value = !popupTriggers.value;
 };
+
+const startMatchmaking = () => {
+  console.log("Matchmaking starting...");
+  TogglePopup();
+  userStore.gameSocket.emit("joinMM", { user: userStore.user });
+};
+
+const leaveMatchmaking = () => {
+  console.log("Leaving MatchMaking...");
+  TogglePopup();
+  userStore.gameSocket.emit("quitMM", { user: userStore.user });
+};
+
+userStore.gameSocket.on("gameReady", function (game) {
+  userStore.gameInfos.gameId = game.gameId;
+  userStore.gameInfos.playerId = game.playerId;
+  userStore.gameInfos.isP1 = game.isP1;
+  router.push("pong");
+});
 </script>
 
 <template>
   <div class="main-section">
     <div class="game">
       <div id="title"><Title /></div>
-      <div class="secondary-button" id="b1" @click="TogglePopup()">
+      <div class="secondary-button" id="b1" @click="startMatchmaking">
         Quick game
       </div>
       <div class="popup" v-if="popupTriggers">
         <div class="popup-inner bg-black bg-opacity-100">
           <h1>In queue...</h1>
           <h2 class="text-center">{{ formattedElapsedTime }}</h2>
-          <button class="popup-close secondary-button" @click="TogglePopup()">
+          <button
+            class="popup-close secondary-button"
+            @click="leaveMatchmaking"
+          >
             CANCEL QUEUE
           </button>
         </div>
       </div>
       <select v-model="game_mode" id="b2" class="secondary-button">
-        <option value="beach">Beach</option>
         <option value="vice">Vice</option>
         <option value="monkey">Monkey</option>
         <option value="mario">Mario</option>

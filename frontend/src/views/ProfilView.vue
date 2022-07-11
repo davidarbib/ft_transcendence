@@ -12,7 +12,8 @@ import { ref } from "vue";
 const api = apiStore();
 const userStore = useUserStore();
 const router = useRouter();
-const isCurrentUserProfile = ref(false);
+const login = ref<string | string[]>("");
+const isCurrentUserProfile = ref<boolean>(false);
 let user = ref({
   id: "-1",
   login: "",
@@ -24,19 +25,26 @@ let user = ref({
   lossCount: "",
 });
 
-const props = defineProps({
-  pseudo: String,
-});
+function private_msg(target:any) {
+    userStore.chatsocket.emit("createDM", {user: userStore.user, target:target}, (data) =>{
+    })
+  }
 
 onMounted(() => {
+  axios.defaults.withCredentials = true;
+  login.value = router.currentRoute.value.params.pseudo;
   axios
-    .get(`${api.url}/users/${props.pseudo}`)
+    .get(`${api.url}/users/login/${login.value}/`)
     .then((response) => {
       user.value = response.data;
-      if (response.data === "") router.push({ path: "/profile_not_found" });
+      if (response.data === "") {
+        router.push({ path: "/profile_not_found" });
+        console.log("response.data is empty");
+      }
       if (user.value.username === userStore.$state.user.username)
         isCurrentUserProfile.value = true;
-    }).catch((error) => {
+    })
+    .catch((error) => {
       console.log(error);
       router.push({ path: "/profile_not_found" });
     });
@@ -54,7 +62,7 @@ onMounted(() => {
     <div class="profile-card bg-black bg-opacity-10">
       <header>
         <div class="secondary-button">
-          <router-link to="/chat"> send message </router-link>
+          <router-link to="/chat" @click="private_msg(user)"> send message f </router-link>
         </div>
         <div v-if="user.avatarRef === null" class="profile-picture h-36 w-36">
           <img src="@/assets/sphere_mini.png" alt="user profile picture" />

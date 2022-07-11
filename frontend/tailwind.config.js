@@ -1,12 +1,6 @@
 module.exports = {
-  content: ["./index.html", "./src/**/*.{vue,js,ts,jsx,tsx}", "./App.vue"],
+  content: ["./index.html", "./src/**/*.{vue,js,ts,jsx,tsx}"],
   theme: {
-    color: {
-      'c-purple': '#e63380',
-    },
-    extend: {},
-  },
-  variants: {
     extend: {},
   },
   plugins: [],

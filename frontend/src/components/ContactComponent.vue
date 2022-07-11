@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import json from "@/assets/dataTest.json";
-import { ref, computed } from "vue";
-import axios from "axios";
-import { useUserStore } from "@/stores/auth";
-import { ConstantTypes } from "@vue/compiler-core";
+import { ref } from "vue";
 
+/*
 const userStore = useUserStore();
 const friend = ref([]);
+<<<<<<< HEAD
+*/
+// const user = ref([]);
+
 const user = ref([]);
 /*
 const allfriend = computed(() => {
@@ -39,13 +40,7 @@ const  alluser = computed (() => {
 const searched = ref("");
 const friendMenu = ref(false);
 const friendSelected = ref(-1);
-/*const userFriends = computed(() =>{
-  
-    allfriend();
-  //test.filter((friend) =>
-   // friend.pseudo.toLowerCase().includes(searched.value.toLowerCase())
-});*/
-
+const tmp = ref([]);
 function toggleFriendMenu(id: number) {
   friendSelected.value = id;
   friendMenu.value = !friendMenu.value;

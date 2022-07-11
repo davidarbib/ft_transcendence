@@ -11,7 +11,7 @@ export class Match {
     @Column({
         type: "boolean",
         nullable: false,
-        default: true
+        default: false
     })
     active: boolean;
 

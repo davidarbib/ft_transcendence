@@ -71,9 +71,9 @@ uploadFile(@UploadedFile() file , @Request()  req) : any {
   findAll() {
     return this.usersService.findAll();
   }
-  @Get(':login')
+  @Get('login/:login')
   async findName(@Param('login') login: string) {
-    return this.usersService.findOne(login);
+    return this.usersService.findName(login);
   }
 
   @Get(':login/profil-image')
@@ -93,7 +93,6 @@ uploadFile(@UploadedFile() file , @Request()  req) : any {
 */
   @Patch('/update/:id')
   update(@Request() req, @Body() updateUserDto: UpdateUserDto) {
-    console.log("bjr");
     const usr :User = req.user;
     return this.usersService.update(usr, updateUserDto);
   }

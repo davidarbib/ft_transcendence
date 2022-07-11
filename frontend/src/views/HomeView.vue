@@ -6,7 +6,7 @@ import MusicLoop from "../components/MusicLoopComponent.vue";
 <template>
   <div class="login-section">
     <div class="logo"><Title /></div>
-    <div class="sound"><MusicLoop /></div>
+    <div class="sound"><MusicLoop music="default" /></div>
     <div class="connect-with-discord">
       <a href="http://localhost:8090/auth/discordLogin" class="primary-button">
         Connect with Discord

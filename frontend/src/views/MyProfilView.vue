@@ -7,20 +7,21 @@ import axios from "axios";
 import { useUserStore } from "@/stores/auth";
 import { apiStore } from "@/stores/api";
 import { ref } from "vue";
-import router from "@/router";
+import { useRouter } from "vue-router";
 import { logoutUser } from "@/utils/auth";
 
+const router = useRouter();
 const api = apiStore();
 const userStore = useUserStore();
-let openModal = ref(false);
-let qrCode = ref("");
-let auth2FaCode = ref("");
-let error2fa = ref(false);
-let success2fa = ref(false);
+let openModal = ref<boolean>(false);
+let qrCode = ref<string>("");
+let auth2FaCode = ref<string>("");
+let error2fa = ref<boolean>(false);
+let success2fa = ref<boolean>(false);
 let closeNotification = ref();
-let notifyMessage = ref("Success");
-let is2faEnabled = ref(userStore.user.twoFactorEnabled);
-let pseudo = ref(userStore.user.username);
+let notifyMessage = ref<string>("Success");
+let is2faEnabled = ref<boolean>(userStore.user.twoFactorEnabled);
+let pseudo = ref<string>(userStore.user.username);
 const file = ref<File | null>();
 const form = ref<HTMLFormElement>();
 axios.defaults.withCredentials = true;
@@ -35,17 +36,16 @@ function onFileChanged($event: Event) {
 async function saveImage() {
   if (file.value) {
     try {
-    axios
-    .post(`${api.url}/users/upload/`, {
-      file: file.value,
-    })
-    .then(() => {
-      console.log("SuccessFully updated username");
-    })
-    .catch(() => {
-      console.log( "This username is invalid try another one....");
-    });
-      // save file.value
+      axios
+        .post(`${api.url}/users/upload/`, {
+          file: file.value,
+        })
+        .then(() => {
+          console.log("SuccessFully updated username");
+        })
+        .catch(() => {
+          console.log("This username is invalid try another one....");
+        });
     } catch (error) {
       console.error(error);
       form.value?.reset();
@@ -56,7 +56,9 @@ async function saveImage() {
 
 const updatePseudo = () => {
   axios
-    .patch(`${api.url}/users/update/${userStore.user.id}`, {
+    .patch(`${api.url}/users/${userStore.user.id}`, {
+      id: userStore.user.id,
+      login: userStore.user.login,
       username: pseudo.value,
     })
     .then(() => {
@@ -275,56 +277,53 @@ const turnoff2fa = () => {
         justify-content: center;
         align-items: center;
       }
-
-      .profile-picture {
-        position: relative;
-        top: -2rem;
-      }
+      position: relative;
+      top: -2rem;
     }
-    .stats {
-      margin-bottom: 4rem;
-      ul {
-        display: flex;
-        flex-direction: row;
-        justify-content: center;
-        text-align: center;
-        .stats-value {
-          color: rgb(161, 161, 161);
-          font-size: 0.7rem;
-        }
-      }
-    }
-    .input-update {
+  }
+  .stats {
+    margin-bottom: 4rem;
+    ul {
       display: flex;
       flex-direction: row;
-      justify-content: space-around;
-      margin-bottom: 2rem;
-      input {
-        width: 80%;
-        border-radius: 0.375rem;
+      justify-content: center;
+      text-align: center;
+      .stats-value {
+        color: rgb(161, 161, 161);
+        font-size: 0.7rem;
       }
-      p {
-        cursor: pointer;
-      }
-    }
-
-    .toggle-2fa {
-      width: 100%;
-      margin-top: 3rem;
-      button {
-        margin: auto;
-        width: 80%;
-      }
-    }
-
-    .update-user-infos {
-      width: 60%;
-      margin: auto auto 1rem;
     }
   }
-  .hidden {
-    opacity: 0;
+  .input-update {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    margin-bottom: 2rem;
+    input {
+      width: 80%;
+      border-radius: 0.375rem;
+    }
+    p {
+      cursor: pointer;
+    }
   }
+
+  .toggle-2fa {
+    width: 100%;
+    margin-top: 3rem;
+    button {
+      margin: auto;
+      width: 80%;
+    }
+  }
+
+  .update-user-infos {
+    width: 60%;
+    margin: auto auto 1rem;
+  }
+}
+.hidden {
+  opacity: 0;
 }
 
 .modal {
@@ -351,4 +350,3 @@ const turnoff2fa = () => {
   }
 }
 </style>
-

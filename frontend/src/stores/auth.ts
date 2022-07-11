@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { ref, watch } from "vue";
-import axios from "axios";
 import { io } from "socket.io-client";
+import axios from "axios";
 
 export const useUserStore = defineStore("user", () => {
   const user = ref({
@@ -17,7 +17,15 @@ export const useUserStore = defineStore("user", () => {
     twoFactorSecret: "",
   });
 
+  const gameSocket = io("http://localhost:8090");
   const chatsocket = io("http://localhost:8090");
+  const gameMode = "default";
+
+  const gameInfos = ref({
+    gameId: "",
+    playerId: "",
+    isP1: false,
+  });
 
   if (localStorage.getItem("user")) {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -43,5 +51,5 @@ export const useUserStore = defineStore("user", () => {
     { deep: true }
   );
 
-  return { user, chatsocket };
+  return { user, gameSocket, gameInfos, gameMode, chatsocket };
 });
