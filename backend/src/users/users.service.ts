@@ -27,6 +27,7 @@ export class UsersService {
     const userRepository = await myDataSource.getRepository(User);
     return userRepository.findOne({ where: { login} })
   }
+
   findOne(id:string) {
     console.log(`id : ${id}`);
     return this.userRepo.findOne({ where: {id
@@ -119,5 +120,13 @@ export class UsersService {
     });
     user.lossCount++;
     return this.userRepo.save(user);
+  }
+
+  async getUserName(userId: string) : Promise<string>
+  {
+    let user = await this.userRepo.findOne({
+      where : { id : userId }
+    });
+    return user.username;
   }
 }

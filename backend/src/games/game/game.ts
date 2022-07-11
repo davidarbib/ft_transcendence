@@ -33,7 +33,9 @@ interface Ids
 {
     gameId: string,
     playerOneId: string,
+    playerOneName: string,
     playerTwoId: string,
+    playerTwoName: string,
 }
 
 export interface LoopDetails
@@ -73,7 +75,9 @@ export class Game
     (
         gameId : string,
         playerOneId : string,
+        playerOneName : string,
         playerTwoId : string,
+        playerTwoName : string,
         //playerOneSocket: Socket,
         //playerTwoSocket: Socket,
         winThresh : number = param.WINTHRESH,
@@ -88,7 +92,7 @@ export class Game
         this.emitter = new EventEmitter2();
 
         this.init(
-            { gameId, playerOneId, playerTwoId },
+            { gameId, playerOneId, playerOneName, playerTwoId, playerTwoName },
             //{ gameId, playerOneId, playerTwoId, playerOneSocket, playerTwoSocket },
             { winThresh, p1Handicap, p2Handicap },
         );
@@ -235,6 +239,7 @@ export class Game
             width : param.WIDTH,
             player1 : {
                 id: ids.playerOneId, 
+                name: ids.playerOneName,
                 //socket: ids.playerOneSocket,
                 isP1: true,
                 xPos: param.P1PADX,
@@ -248,6 +253,7 @@ export class Game
             },
             player2 : {
                 id: ids.playerTwoId, 
+                name: ids.playerTwoName,
                 //socket: ids.playerTwoSocket,
                 isP1: false,
                 xPos: param.P2PADX,
