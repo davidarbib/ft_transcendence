@@ -243,6 +243,12 @@ onMounted(() => {
               <button @click="submit2faCode" class="secondary-button w-full">
                 Submit
               </button>
+              <button
+                @click="openModal = false"
+                class="secondary-button w-full my-3"
+              >
+                Cancel
+              </button>
             </div>
           </div>
         </Teleport>
