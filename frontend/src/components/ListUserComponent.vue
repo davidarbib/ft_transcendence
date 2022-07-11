@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import axios from "axios";
 
 interface User {
   id: string;
@@ -21,8 +20,6 @@ defineProps<{
 
 const friendMenu = ref(false);
 const friendSelected = ref<string>("");
-
-axios.defaults.withCredentials = true;
 
 function toggleFriendMenu(id: string) {
   friendSelected.value = id;
@@ -48,8 +45,7 @@ function toggleFriendMenu(id: string) {
     </div>
     <div class="user-pseudo py-2">
       <p>{{ user.username }}</p>
-      <p v-if="user.status" class="online">online</p>
-      <p v-else class="offline">offline</p>
+      <p :class="user.status">{{ user.status }}</p>
       <Transition name="slide-fade">
         <div v-if="friendMenu && friendSelected === user.id">
           <ul class="list">
