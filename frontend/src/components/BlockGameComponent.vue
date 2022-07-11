@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, nextTick } from "vue";
+import { ref, onMounted, nextTick, onUnmounted } from "vue";
 import { useUserStore } from "@/stores/auth";
 import ConfettiExplosion from "vue-confetti-explosion";
 
@@ -147,6 +147,13 @@ onMounted(() => {
   if (userStore.gameInfos.playerId !== null)
     window.addEventListener("keydown", movePad);
   draw();
+});
+
+onUnmounted(() => {
+  userStore.gameSocket.emit("endSpectate", {
+    gameId: userStore.gameInfos.gameId,
+    userId: userStore.user.id,
+  });
 });
 </script>
 
