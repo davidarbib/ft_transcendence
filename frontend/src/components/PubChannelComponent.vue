@@ -9,13 +9,11 @@ const childMsg = ref("");
 const chanPublic = ref([]);
 const chanPrivate = ref([]);
 const userStore = useUserStore();
+const passOpen = ref<boolean>(false);
 
 userStore.chatsocket.on("creation", (data) => {
-  if(data.type == 'public')
-    chanPublic.value.push(data);
-  if (data.type == 'private')
-    chanPrivate.value.push(data);
-
+  if (data.type == "public") chanPublic.value.push(data);
+  if (data.type == "private") chanPrivate.value.push(data);
 });
 watch(childMsg, () => {
   axios.defaults.withCredentials = true;
@@ -58,7 +56,7 @@ onMounted(() => {
     });
 });
 
-const emit = defineEmits(['name']);
+const emit = defineEmits(["name"]);
 function joinChan(name: string) {
   userStore.chatsocket.emit("joinchan", { user: userStore.user, name: name });
 }
@@ -87,6 +85,41 @@ function joinChan(name: string) {
         >
           Join
         </button>
+        <Teleport to="body">
+          <div v-if="passOpen" class="modal">
+            <div class="modal-inner">
+              <div class=""><slot /></div>
+              <input
+                v-model="createChanName"
+                id="email-address"
+                name="email"
+                type="email"
+                autocomplete="email"
+                class="log w-full rounded-t-md focus:outline-none border border-gray-300"
+                placeholder="Name"
+              />
+              <select v-model="chan_setting" class="status secondary-button">
+                <option value="private">Private</option>
+                <option value="public">Public</option>
+              </select>
+              <input
+                v-model="createChanPass"
+                id="password"
+                name="password"
+                type="password"
+                autocomplete="current-password"
+                class="pass w-full rounded-b-md focus:outline-none border border-gray-300"
+                placeholder="Password"
+              />
+              <button @click="passOpen = false" class="cancel secondary-button">
+                Cancel
+              </button>
+              <button @click="createChannel" class="valid primary-button">
+                Create
+              </button>
+            </div>
+          </div>
+        </Teleport>
       </div>
     </div>
     <h1>Private :</h1>
