@@ -53,15 +53,12 @@ function toggleFriendMenu(id: string) {
       <Transition name="slide-fade">
         <div v-if="friendMenu && friendSelected === user.id">
           <ul class="list">
-            <li><router-link to="/chat">chat</router-link></li>
             <li>
               <router-link
                 :to="{ name: 'profile', params: { pseudo: user.login } }"
                 >profile</router-link
               >
             </li>
-            <li><router-link to="/">invite</router-link></li>
-            <li><router-link to="/">block</router-link></li>
             <li><router-link to="/">spectate</router-link></li>
           </ul>
         </div>
