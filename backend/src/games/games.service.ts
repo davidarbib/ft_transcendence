@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreateGameDto } from './dto/create-game.dto';
 import { UpdateGameDto } from './dto/update-game.dto';
-import { User } from 'src/users/entities/user.entity';
+import { User, UserStatus } from 'src/users/entities/user.entity';
 import { MatchesService } from 'src/matches/matches.service';
 import { Match } from 'src/matches/entities/match.entity';
 import { PlayersService } from 'src/players/players.service';
@@ -11,6 +11,7 @@ import { Game } from 'src/games/game/game';
 import { Socket } from 'socket.io';
 import { GameState } from './game/gameState';
 import { randomUUID } from 'crypto';
+import { UsersGateway } from 'src/users/users.gateway';
 
 export interface UserSocket
 {
@@ -24,6 +25,7 @@ export class GamesService {
   (
     private readonly matchesService : MatchesService,
     private readonly playersService : PlayersService,
+    private readonly usersGateway: UsersGateway,
   )
   { }
 
@@ -54,8 +56,6 @@ export class GamesService {
 
   userStopWaiting(user:User)
   {
-    //console.log(this.userWhoWaitMatch.length);
-    //console.log("lol");
     let index:number = 0;
     this.userWhoWaitMatch.forEach(element => {
       if (element.user.id == user.id) {
@@ -75,8 +75,8 @@ export class GamesService {
         clientOne: this.userWhoWaitMatch[0].socket,
         clientTwo: this.userWhoWaitMatch[1].socket,
       }
-      const playerOneName = this.userWhoWaitMatch[0].user.username;
-      const playerTwoName = this.userWhoWaitMatch[1].user.username;
+      const user1 : User = this.userWhoWaitMatch[0].user;
+      const user2 : User = this.userWhoWaitMatch[1].user;
       this.userWhoWaitMatch.splice(1);
       this.userWhoWaitMatch.splice(0);
       return { 
@@ -84,8 +84,8 @@ export class GamesService {
         clients,
         playerOneId,
         playerTwoId,
-        playerOneName: playerOneName,
-        playerTwoName: playerTwoName
+        playerOneUserRef: user1,
+        playerTwoUserRef: user2,
       };
     }
     return {
@@ -94,7 +94,9 @@ export class GamesService {
       playerOneId: null,
       playerTwoId: null,
       playerOneName: null,
-      playerTwoName: null
+      playerTwoName: null,
+      playerOneUserRef: null,
+      playerTwoUserRef: null,
     };
   }
 
@@ -168,16 +170,15 @@ export class GamesService {
 
   async getGamePlayedByUser(userId: string) : Promise<string>
   {
-    const match: Match = await myDataSource
-    .getRepository(Match)
-    .createQueryBuilder('match')
-    .select('match.id')
-    .leftJoin(Player, 'player',
-      "'player'.'userRefId' = :userId AND 'match'.'id' = 'player'.'matchRefId'",
-      { 'userId': userId })
-    .where("'match'.'active' = :active",
-      { 'active': true })
-    .getOne();
+    const gameRequest = myDataSource
+    .createQueryBuilder()
+    .select("match")
+    .from(Match, "match")
+    .innerJoin(Player, "player", "player.matchRef = match.id")
+    .where("match.active = :active", { 'active': true })
+    .andWhere("player.userRef = :userId", { 'userId': userId });
+    
+    const match : Match = await gameRequest.getOne();
     if (!match)
       throw("game not found");
     return match.id;
@@ -219,5 +220,20 @@ export class GamesService {
   getHostSocket(userId: string)
   {
     return (this.hostSocket.get(userId));
+  }
+
+  setIngameStatus(userId: string)
+  {
+    this.usersGateway.handleStatusSwitch(userId, UserStatus.INGAME);
+  }
+
+  setSpectateStatus(userId: string)
+  {
+    this.usersGateway.handleStatusSwitch(userId, UserStatus.SPECTATE);
+  }
+
+  setEndGameStatus(userId: string)
+  {
+    this.usersGateway.handleStatusSwitch(userId, UserStatus.ONLINE);
   }
 }

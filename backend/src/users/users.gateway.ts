@@ -27,6 +27,8 @@ export class UsersGateway {
   async handleStatusSwitch(userId: string, status: UserStatus)
   {
     await this.usersService.switchStatus(userId, status);
+    console.log(`userId : ${userId}`);
+    console.log(`status : ${status}`);
     const payload : StatusSwitchPayload = {
         userId: userId,
         status: status,
