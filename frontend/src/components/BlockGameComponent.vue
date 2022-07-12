@@ -138,15 +138,7 @@ const movePad = (e: KeyboardEvent) => {
   }
 };
 
-const isSpectator = () => {
-  return !userStore.gameInfos.playerId;
-}
-
 onMounted(() => {
-  if (isSpectator())
-    console.log("is spectator")
-  else
-    console.log("is player")
   scoreA.value = userStore.gameInfos.scoreP1;
   scoreB.value = userStore.gameInfos.scoreP2;
   gameEnded.value = false;
@@ -161,8 +153,7 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
-  if (isSpectator())
-  {
+  if (userStore.gameInfos.playerId === null) {
     userStore.gameSocket.emit("endSpectate", {
       gameId: userStore.gameInfos.gameId,
       userId: userStore.user.id,
@@ -183,11 +174,17 @@ onUnmounted(() => {
       </div>
     </div>
   </Teleport>
-  <div class=game_ui>
-    <h1 class="text-8xl tracking-widest text-white my-42">
-      {{ scoreA + ":" + scoreB }}
-    </h1>
-    <div class="w-full text-center">
+  <div>
+    <div class="game-infos flex justify-center items-center">
+      <p class="text-5xl text-white">Player 1</p>
+      <h1
+        class="score text-8xl tracking-widest text-white my-3 w-1/2 mx-auto text-center"
+      >
+        {{ scoreA + ":" + scoreB }}
+      </h1>
+      <p class="text-5xl text-white">Player 2</p>
+    </div>
+    <div>
       <canvas
         tabindex="0"
         class="inline"
@@ -197,19 +194,38 @@ onUnmounted(() => {
         :height="height"
       >
       </canvas>
-      <ConfettiExplosion
-        v-if="playerWin"
-        :particleCount="642"
-        :stageHeight="5000"
-        :stageWidth="3700"
-        :duration="5000"
-      />
+      <router-link
+        to="/main"
+        class="primary-button my-3 w-1/2 mx-auto"
+        v-if="userStore.gameMode.userId === null"
+        >Quit Spectate</router-link
+      >
     </div>
+    <ConfettiExplosion
+      v-if="playerWin"
+      :particleCount="642"
+      :stageHeight="5000"
+      :stageWidth="3700"
+      :duration="5000"
+    />
   </div>
 </template>
 
 <style scoped lang="scss">
 @use "@/assets/variables.scss" as v;
+
+@media only screen and (max-width: 940px) {
+  .game-infos {
+    flex-direction: column;
+    .score {
+      order: 3;
+    }
+    p {
+      margin-top: 1rem;
+      margin-bottom: 1rem;
+    }
+  }
+}
 
 .default {
   background-color: black;
@@ -264,11 +280,6 @@ onUnmounted(() => {
       padding: 1rem 2rem;
       font-size: 2rem;
     }
-  }
-
-  .game_ui {
-    display: flexbox;
-    flex-direction: column;
   }
 }
 </style>
