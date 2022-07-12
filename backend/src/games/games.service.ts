@@ -170,16 +170,15 @@ export class GamesService {
 
   async getGamePlayedByUser(userId: string) : Promise<string>
   {
-    const match: Match = await myDataSource
-    .getRepository(Match)
-    .createQueryBuilder('match')
-    .select('match.id')
-    .leftJoin(Player, 'player',
-      "'player.userRefId' = :userId AND 'match.id' = 'player.matchRefId'",
-      { 'userId': userId })
-    .where("'match.active' = :active",
-      { 'active': true })
-    .getOne();
+    const gameRequest = myDataSource
+    .createQueryBuilder()
+    .select("match")
+    .from(Match, "match")
+    .innerJoin(Player, "player", "player.matchRef = match.id")
+    .where("match.active = :active", { 'active': true })
+    .andWhere("player.userRef = :userId", { 'userId': userId });
+    
+    const match : Match = await gameRequest.getOne();
     if (!match)
       throw("game not found");
     return match.id;

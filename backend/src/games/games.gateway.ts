@@ -167,6 +167,7 @@ export class GamesGateway {
       client.emit('gameReady', payload);
     })
     .catch((error) => {
+      console.log("impossible to spectate");
       client.emit('spectateFailure', error);
     });
   }
