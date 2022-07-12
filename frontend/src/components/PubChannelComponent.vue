@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import ChatModal from "@/components/ChatModalComponent.vue";
 import axios from "axios";
-import { io } from "socket.io-client";
 import { useUserStore } from "@/stores/auth";
 import { ref, onMounted, watch } from "vue";
 
@@ -11,11 +10,8 @@ const chanPrivate = ref([]);
 const userStore = useUserStore();
 
 userStore.chatsocket.on("creation", (data) => {
-  if(data.type == 'public')
-    chanPublic.value.push(data);
-  if (data.type == 'private')
-    chanPrivate.value.push(data);
-
+  if (data.type == "public") chanPublic.value.push(data);
+  if (data.type == "private") chanPrivate.value.push(data);
 });
 watch(childMsg, () => {
   axios.defaults.withCredentials = true;
@@ -58,7 +54,7 @@ onMounted(() => {
     });
 });
 
-const emit = defineEmits(['name']);
+const emit = defineEmits(["name"]);
 function joinChan(name: string) {
   userStore.chatsocket.emit("joinchan", { user: userStore.user, name: name });
 }

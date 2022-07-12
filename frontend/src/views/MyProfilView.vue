@@ -41,13 +41,12 @@ async function saveImage() {
           file: file.value,
         })
         .then(() => {
-          console.log("SuccessFully updated username");
+          // do nothing
         })
         .catch(() => {
-          console.log("This username is invalid try another one....");
+          // do nothing
         });
     } catch (error) {
-      console.error(error);
       form.value?.reset();
       file.value = null;
     }
