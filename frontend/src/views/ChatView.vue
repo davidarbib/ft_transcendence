@@ -78,23 +78,10 @@ function listBan() {
   );
 }
 
-/* AS TON BESOIN D'UN MDP POUR CE CHAN */
-function needPassword() {
-  userStore.chatsocket.emit("needPassword", { name: getName.value }, (data) => {
-    // LA DATA return true or false
-  });
-}
+
 
 /* EST CE QUE LE PASSWORD  EST BON */
-function isGoodPassword(password: string) {
-  userStore.chatsocket.emit(
-    "isPassword",
-    { name: getName.value, password: password },
-    (data) => {
-      //BOOL
-    }
-  );
-}
+
 /* CHANGER LE PASSWORD*/
 function changePassword(password: string) {
   userStore.chatsocket.emit(
@@ -399,7 +386,7 @@ watch(getName, () => {
           class="secondary-button"
           >Play a pong game ? 🌚</router-link
         >
-        <span v-else-if="!isUserBanned(userStore.user.login)">
+        <span v-if="!isUserBanned(userStore.user.login)">
           {{ message.login }} :
           {{ message.time }}
           <p>{{ message.content }}</p>
@@ -409,13 +396,19 @@ watch(getName, () => {
     <div class="message-input">
       <input
         type="text"
-        v-if="!isUserMuted(userStore.user.login)"
+        v-if="
+          !isUserMuted(userStore.user.login) ||
+          !isUserBanned(userStore.user.login)
+        "
         v-on:keyup.enter="sendMessage"
         v-model="myInput"
         class="h-3/4 w-3/4 px-2 focus:outline-none border rounded border-gray-300"
       />
       <button
-        v-if="!isUserMuted(userStore.user.login)"
+        v-if="
+          !isUserMuted(userStore.user.login) ||
+          !isUserBanned(userStore.user.login)
+        "
         @click="sendMessage"
         class="valid primary-button"
       >
