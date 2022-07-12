@@ -138,8 +138,11 @@ export class MessagesGateway
   async isPassword(@MessageBody('name') name:string, @MessageBody('password') password:string)
   {
     const chan = await myDataSource.getRepository(Channel).findOne({where:{name:name}});
-    if (bcrypt.compareSync(password, chan.password) == true)
-      return true;
+    if(chan.password)
+    {
+      if (bcrypt.compareSync(password, chan.password) == true)
+        return true;
+      }
     return false;
   }
   
