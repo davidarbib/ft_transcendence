@@ -74,7 +74,7 @@ export class UsersService {
 
   async switchStatus(id: string, status: UserStatus)
   {
-    const usrToUpdate= await this.userRepo.findOneBy({id});
+    let usrToUpdate= await this.userRepo.findOneBy({id});
     usrToUpdate.status = status;
     return this.userRepo.save(usrToUpdate);
   }

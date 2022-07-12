@@ -321,10 +321,10 @@ export class GamesGateway {
     let userLoser:User = loser.userRef;
     userWinner.winCount++;
     userLoser.lossCount++;
-    this.gamesService.setEndGameStatus(userWinner.id);
-    this.gamesService.setEndGameStatus(userLoser.id);
     myDataSource.getRepository(User).save(userWinner); 
     myDataSource.getRepository(User).save(userLoser); 
+    this.gamesService.setEndGameStatus(userWinner.id);
+    this.gamesService.setEndGameStatus(userLoser.id);
   }
   
   async handleLoopOutput(gameId: string, details: LoopDetails)
