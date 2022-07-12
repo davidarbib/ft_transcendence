@@ -30,8 +30,8 @@ function toggleFriendMenu(id: string) {
   friendMenu.value = !friendMenu.value;
 }
 
-function startSpectating(id: string) {
-  userStore.gameSocket.emit("spectate", { userId: id });
+function startSpectating(spectatorId: string, userId: string) {
+  userStore.gameSocket.emit("spectate", { spectatorId: spectatorId, userId: userId });
 }
 
 userStore.gameSocket.on("gameReady", function (game) {
@@ -67,7 +67,7 @@ userStore.gameSocket.on("gameReady", function (game) {
                 >profile</router-link
               >
             </li>
-            <li v-if="user.status === 'ingame'" @click="startSpectating(user.id)">spectate</li>
+            <li v-if="user.status === 'ingame'" @click="startSpectating(userStore.user.id, user.id)">spectate</li>
           </ul>
         </div>
       </Transition>

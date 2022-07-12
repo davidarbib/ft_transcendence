@@ -145,6 +145,7 @@ export class GamesGateway {
   @SubscribeMessage('spectate')
   async spectate
   (
+    @MessageBody('spectatorId') spectatorId: string,
     @MessageBody('userId') userId: string,
     @ConnectedSocket() client: Socket,
   )
@@ -162,7 +163,7 @@ export class GamesGateway {
         playerOneName: playerOneName,
         playerTwoName: playerTwoName,
       }
-      this.gamesService.setSpectateStatus(userId);
+      this.gamesService.setSpectateStatus(spectatorId);
       client.join(gameId); 
       client.emit('gameReady', payload);
     })
@@ -381,8 +382,9 @@ export class GamesGateway {
       }
     //}, 10); //~90fps for debugging
     //}, 33); //~30fps
+    }, 66); //~15fps
     //}, 25); //40fps
-    }, 20); //50fps
+    //}, 20); //50fps
     //}, 10000); //slow for debugging
   }
 }

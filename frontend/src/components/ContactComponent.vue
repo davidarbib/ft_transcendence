@@ -29,6 +29,7 @@ onUnmounted(() => {
 })
 
 userStore.statusSocket.on("switchStatus", (payload) => {
+  console.log(`switch status : ${payload.status}`);
   let index_users = users.value.findIndex((e) => e.id === payload.userId);
   if (index_users !== -1) {
     users.value[index_users].status = payload.status;
