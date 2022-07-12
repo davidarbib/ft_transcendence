@@ -58,8 +58,8 @@ export class UsersController {
   })
 uploadFile(@UploadedFile() file , @Request()  req) : any {
   const allowMimeType: ValidMimeTYpe[] = validMimeTYpe;
-  const fileext = allowMimeType.includes(file.mimetype);
-  if (!fileext) return of({error: 'File must be a png'});
+ // const fileext = allowMimeType.includes(file.mimetype);
+  //if (!fileext) return of({error: 'File must be a png'});
   const user: User = req.user;
   user.avatarRef = file.filename;
   console.log(user.avatarRef);
@@ -83,21 +83,19 @@ uploadFile(@UploadedFile() file , @Request()  req) : any {
     const usr = await myDataSource.getRepository(User).findOneBy({login})
     return usr.avatarRef;
   }
-  @Get(':id/historic')
-  async findHistoric(@Request() req, @Param('login') login:string ) {
+  @Get(':login/test/historic')
+  async findHistoric(@Param('login') login:string ) {
     console.log(login);
-    /*const usr:User = req.user;
-    const arr:Player[] = [];
-     const match = await myDataSource.getRepository(Player).find({relations: ['matchRef', 'userRef']});
+    const arr= [];
+     const match = await myDataSource.getRepository(Match).find({relations: ['players']});
      match.forEach(element => {
 
-        if (element.userRef.login == usr.login)
-        {
-          arr.push(element);
-        }   
-     });
-     console.log(arr);*/
-  }
+        arr.push(element.players);
+     //   console.log(element.players);
+      });
+      
+     };
+  
 
 
   @Get(':login/2FA')

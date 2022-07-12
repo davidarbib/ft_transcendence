@@ -43,13 +43,6 @@ function private_msg(target:any) {
 
 onMounted(() => {
   axios.defaults.withCredentials = true;
-  // pour l'historique
-  console.log("lol");
-  axios
-    .get(`${api.url}/users/${userStore.user.login}/historic/`)
-    .then((response)  => {
-      console.log(response.data);
-    });
 
   login.value = router.currentRoute.value.params.pseudo;
   axios
@@ -76,7 +69,7 @@ onMounted(() => {
       <NavbarItem />
     </div>
     <div class="historic">
-      <Historic />
+      <Historic :login="login"/>
     </div>
     <div class="profile-card bg-black bg-opacity-10">
       <header>

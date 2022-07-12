@@ -24,6 +24,7 @@ let is2faEnabled = ref<boolean>(userStore.user.twoFactorEnabled);
 let pseudo = ref<string>(userStore.user.username);
 const file = ref<File | null>();
 const form = ref<HTMLFormElement>();
+const login = ref(userStore.user.login)
 axios.defaults.withCredentials = true;
 
 function onFileChanged($event: Event) {
@@ -143,7 +144,7 @@ const turnoff2fa = () => {
 };
 
 onMounted(() => {
-axios.defaults.withCredentials = true;
+  axios.defaults.withCredentials = true;
   axios
     .get("http://localhost:8090/auth/current")
     .then((response) => {
@@ -168,7 +169,7 @@ axios.defaults.withCredentials = true;
       ><p>{{ notifyMessage }}</p></notification-message
     >
     <div class="historic">
-      <Historic />
+      <Historic :login="login"/>
     </div>
     <div class="profile-card bg-black bg-opacity-10">
       <header>

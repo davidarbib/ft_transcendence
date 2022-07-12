@@ -4,11 +4,13 @@ import { ref, onMounted } from "vue";
 import axios from "axios";
 import { useUserStore } from "@/stores/auth";
 
+const props = defineProps({login : String})
+const counter = ref(props.login)
 const userStore = useUserStore();
 onMounted(() => {
 axios.defaults.withCredentials = true;
   axios
-    .get(`http://localhost:8090/users/${userStore.user.id}/historic/`)
+    .get(`http://localhost:8090/users/${props.login}/test/historic/`)
     .then((response) => {
       console.log(response.data);
       userStore.user = response.data;
@@ -19,7 +21,6 @@ axios.defaults.withCredentials = true;
 });
 </script>
 <template>
-
   <div class="overflow-scroll h-[92vh]">
     <div
       class="text-white flex flex-row flex-nowrap justify-around items-center rounded my-2 bg-black bg-opacity-10 font-medium hover:bg-opacity-30 transition duration-300"
