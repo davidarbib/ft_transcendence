@@ -98,9 +98,9 @@ userStore.gameSocket.on("gameState", (gameStatePayload) => {
   draw();
 });
 
-userStore.gameSocket.on("score", (scorePayload: boolean) => {
-  if (scorePayload) scoreA.value++;
-  else scoreB.value++;
+userStore.gameSocket.on("score", (scorePayload) => {
+  scoreA.value = scorePayload.scoreP1;
+  scoreB.value = scorePayload.scoreP2;
 });
 
 userStore.gameSocket.on("endGame", (endGamePayload) => {
