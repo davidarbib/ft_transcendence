@@ -33,6 +33,12 @@ interface GameStatePayload
   ballY: number,
 }
 
+interface ScorePayload
+{
+  scoreP1: number,
+  scoreP2: number
+}
+
 interface EndGamePayload
 {
   gameId: string,
@@ -289,11 +295,15 @@ export class GamesGateway {
     }
   }
 
-  async handlePoint(gameId: string, playerId: string, isP1: boolean)
+  async handlePoint(gameId: string, playerId: string, scoreP1: number, scoreP2: number)
   {
     const player = await myDataSource.getRepository(Player).findOne({where : { id : playerId}})
     this.playerService.incrementScore(player);
-    this.server.to(gameId).emit('score', isP1);
+    const payload : ScorePayload = {
+      scoreP1: scoreP1,
+      scoreP2: scoreP2,
+    }
+    this.server.to(gameId).emit('score', payload);
   }
 
   async handleFinishGame
@@ -349,7 +359,7 @@ export class GamesGateway {
         playerId = gameState.player1.id;
       else
         playerId = gameState.player2.id;
-      this.handlePoint(gameId, playerId, details.isP1Score);
+      this.handlePoint(gameId, playerId, gameState.player1.score, gameState.player2.score);
     }
   }
 
