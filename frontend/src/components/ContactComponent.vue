@@ -36,6 +36,7 @@ userStore.statusSocket.on("switchStatus", (payload) => {
 });
 
 onMounted(() => {
+  axios.defaults.withCredentials = true;
   axios
     .get(`${api.url}/users`)
     .then((response) => {
