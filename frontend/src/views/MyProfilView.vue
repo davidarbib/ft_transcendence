@@ -106,14 +106,14 @@ const submit2faCode = () => {
       userStore.user.twoFactorEnabled = true;
       is2faEnabled.value = true;
       openModal.value = !openModal.value;
-      logoutUser();
-      router.push({ name: "home" });
+      logoutUser().then(() => {
+        router.push({ path: "/" });
+      });
     })
     .catch(() => {
       error2fa.value = true;
       success2fa.value = false;
-      userStore.user.twoFactorEnabled = false;
-      is2faEnabled.value = true;
+      is2faEnabled.value = false;
       notifyMessage.value = "Please provide valid code";
     });
 };
