@@ -104,7 +104,8 @@ userStore.gameSocket.on("score", (scorePayload: boolean) => {
 });
 
 userStore.gameSocket.on("endGame", (endGamePayload) => {
-  window.removeEventListener("keydown", movePad);
+  if (userStore.gameInfos.playerId !== null)
+    window.removeEventListener("keydown", movePad);
   playerWin.value = !!(
     (endGamePayload.didPlayerOneWin && userStore.gameInfos.isP1) ||
     (!endGamePayload.didPlayerOneWin && !userStore.gameInfos.isP1)
@@ -218,6 +219,7 @@ onUnmounted(() => {
   background-attachment: fixed;
   background-position: center;
 }
+
 .modal {
   position: fixed;
   top: 0;
