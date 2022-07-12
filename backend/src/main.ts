@@ -5,6 +5,12 @@ import * as passport from 'passport'
 import * as cookieParser from 'cookie-parser';
 import * as express from 'express';
 
+// maxime shit
+import { Module } from '@nestjs/common';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
+import { mainModule } from 'process'
+
 import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap()
@@ -38,7 +44,14 @@ async function bootstrap()
     origin:true
   }); // pour connecter le back et le front !!!
 
-  app.use(express.static('public'));
+  //app.use(express.static('public'));
+@Module({
+  imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'public'),
+    }),
+  ],
+})
   await app.listen(PORT, () => console.log(`Running on Port : ${PORT}`));
 }
 
