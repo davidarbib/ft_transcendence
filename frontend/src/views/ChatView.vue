@@ -2,7 +2,7 @@
 import NavbarItem from "@/components/NavbarItemComponent.vue";
 import Channel from "@/components/ChannelComponent.vue";
 import PubChannel from "@/components/PubChannelComponent.vue";
-import { onMounted, ref, watch } from "vue";
+import { onMounted, onUnmounted, ref, watch } from "vue";
 import { useUserStore } from "@/stores/auth";
 import { useRouter } from "vue-router";
 import axios from "axios";
@@ -41,6 +41,10 @@ const allBanned = ref<User[]>([]); // list banned user
 onMounted(() => {
   userStore.chatsocket.emit("setConnexion", { user: userStore.user });
 });
+
+onUnmounted(() => {
+  userStore.gameSocket.removeAllListeners();
+})
 
 /* pour recevoir les message envoye */
 userStore.chatsocket.on("message", (message, chan) => {

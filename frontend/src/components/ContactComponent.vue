@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
 import axios from "axios";
 import { apiStore } from "@/stores/api";
 import ListUserComponent from "@/components/ListUserComponent.vue";
@@ -23,6 +23,10 @@ const api = apiStore();
 const userStore = useUserStore();
 const friends = ref<User[]>([]);
 let users = ref<User[]>([]);
+
+onUnmounted(() => {
+  userStore.statusSocket.removeAllListeners();
+})
 
 userStore.statusSocket.on("switchStatus", (payload) => {
   let index_users = users.value.findIndex((e) => e.id === payload.userId);
