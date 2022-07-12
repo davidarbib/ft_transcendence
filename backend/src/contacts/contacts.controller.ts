@@ -1,7 +1,9 @@
-import { Controller, Get, Post, Body, Patch, UseGuards,  Param, Delete, ConsoleLogger } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, UseGuards,  Param, Delete, ConsoleLogger, Request} from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
+import { myDataSource } from 'src/app-data-source';
 import { JwtGuard } from 'src/auth/guards/jwt.guard';
 import { User } from 'src/users/entities/user.entity';
+import { Contact } from './entities/contact.entity';
 import { ContactsService } from './contacts.service';
 import { CreateContactDto } from './dto/create-contact.dto';
 import { UpdateContactDto } from './dto/update-contact.dto';
@@ -10,15 +12,18 @@ import { UpdateContactDto } from './dto/update-contact.dto';
 @UseGuards(JwtGuard)
 export class ContactsController {
   constructor(private readonly contactsService: ContactsService) {}
-  @Post()
-  create(@Body() createContactDto : CreateContactDto) {
-    const contactDto = plainToClass(CreateContactDto, createContactDto);
-   User.findOne({where : {login:contactDto.followedlogin}}).then(user => {
-     if (!user)
-       return;
-      return this.contactsService.create(contactDto);
-   })
-  }
+  @Post(':id')
+  async create(@Request() req, @Param('login') login:string ) {
+    console.log(req.user);
+    console.log(login);
+    // const contactDto = plainToClass(CreateContactDto, createContactDto);
+    // console.log(contactDto.followedlogin);
+    // const contact = await myDataSource.getRepository(Contact).findOne({where :{userLogin:contactDto.userLogin, followedLogin: contactDto.followedlogin}})
+    // if (contact)
+    //   return ;
+    // return this.contactsService.create(contactDto);
+   }
+  
 
   @Get()
   findAll() {

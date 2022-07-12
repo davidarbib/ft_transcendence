@@ -22,6 +22,8 @@ type ValidMimeTYpe = 'image/png' |'image/jpg' | 'image/jpeg ';
 
 const validMimeTYpe  : ValidMimeTYpe[] = [ 'image/png' , 'image/jpg' , 'image/jpeg ',];
 import { JwtGuard } from 'src/auth/guards/jwt.guard';
+import { Match } from 'src/matches/entities/match.entity';
+import { Player } from 'src/players/entities/player.entity';
 
 @Controller('users')
 @UseGuards(JwtGuard)
@@ -81,6 +83,22 @@ uploadFile(@UploadedFile() file , @Request()  req) : any {
     const usr = await myDataSource.getRepository(User).findOneBy({login})
     return usr.avatarRef;
   }
+  @Get(':id/historic')
+  async findHistoric(@Request() req, @Param('login') login:string ) {
+    console.log(login);
+    /*const usr:User = req.user;
+    const arr:Player[] = [];
+     const match = await myDataSource.getRepository(Player).find({relations: ['matchRef', 'userRef']});
+     match.forEach(element => {
+
+        if (element.userRef.login == usr.login)
+        {
+          arr.push(element);
+        }   
+     });
+     console.log(arr);*/
+  }
+
 
   @Get(':login/2FA')
   dfa_bool(@Request() req) {

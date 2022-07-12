@@ -23,7 +23,6 @@ export class UsersService {
 
   async findName(login:string)
   {
-    console.log("OK");
     const userRepository = await myDataSource.getRepository(User);
     return userRepository.findOne({ where: { login} })
   }

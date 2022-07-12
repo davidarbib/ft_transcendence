@@ -6,6 +6,7 @@ import { onMounted, ref, watch } from "vue";
 import { useUserStore } from "@/stores/auth";
 import { useRouter } from "vue-router";
 import axios from "axios";
+import { apiStore } from "@/stores/api";
 
 axios.defaults.withCredentials = true;
 
@@ -24,7 +25,8 @@ axios.defaults.withCredentials = true;
 const router = useRouter();
 const userStore = useUserStore();
 const getName = ref<string>("");
-let messages = ref<Message[]>([]);
+let messages = ref([]);
+const api = apiStore();
 const messageText = ref<string>("");
 const myInput = ref<string>("");
 let inviteUid = ref<string>("");
@@ -44,9 +46,15 @@ onMounted(() => {
 
 /* pour recevoir les message envoye */
 userStore.chatsocket.on("message", (message, chan) => {
-  console.log(message);
-  if (chan.name == getName.value) return messages.value.push(message);
-});
+  let bloock:Boolean = false;
+  userStore.chatsocket.emit("isBlock", {user:userStore.user.login, target:message.author.login}, (block) => {
+  if (block) // pour ne pas recevoir de message si la personne est bloque 
+    {
+      bloock = block;
+    }
+    if (bloock == false)
+    {if (chan.name == getName.value) return messages.value.push(message);}}) }
+);
 
 /* event il ya un new user dans le chan */
 userStore.chatsocket.on("newUser", (usr: never, chan) => {
@@ -54,7 +62,7 @@ userStore.chatsocket.on("newUser", (usr: never, chan) => {
 });
 /* event le user est devenu admin dans le chan */
 userStore.chatsocket.on("newadmin", (chan: never, user: never) => {
-  //  if (chan.name == getName.value)
+    if (chan.name == getName.value) allAdmins.value.push(user);
   // need to put data in tab of admin
 });
 
@@ -62,7 +70,9 @@ function ListMute() {
   userStore.chatsocket.emit(
     "getMuteInChan",
     { name: getName.value },
-    (data) => {}
+    (data) => {
+      allMuted.value.push(data);
+    }
     // NEED TO PUT DATA IN LIST
   );
 }
@@ -70,7 +80,9 @@ function ListBan() {
   userStore.chatsocket.emit(
     "getBanInChan",
     { name: getName.value },
-    (data) => {}
+    (data) => {
+      allBanned.value.push(data);
+    }
     // NEED TO PUT DATA IN LIST
   );
 }
@@ -216,18 +228,7 @@ function muteClient(login: string) {
 }
 
 function addFriend(login: string) {
-  axios
-    .post(`http://localhost:8090/contacts/${getName.value}`, {
-      userLogin: userStore.user.login,
-      followedLogin: login,
-    })
-    .then((response) => {
-      console.log(response.data);
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-  console.log("friend");
+  userStore.chatsocket.emit("addfriend", {user:userStore.user.login, target:login});
 }
 
 // get all admins
@@ -304,6 +305,7 @@ watch(getName, () => {
     { name: getName.value, login: userStore.user.login },
     (data: never) => {
       messages.value = data;
+      console.log(messages.value)
     }
   );
 });

@@ -35,8 +35,22 @@ function private_msg(target:any) {
     })
   }
 
+   function addFriend(target:string)
+  {
+     userStore.chatsocket.emit("addfriend", {user: userStore.user.login, target:target}, () =>{
+    })
+  }
+
 onMounted(() => {
   axios.defaults.withCredentials = true;
+  // pour l'historique
+  console.log("lol");
+  axios
+    .get(`${api.url}/users/${userStore.user.login}/historic/`)
+    .then((response)  => {
+      console.log(response.data);
+    });
+
   login.value = router.currentRoute.value.params.pseudo;
   axios
     .get(`${api.url}/users/login/${login.value}/`)
@@ -75,7 +89,7 @@ onMounted(() => {
         <div v-else class="profile-picture h-36 w-36">
           <img :src="user.avatarRef" alt="user profile picture" />
         </div>
-        <div class="secondary-button">
+        <div class="secondary-button" @click="addFriend(user.login)">
           <button>+ add friend</button>
         </div>
       </header>

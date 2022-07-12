@@ -226,7 +226,7 @@ export class GamesGateway {
     const inviteId = this.gamesService.userInvit.get(hostId);
     //-----------------
     this.gamesService.delInvite(hostId);
-    console.log(`invite ${inviteId} exist : ${this.gamesService.userInvit.get(hostId)}`);
+    (`invite ${inviteId} exist : ${this.gamesService.userInvit.get(hostId)}`);
   }
 
   @SubscribeMessage('acceptInvite')

@@ -143,6 +143,7 @@ const turnoff2fa = () => {
 };
 
 onMounted(() => {
+axios.defaults.withCredentials = true;
   axios
     .get("http://localhost:8090/auth/current")
     .then((response) => {
