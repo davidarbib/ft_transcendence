@@ -204,10 +204,11 @@ onUnmounted(() => {
 }
 
 .mario {
-  background-image: url("@/assets/mario_bg.png");
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  background-position: center;
+  background: url("@/assets/mario_bg.png") no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
 }
 
 .monkey {
