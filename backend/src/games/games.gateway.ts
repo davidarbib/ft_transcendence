@@ -22,6 +22,8 @@ interface GameReadyPayload
   isP1: boolean,
   playerOneName: string,
   playerTwoName: string,
+  scoreP1: number,
+  scoreP2: number,
 }
 
 interface GameStatePayload
@@ -103,6 +105,8 @@ export class GamesGateway {
         isP1: true,
         playerOneName: playerOneUserRef.username,
         playerTwoName: playerTwoUserRef.username,
+        scoreP1: 0,
+        scoreP2: 0,
       };
       clients.clientOne.emit("gameReady", payload);
       
@@ -112,6 +116,8 @@ export class GamesGateway {
         isP1: false,
         playerOneName: playerOneUserRef.username,
         playerTwoName: playerTwoUserRef.username,
+        scoreP1: 0,
+        scoreP2: 0,
       }
       clients.clientTwo.emit("gameReady", payload);
     };
@@ -167,6 +173,8 @@ export class GamesGateway {
         isP1: false,
         playerOneName: playerOneName,
         playerTwoName: playerTwoName,
+        scoreP1: this.gamesService.getState(gameId).player1.score,
+        scoreP2: this.gamesService.getState(gameId).player2.score,
       }
       this.gamesService.setSpectateStatus(userId);
       client.join(gameId); 
@@ -277,6 +285,8 @@ export class GamesGateway {
           isP1: true,
           playerOneName: user1.username,
           playerTwoName: user2.username,
+          scoreP1: 0,
+          scoreP2: 0,
         }
         hostSocket.emit("gameReady", payload);
         payload = {
@@ -285,6 +295,8 @@ export class GamesGateway {
           isP1: false,
           playerOneName: user1.username,
           playerTwoName: user2.username,
+          scoreP1: 0,
+          scoreP2: 0,
         }
         client.emit("gameReady", payload);
         this.gamesService.delInvite(hostId);
@@ -390,9 +402,10 @@ export class GamesGateway {
         this.server.in(gameId).socketsLeave(gameId);
       }
     //}, 10); //~90fps for debugging
+    }, 66); //~15fps
     //}, 33); //~30fps
     //}, 25); //40fps
-    }, 20); //50fps
+    //}, 20); //50fps
     //}, 10000); //slow for debugging
   }
 }

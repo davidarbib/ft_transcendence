@@ -26,6 +26,8 @@ export const useUserStore = defineStore("user", () => {
     gameId: "",
     playerId: "",
     isP1: false,
+    scoreP1: 0,
+    scoreP2: 0,
   });
 
   if (localStorage.getItem("user")) {

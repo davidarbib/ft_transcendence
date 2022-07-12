@@ -138,7 +138,17 @@ const movePad = (e: KeyboardEvent) => {
   }
 };
 
+const isSpectator = () => {
+  return !userStore.gameInfos.playerId;
+}
+
 onMounted(() => {
+  if (isSpectator())
+    console.log("is spectator")
+  else
+    console.log("is player")
+  scoreA.value = userStore.gameInfos.scoreP1;
+  scoreB.value = userStore.gameInfos.scoreP2;
   gameEnded.value = false;
   playerWin.value = false;
   canvas.value = document.getElementById("canvasRef") as HTMLCanvasElement;
@@ -151,10 +161,13 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
-  userStore.gameSocket.emit("endSpectate", {
-    gameId: userStore.gameInfos.gameId,
-    userId: userStore.user.id,
-  });
+  if (isSpectator())
+  {
+    userStore.gameSocket.emit("endSpectate", {
+      gameId: userStore.gameInfos.gameId,
+      userId: userStore.user.id,
+    });
+  }
 });
 </script>
 
@@ -170,26 +183,28 @@ onUnmounted(() => {
       </div>
     </div>
   </Teleport>
-  <h1 class="text-8xl tracking-widest text-white my-42">
-    {{ scoreA + ":" + scoreB }}
-  </h1>
-  <div class="w-full text-center">
-    <canvas
-      tabindex="0"
-      class="inline"
-      :class="userStore.gameMode"
-      id="canvasRef"
-      :width="width"
-      :height="height"
-    >
-    </canvas>
-    <ConfettiExplosion
-      v-if="playerWin"
-      :particleCount="642"
-      :stageHeight="5000"
-      :stageWidth="3700"
-      :duration="5000"
-    />
+  <div class=game_ui>
+    <h1 class="text-8xl tracking-widest text-white my-42">
+      {{ scoreA + ":" + scoreB }}
+    </h1>
+    <div class="w-full text-center">
+      <canvas
+        tabindex="0"
+        class="inline"
+        :class="userStore.gameMode"
+        id="canvasRef"
+        :width="width"
+        :height="height"
+      >
+      </canvas>
+      <ConfettiExplosion
+        v-if="playerWin"
+        :particleCount="642"
+        :stageHeight="5000"
+        :stageWidth="3700"
+        :duration="5000"
+      />
+    </div>
   </div>
 </template>
 
@@ -249,6 +264,11 @@ onUnmounted(() => {
       padding: 1rem 2rem;
       font-size: 2rem;
     }
+  }
+
+  .game_ui {
+    display: flexbox;
+    flex-direction: column;
   }
 }
 </style>
