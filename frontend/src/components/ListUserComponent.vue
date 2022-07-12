@@ -67,7 +67,7 @@ userStore.gameSocket.on("gameReady", function (game) {
                 >profile</router-link
               >
             </li>
-            <li v-if="user.status === 'ingame'" @click="startSpectating(user.id)">spectate< /li>
+            <li @click="startSpectating(user.id)">spectate</li>
           </ul>
         </div>
       </Transition>
