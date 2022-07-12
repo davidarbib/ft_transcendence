@@ -106,9 +106,6 @@ onMounted(() => {
         </div>
       </div>
     </div>
-    <div class="contact-bar">
-      <Contact />
-    </div>
   </div>
 </template>
 
