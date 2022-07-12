@@ -51,10 +51,7 @@ userStore.gameSocket.on("gameReady", function (game) {
   >
     <div class="user-icon">
       <img src="@/assets/sphere.png" alt="" class="h-10 w-10" />
-      <p v-if="user.status" class="online">
-        <i class="fa-solid fa-circle status-dot outline-inherit"></i>
-      </p>
-      <p v-else class="offline">
+      <p :class="user.status">
         <i class="fa-solid fa-circle status-dot outline-inherit"></i>
       </p>
     </div>
@@ -70,7 +67,7 @@ userStore.gameSocket.on("gameReady", function (game) {
                 >profile</router-link
               >
             </li>
-            <li @click="startSpectating(user.id)">spectate</li>
+            <li v-if="user.status === 'ingame'" @click="startSpectating(user.id)">spectate</li>
           </ul>
         </div>
       </Transition>

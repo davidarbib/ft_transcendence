@@ -25,10 +25,13 @@ let user = ref({
   lossCount: "",
 });
 
-function private_msg(target:any) {
-    userStore.chatsocket.emit("createDM", {user: userStore.user, target:target}, (data) =>{
-    })
-  }
+function private_msg(target: any) {
+  userStore.chatsocket.emit(
+    "createDM",
+    { user: userStore.user, target: target },
+    (data) => {}
+  );
+}
 
 onMounted(() => {
   axios.defaults.withCredentials = true;
@@ -42,7 +45,7 @@ onMounted(() => {
         console.log("response.data is empty");
       }
       if (user.value.username === userStore.$state.user.username)
-        isCurrentUserProfile.value = true;
+        router.push({ path: "/my_profile" });
     })
     .catch((error) => {
       console.log(error);
@@ -102,9 +105,6 @@ onMounted(() => {
           </div>
         </div>
       </div>
-    </div>
-    <div class="contact-bar">
-      <Contact />
     </div>
   </div>
 </template>

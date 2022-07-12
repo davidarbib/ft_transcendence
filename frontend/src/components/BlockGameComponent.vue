@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, nextTick } from "vue";
+import { ref, onMounted, nextTick, onUnmounted } from "vue";
 import { useUserStore } from "@/stores/auth";
 import ConfettiExplosion from "vue-confetti-explosion";
 
@@ -104,7 +104,8 @@ userStore.gameSocket.on("score", (scorePayload: boolean) => {
 });
 
 userStore.gameSocket.on("endGame", (endGamePayload) => {
-  window.removeEventListener("keydown", movePad);
+  if (userStore.gameInfos.playerId !== null)
+    window.removeEventListener("keydown", movePad);
   playerWin.value = !!(
     (endGamePayload.didPlayerOneWin && userStore.gameInfos.isP1) ||
     (!endGamePayload.didPlayerOneWin && !userStore.gameInfos.isP1)
@@ -147,6 +148,13 @@ onMounted(() => {
   if (userStore.gameInfos.playerId !== null)
     window.addEventListener("keydown", movePad);
   draw();
+});
+
+onUnmounted(() => {
+  userStore.gameSocket.emit("endSpectate", {
+    gameId: userStore.gameInfos.gameId,
+    userId: userStore.user.id,
+  });
 });
 </script>
 
@@ -197,10 +205,11 @@ onMounted(() => {
 }
 
 .mario {
-  background-image: url("@/assets/mario_bg.png");
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  background-position: center;
+  background: url("@/assets/mario_bg.png") no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
 }
 
 .monkey {
@@ -210,6 +219,7 @@ onMounted(() => {
   background-attachment: fixed;
   background-position: center;
 }
+
 .modal {
   position: fixed;
   top: 0;

@@ -11,7 +11,7 @@ const visibleToggle = () => {
 
 const logoutRedirect = () => {
   logoutUser().then(() => {
-    router.push({ path: "/chat" });
+    router.push({ path: "/" });
   });
 };
 </script>

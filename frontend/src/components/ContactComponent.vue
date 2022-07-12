@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {ref, onMounted, watch} from "vue";
+import { ref, onMounted } from "vue";
 import axios from "axios";
 import { apiStore } from "@/stores/api";
 import ListUserComponent from "@/components/ListUserComponent.vue";
@@ -24,12 +24,6 @@ const userStore = useUserStore();
 const friends = ref<User[]>([]);
 let users = ref<User[]>([]);
 
-function printUsers() {
-  for (let i = 0; i < users.value.length; i++) {
-    console.log(users.value[i]);
-  }
-}
-
 userStore.statusSocket.on("switchStatus", (payload) => {
   let index_users = users.value.findIndex((e) => e.id === payload.userId);
   if (index_users !== -1) {
@@ -39,11 +33,10 @@ userStore.statusSocket.on("switchStatus", (payload) => {
   if (index_friend !== -1) {
     friends.value[index_friend].status = payload.status;
   }
-  console.log("After event print");
-  printUsers();
 });
 
 onMounted(() => {
+  axios.defaults.withCredentials = true;
   axios
     .get(`${api.url}/users`)
     .then((response) => {
@@ -61,8 +54,6 @@ onMounted(() => {
     .catch((error) => {
       console.log(error);
     });
-  console.log("Mounted print");
-  printUsers();
 });
 </script>
 

@@ -31,12 +31,10 @@ onMounted(() => {
 });
 function selectChannel(name: string) {
   channelName.value = name;
-  console.log("selectChannel :" + channelName.value);
   emit("name", channelName.value);
 }
 
 function leaveChan() {
-  console.log("leave channel");
   userStore.chatsocket.emit(
     "leavechan",
     { user: userStore.user, name: channelName.value },
@@ -46,7 +44,6 @@ function leaveChan() {
 
 function addPassword() {
   axios.defaults.withCredentials = true;
-  console.log("add password");
 }
 
 const emit = defineEmits(["name", "msg"]);
