@@ -7,8 +7,6 @@ import { ConfigService } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport'
 import { UsersGateway } from './users.gateway';
 
-
-
 @Module({
   imports: [
     PassportModule,

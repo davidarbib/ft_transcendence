@@ -77,6 +77,8 @@ export class GamesService {
       }
       const user1 : User = this.userWhoWaitMatch[0].user;
       const user2 : User = this.userWhoWaitMatch[1].user;
+      console.log(`p1 user id: ${user1.id}`);
+      console.log(`p2 user id: ${user2.id}`);
       this.userWhoWaitMatch.splice(1);
       this.userWhoWaitMatch.splice(0);
       return { 
