@@ -50,9 +50,7 @@ const uploadProfilePicture = () => {
 
 const updatePseudo = () => {
   axios
-    .patch(`${api.url}/users/${userStore.user.id}`, {
-      id: userStore.user.id,
-      login: userStore.user.login,
+    .patch(`${api.url}/users/${userStore.user.login}`, {
       username: pseudo.value,
     })
     .then(() => {
@@ -161,7 +159,7 @@ onMounted(() => {
       ><p>{{ notifyMessage }}</p></notification-message
     >
     <div class="historic">
-      <Historic :login="login"/>
+      <Historic :login="pseudo"/>
     </div>
     <div class="profile-card bg-black bg-opacity-10">
       <header>

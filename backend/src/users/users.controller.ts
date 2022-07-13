@@ -22,11 +22,12 @@ type ValidMimeTYpe = 'image/png' |'image/jpg' | 'image/jpeg ';
 
 const validMimeTYpe  : ValidMimeTYpe[] = [ 'image/png' , 'image/jpg' , 'image/jpeg ',];
 import { JwtGuard } from 'src/auth/guards/jwt.guard';
+import { JwtTwoFaGuard } from 'src/auth/guards/jwtTwoFa.guard';
 import { Match } from 'src/matches/entities/match.entity';
 import { Player } from 'src/players/entities/player.entity';
 
 @Controller('users')
-@UseGuards(JwtGuard)
+@UseGuards(JwtTwoFaGuard)
 @ApiTags('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -102,7 +103,7 @@ uploadFile(@UploadedFile() file , @Request()  req) : any {
 *  PATCH
 *
 */
-  @Patch('/update/:id')
+  @Patch(':login')
   update(@Request() req, @Body() updateUserDto: UpdateUserDto) {
     const usr :User = req.user;
     return this.usersService.update(usr, updateUserDto);

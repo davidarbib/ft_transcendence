@@ -7,8 +7,10 @@ import { UpdateChanParticipantDto } from './dto/update-chan-participant.dto';
 import { ChanParticipant, ChanPartStatus } from './entities/chan-participant.entity';
 import { JwtGuard } from 'src/auth/guards/jwt.guard';
 import {HttpException, HttpStatus} from '@nestjs/common'
+import { JwtTwoFaGuard } from 'src/auth/guards/jwtTwoFa.guard';
+
 @Controller('chan-participants')
-@UseGuards(JwtGuard)
+@UseGuards(JwtTwoFaGuard)
 export class ChanParticipantsController {
   constructor(private readonly chanParticipantsService: ChanParticipantsService) {}
 

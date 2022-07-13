@@ -7,9 +7,10 @@ import { Contact } from './entities/contact.entity';
 import { ContactsService } from './contacts.service';
 import { CreateContactDto } from './dto/create-contact.dto';
 import { UpdateContactDto } from './dto/update-contact.dto';
+import { JwtTwoFaGuard } from 'src/auth/guards/jwtTwoFa.guard';
 
 @Controller('contacts')
-@UseGuards(JwtGuard)
+@UseGuards(JwtTwoFaGuard)
 export class ContactsController {
   constructor(private readonly contactsService: ContactsService) {}
   @Post(':id')
@@ -38,6 +39,8 @@ export class ContactsController {
   @Get(':login/friend')
   all_friend(@Param('login') login:string)
    {
+    console.log(login);
+    console.log("YES");
       return this.contactsService.all_friend(login);
   }
   // MAYBE ajouter request ??? si le front  a du mal ?

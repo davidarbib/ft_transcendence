@@ -50,9 +50,8 @@ onMounted(() => {
     .catch((error) => {
       console.log(error);
     });
-
   axios
-    .get(`${api.url}/contacts`)
+    .get(`${api.url}/contacts/${userStore.user.login}/friend`)
     .then((response) => {
       friends.value = response.data;
     })
