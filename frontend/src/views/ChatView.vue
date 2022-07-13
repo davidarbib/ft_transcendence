@@ -42,8 +42,13 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
+<<<<<<< HEAD
   userStore.gameSocket.removeAllListeners();
 });
+=======
+  userStore.gameSocket.off('inviteCreated');
+})
+>>>>>>> fix_logout
 
 /* pour recevoir les message envoye */
 userStore.chatsocket.on("message", (message, chan) => {
