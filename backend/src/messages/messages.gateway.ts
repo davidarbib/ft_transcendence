@@ -7,14 +7,16 @@ import { Server, Socket } from 'socket.io';
 import { MessagesService } from './messages.service';
 import {HttpException, HttpStatus} from '@nestjs/common'
 import { Messages } from './entities/message.entity';
+import { Contact} from 'src/contacts/entities/contact.entity' ;
 import { CreateChannelDto } from 'src/channels/dto/create-channel.dto';
 import { ChanParticipant } from 'src/chan-participants/entities/chan-participant.entity';
 import { ChanPartStatus } from 'src/chan-participants/entities/chan-participant.entity';
 import { myDataSource } from 'src/app-data-source';
 import { Channel, ChanType } from 'src/channels/entities/channel.entity';
 import { UpdateChanParticipantDto } from 'src/chan-participants/dto/update-chan-participant.dto';
-import bcrypt from 'bcryptjs'
-var bcrypt = require('bcryptjs');
+import {bcrypt} from 'bcryptjs'
+import { IsLoginlNotExisting } from 'src/users/validator/is-login-already-exist.validator';
+//var bcrypt = require('bcryptjs');
 
 @WebSocketGateway({
   cors:{
@@ -30,7 +32,7 @@ export class MessagesGateway
   @SubscribeMessage('setConnexion')
   async setCo(@MessageBody('user') user:User, @ConnectedSocket() client:Socket)
   {  
-  this.messageService.setCo(user, client);
+    this.messageService.setCo(user, client);
   }
 
   @SubscribeMessage('createMessage')
@@ -39,30 +41,107 @@ export class MessagesGateway
    this.server.emit('message', msg, chan);
     return {msg};
   }
+
   @SubscribeMessage('findAllMessage')
   async findAll() {
     const msg = await this.messageService.findAll();
     return msg;
   }
-
+  
   @SubscribeMessage('findMessageFromChan')
   async findMsg(@MessageBody('name') name:string, @MessageBody('login') login:string)
   {
     const msg = await this.messageService.findMsg(name, login);
     return  msg;
   }
+  @SubscribeMessage('isBlock')
+  async block_bool(@MessageBody('user') user:string, @MessageBody('target') target:string)
+  {
+      const block = this.messageService.is_block(user, target);
+    return  block;
+  }
   @SubscribeMessage('ourchan')
   async findChan( @MessageBody('user') user:User )
   {
     const chan = await this.messageService.findChan(user);
     this.server.emit('chan', chan);
-    return  chan ;
+    return  chan;
+  }
+  @SubscribeMessage('blockUser')
+  async BlockUser( @MessageBody('user') user:User, @MessageBody('target') target:User )
+  {
+    const contact = await myDataSource.getRepository(Contact).find();
+    let friendship;
+    contact.forEach(element => {
+      if ( element.userLogin == user.login && element.followedLogin == target.login)
+        friendship = element;
+    })
+    if (friendship)
+    {
+        friendship.block = true;
+        await myDataSource.getRepository(Contact).save(friendship);
+        return ;
+    }
+    else 
+    {
+      friendship = new Contact();
+      friendship.userLogin = user.login;
+      friendship.followedLogin = target.login;
+      friendship.block = true;
+      await myDataSource.getRepository(Contact).save(friendship);
+    }
+  }
+  @SubscribeMessage('isTimeToDemut')
+  async isTimeTo(@MessageBody('user') usr:User, @MessageBody('name') name:string) 
+  {
+    let date = new Date();
+    let chanPart;
+      const listchanPart = await myDataSource.getRepository(ChanParticipant).find({relations:['chan', 'participant']});
+        listchanPart.forEach(element => {
+            if (element.chan.name == name && element.participant.login == usr.login)
+              {
+                if (element.end_timestamp < date && element.ban != true)
+                {
+                  element.end_timestamp = null;
+                  element.mute = false;
+                  chanPart = element;
+                }
+              }
+            });
+           if ( chanPart.ban == false && chanPart.mute == false)
+           {
+
+            await myDataSource.getRepository(ChanParticipant).save(chanPart);
+            return true;
+           }
+        
+  } 
+  @SubscribeMessage('isTimeToDeBan')
+  async isTimeTodeban(@MessageBody('user') usr:User, @MessageBody('name') name:string) 
+  {
+    let date = new Date();
+    let chanPart;
+      const listchanPart = await myDataSource.getRepository(ChanParticipant).find({relations:['chan', 'participant']});
+        listchanPart.forEach(element => {
+            if (element.chan.name == name && element.participant.login == usr.login)
+              {
+                if (element.end_timestamp < date && element.mute == false)
+                {
+                  element.end_timestamp = null;
+                  element.ban = false;
+                  chanPart = element;
+                }
+              }
+            });
+            if (chanPart){
+             if (chanPart.ban == false && chanPart.mute == false)
+                await myDataSource.getRepository(ChanParticipant).save(chanPart);
+            }
   }
 
   @SubscribeMessage('createChannel')
   async createChan(@MessageBody('user') usr:User , @MessageBody('name')name : string, @MessageBody('type')type : ChanType, @MessageBody('password')password : string,  @ConnectedSocket() client:Socket) 
   {
-    // need to tchek if name exist AND CRYPT PASSWORd
       const chan = await this.messageService.CreateChan(usr, name, type, password,client)
       client.join(chan.id);
       this.server.in(client.id).emit('join', chan);
@@ -79,7 +158,6 @@ export class MessagesGateway
       this.server.to(chan.id).emit('newUser', usr, chan);
       client.join(chan.id);
       this.server.in(client.id).emit('join', chan);
-
   }
 }
   @SubscribeMessage('leavechan')
@@ -95,7 +173,6 @@ export class MessagesGateway
          chanPartDelete.remove();
         return ;
       }
-
     }
   })
   }
@@ -123,7 +200,7 @@ export class MessagesGateway
   async MuteBanUser( @MessageBody('name') name:string, @MessageBody('user') usr:User, @MessageBody('target') target:string , @MessageBody() updateChanParticipantDto: UpdateChanParticipantDto, @ConnectedSocket() client:Socket) {
 
     const {arg, bool, chan} = await this.messageService.muteBanUser(name, updateChanParticipantDto, target);
-    this.server.emit("UsernewStatus", {status:arg, bool:bool, chan :chan});
+    this.server.emit("UsernewStatus", {status:arg, bool:bool, chan :chan, user:usr});
   }
 
   @SubscribeMessage('needPassword')
@@ -210,6 +287,8 @@ export class MessagesGateway
   @SubscribeMessage('createDM')
   async createDM( @MessageBody('user') user:User, @MessageBody('target') target:User, @ConnectedSocket() client:Socket)
   {
+    if (user.login == target.login)
+      return ;
     // tcheker si il est blocker  dans les deux sens 
     const { chan, targetsocket} = await this.messageService.createDM(user, target)
     if (chan && targetsocket)
@@ -250,18 +329,14 @@ export class MessagesGateway
     this.server.in(client.id).emit('newadmin', chan, chanPart.participant);
   }
   
-  // @SubscribeMessage('addfriend')
-  // async TheOwner( @MessageBody('name') name:string)
-  // {
-  //   const list = await myDataSource.getRepository(ChanParticipant).find({relations : ['participant', 'chan']});
-  //   list.forEach( element => {
-  //     if (element.chan && element.participant)
-  //     {
-  //       if (element.chan.name == name && element.privilege == ChanPartStatus.OWNER)
-  //         return element.participant;
-  //     }
-  //   })
-  // }
+  @SubscribeMessage('addfriend')
+  async addFriend( @MessageBody('user') user:string, @MessageBody('target') target:string )
+  {
+     const contact = await myDataSource.getRepository(Contact).findOne({where :{userLogin:user, followedLogin: target}})
+    if (contact)
+      return ;
+    return this.messageService.friendship(user, target);
+  }
   /*
   @SubscribeMessage('listOfContacts')
   async list_contact( @MessageBody('login') login :string)

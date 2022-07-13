@@ -7,11 +7,10 @@ import { Contact } from './entities/contact.entity';
 
 @Injectable()
 export class ContactsService {
-  async create(contact : CreateContactDto) {
+  async create(login:string, target:string) {
     const newContact = new Contact;
-    newContact.userLogin = contact.userLogin;
-    newContact.followedLogin = contact.followedlogin;
-    newContact.block = contact.block;
+    newContact.userLogin = login;
+    newContact.followedLogin = target;
     return myDataSource.getRepository(Contact).save(newContact);
   }
   
@@ -34,10 +33,13 @@ export class ContactsService {
   
   async block_bool(login:string, followedlogin:string)
   {
-    const test =await  Contact.findOne({where : {userLogin: login, followedLogin: followedlogin}})
-    if (test.block == false)
-      return false;
-    return true;
+    const test  =await  myDataSource.getRepository(Contact).findOne({where : {userLogin: login, followedLogin: followedlogin}})
+    if (test)
+    {
+      if (test.block == true)
+       return true;
+    }
+    return false;
   }
 
   async all_friend(login:string)
