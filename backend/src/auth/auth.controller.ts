@@ -105,7 +105,8 @@ export class AuthController {
 
     @HttpCode(200)
     @Post('logout')
-    @UseGuards(JwtTwoFaGuard)
+    //@UseGuards(JwtTwoFaGuard)
+    @UseGuards(JwtGuard)
     logout
     (
         @Req() request: Request,
