@@ -13,11 +13,13 @@ interface Message {
   id: string;
   content: string;
   time: string;
+  author: never;
   login: string;
 }
 
 interface User {
   login: string;
+  username: string;
   id: string;
 }
 
@@ -313,7 +315,7 @@ watch(getName, () => {
     { name: getName.value, login: userStore.user.login },
     (data: never) => {
       messages.value = data;
-      console.log(messages.value);
+      console.log(data);
     }
   );
 });
@@ -454,8 +456,7 @@ userStore.chatsocket.on("UserNewStatus", (payload) => {
         <div
           v-if="!isUserBanned(userStore.user.login) && !isUid(message.content)"
         >
-          {{ message.login }} :
-          {{ message.time }}
+          {{ message.author.username }} :
           <p>{{ message.content }}</p>
         </div>
       </div>
