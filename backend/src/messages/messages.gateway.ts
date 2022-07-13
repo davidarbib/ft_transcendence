@@ -236,7 +236,15 @@ export class MessagesGateway
   async MuteBanUser( @MessageBody('name') name:string, @MessageBody('user') usr:User, @MessageBody('target') target:string , @MessageBody() updateChanParticipantDto: UpdateChanParticipantDto, @ConnectedSocket() client:Socket) {
 
     const {arg, bool, chan} = await this.messageService.muteBanUser(name, updateChanParticipantDto, target);
-    this.server.emit("UserNewStatus", {status:arg, bool:bool, chan :chan, user:usr});
+    console.log(
+      `Args of UserNewStatus -- arg :${arg} | bool:${bool} | chan:${chan} | user:${usr}`,
+    );
+    this.server.emit('UserNewStatus', {
+      status: arg,
+      bool: bool,
+      chan: chan,
+      user: usr,
+    });
   }
 
   @SubscribeMessage('needPassword')

@@ -41,33 +41,37 @@ const allBanned = ref<User[]>([]); // list banned user
 /* permet de Set la connexion quand ca refresh essentiel pour les dm */
 onMounted(() => {
   userStore.chatsocket.emit("setConnexion", { user: userStore.user });
-
 });
 
 onUnmounted(() => {
   userStore.gameSocket.removeAllListeners();
-})
+});
 
 /* pour recevoir les message envoye */
 userStore.chatsocket.on("message", (message, chan) => {
-  let bloock:Boolean = false;
-  userStore.chatsocket.emit("isBlock", {user:userStore.user.login, target:message.author.login}, (block) => {
-  if (block) // pour ne pas recevoir de message si la personne est bloque 
-    {
-      bloock = block;
+  let bloock = false;
+  userStore.chatsocket.emit(
+    "isBlock",
+    { user: userStore.user.login, target: message.author.login },
+    (block) => {
+      if (block) {
+        // pour ne pas recevoir de message si la personne est bloque
+        bloock = block;
+      }
+      if (bloock == false) {
+        if (chan.name == getName.value) return messages.value.push(message);
+      }
     }
-    if (bloock == false)
-    {if (chan.name == getName.value) return messages.value.push(message);}}) }
-);
+  );
+});
 
 /* event il ya un new user dans le chan */
 userStore.chatsocket.on("newUser", (usr: never, chan) => {
   if (chan.name == getName.value) userIn.value.push(usr);
 });
 userStore.chatsocket.on("userleavetheChan", (chan) => {
-  if (chan.name == getName.value) 
-    getUserInChan();
-  console.log(userIn.value)
+  if (chan.name == getName.value) getUserInChan();
+  console.log(userIn.value);
 });
 userStore.chatsocket.on("userleaveChan", () => {
   console.log("YESfffff");
@@ -75,7 +79,7 @@ userStore.chatsocket.on("userleaveChan", () => {
 });
 /* event le user est devenu admin dans le chan */
 userStore.chatsocket.on("newadmin", (chan: never, user: never) => {
-    if (chan.name == getName.value) allAdmins.value.push(user);
+  if (chan.name == getName.value) allAdmins.value.push(user);
   // need to put data in tab of admin
 });
 
@@ -205,7 +209,10 @@ function muteClient(login: string) {
 }
 
 function addFriend(login: string) {
-  userStore.chatsocket.emit("addfriend", {user:userStore.user.login, target:login});
+  userStore.chatsocket.emit("addfriend", {
+    user: userStore.user.login,
+    target: login,
+  });
 }
 
 // get all admins
@@ -247,25 +254,35 @@ function addAdmin(login: string) {
   });
   // console.log("add admin");
 }
-function isalwaysMut(){
-  userStore.chatsocket.emit("isTimeToDeMut", {user:userStore.user, name:getName.value}, (data) =>{
+function isalwaysMut() {
+  userStore.chatsocket.emit(
+    "isTimeToDeMut",
+    { user: userStore.user, name: getName.value },
+    (data) => {
       userStore.chatsocket.emit(
-    "geMuteInChan",
-    { name: getName.value },
-    (data) => {
-      allMuted.value = data;
-    })
-  })
+        "geMuteInChan",
+        { name: getName.value },
+        (data) => {
+          allMuted.value = data;
+        }
+      );
+    }
+  );
 }
-function isalwaysban(){
-  userStore.chatsocket.emit("isTimeToDeBan", {user:userStore.user, name:getName.value}, (data) =>{
-            userStore.chatsocket.emit(
-    "getBanInChan",
-    { name: getName.value },
+function isalwaysban() {
+  userStore.chatsocket.emit(
+    "isTimeToDeBan",
+    { user: userStore.user, name: getName.value },
     (data) => {
-      allMuted.value = data;
-    })
-  })
+      userStore.chatsocket.emit(
+        "getBanInChan",
+        { name: getName.value },
+        (data) => {
+          allMuted.value = data;
+        }
+      );
+    }
+  );
 }
 function itsMe(login: string): boolean {
   return !(userStore.user.login === login);
@@ -296,11 +313,25 @@ watch(getName, () => {
     { name: getName.value, login: userStore.user.login },
     (data: never) => {
       messages.value = data;
-      console.log(messages.value)
+      console.log(messages.value);
     }
   );
 });
 
+userStore.chatsocket.on("UserNewStatus", (payload) => {
+  if (payload.status === "ban") {
+    if (payload.chan !== getName.value) {
+      return;
+    }
+    allBanned.value.push(payload.user);
+  }
+  if (payload.status === "mute") {
+    if (payload.chan !== getName.value) {
+      return;
+    }
+    allMuted.value.push(payload.user);
+  }
+});
 </script>
 
 <template>
