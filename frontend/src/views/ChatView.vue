@@ -41,36 +41,40 @@ const allBanned = ref<User[]>([]); // list banned user
 /* permet de Set la connexion quand ca refresh essentiel pour les dm */
 onMounted(() => {
   userStore.chatsocket.emit("setConnexion", { user: userStore.user });
-
 });
 
 onUnmounted(() => {
   userStore.gameSocket.removeAllListeners();
-})
+});
 
 /* pour recevoir les message envoye */
 userStore.chatsocket.on("message", (message, chan) => {
-  let bloock:Boolean = false;
-  userStore.chatsocket.emit("isBlock", {user:userStore.user.login, target:message.author.login}, (block) => {
-  if (block) // pour ne pas recevoir de message si la personne est bloque 
-    {
-      bloock = block;
+  let bloock = false;
+  userStore.chatsocket.emit(
+    "isBlock",
+    { user: userStore.user.login, target: message.author.login },
+    (block) => {
+      if (block) {
+        // pour ne pas recevoir de message si la personne est bloque
+        bloock = block;
+      }
+      if (bloock == false) {
+        if (chan.name == getName.value) return messages.value.push(message);
+      }
     }
-    if (bloock == false)
-    {if (chan.name == getName.value) return messages.value.push(message);}}) }
-);
+  );
+});
 
 /* event il ya un new user dans le chan */
 userStore.chatsocket.on("newUser", (usr: never, chan) => {
   if (chan.name == getName.value) userIn.value.push(usr);
 });
-userStore.chatsocket.on("userleavetheChan", (chan:never, user:never) => { 
-  if (userStore.user.login !== user.login && chan.name === getName.value)
-  {
-      userStore.chatsocket.emit("getUserChan", {name:chan.name}, (data) =>{
-        userIn.value = data;
-      })
-        getUserInChan();
+userStore.chatsocket.on("userleavetheChan", (chan: never, user: never) => {
+  if (userStore.user.login !== user.login && chan.name === getName.value) {
+    userStore.chatsocket.emit("getUserChan", { name: chan.name }, (data) => {
+      userIn.value = data;
+    });
+    getUserInChan();
   }
 });
 userStore.chatsocket.on("userleaveChan", () => {
@@ -78,7 +82,7 @@ userStore.chatsocket.on("userleaveChan", () => {
 });
 /* event le user est devenu admin dans le chan */
 userStore.chatsocket.on("newadmin", (chan: never, user: never) => {
-    if (chan.name == getName.value) allAdmins.value.push(user);
+  if (chan.name == getName.value) allAdmins.value.push(user);
   // need to put data in tab of admin
 });
 
@@ -208,37 +212,44 @@ function muteClient(login: string) {
 }
 
 function addFriend(login: string) {
-  userStore.chatsocket.emit("addfriend", {user:userStore.user.login, target:login});
+  userStore.chatsocket.emit("addfriend", {
+    user: userStore.user.login,
+    target: login,
+  });
 }
 
 // get all admins
 function getAdmins() {
   // pour avoir tout les admin du serv
-  axios
-    .get(`http://localhost:8090/chan-participants/admin/${getName.value}`, {
-      name: getName.value,
-    })
-    .then((response) => {
-      allAdmins.value = response.data;
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+  if (getName.value) {
+    axios
+      .get(`http://localhost:8090/chan-participants/admin/${getName.value}`, {
+        name: getName.value,
+      })
+      .then((response) => {
+        allAdmins.value = response.data;
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
 }
 
 function getOwner() {
   // get owner of chan and put it in owner.value.
-  axios
-    .get(`http://localhost:8090/chan-participants/owner/${getName.value}`, {
-      name: getName.value,
-    })
-    .then((response) => {
-      owner.value = response.data.login;
-      // console.log(owner.value);
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+  if (getName.value) {
+    axios
+      .get(`http://localhost:8090/chan-participants/owner/${getName.value}`, {
+        name: getName.value,
+      })
+      .then((response) => {
+        owner.value = response.data.login;
+        // console.log(owner.value);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
 }
 
 // add admin (addAdmin(login))
@@ -250,25 +261,35 @@ function addAdmin(login: string) {
   });
   // console.log("add admin");
 }
-function isalwaysMut(){
-  userStore.chatsocket.emit("isTimeToDeMut", {user:userStore.user, name:getName.value}, (data) =>{
+function isalwaysMut() {
+  userStore.chatsocket.emit(
+    "isTimeToDeMut",
+    { user: userStore.user, name: getName.value },
+    (data) => {
       userStore.chatsocket.emit(
-    "geMuteInChan",
-    { name: getName.value },
-    (data) => {
-      allMuted.value = data;
-    })
-  })
+        "geMuteInChan",
+        { name: getName.value },
+        (data) => {
+          allMuted.value = data;
+        }
+      );
+    }
+  );
 }
-function isalwaysban(){
-  userStore.chatsocket.emit("isTimeToDeBan", {user:userStore.user, name:getName.value}, (data) =>{
-            userStore.chatsocket.emit(
-    "getBanInChan",
-    { name: getName.value },
+function isalwaysban() {
+  userStore.chatsocket.emit(
+    "isTimeToDeBan",
+    { user: userStore.user, name: getName.value },
     (data) => {
-      allMuted.value = data;
-    })
-  })
+      userStore.chatsocket.emit(
+        "getBanInChan",
+        { name: getName.value },
+        (data) => {
+          allMuted.value = data;
+        }
+      );
+    }
+  );
 }
 function itsMe(login: string): boolean {
   return !(userStore.user.login === login);
@@ -284,27 +305,27 @@ function banUser(login: string) {
 }
 
 watch(getName, () => {
-  console.log("WATCH ??")
-  console.log(userIn.value);
-  getAdmins();
-  listMute();
-  listBan();
-  getOwner();
-  isalwaysMut();
-  isalwaysban();
+  if (getName.value) {
+    // console.log(userIn.value);
+    getAdmins();
+    listMute();
+    listBan();
+    getOwner();
+    isalwaysMut();
+    isalwaysban();
 
-  getUserInChan();
-  messages.value = [];
-  userStore.chatsocket.emit(
-    "findMessageFromChan",
-    { name: getName.value, login: userStore.user.login },
-    (data: never) => {
-      messages.value = data;
-      console.log(messages.value)
-    }
-  );
+    getUserInChan();
+    messages.value = [];
+    userStore.chatsocket.emit(
+        "findMessageFromChan",
+        {name: getName.value, login: userStore.user.login},
+        (data: never) => {
+          messages.value = data;
+          console.log(messages.value);
+        }
+    );
+  }
 });
-
 </script>
 
 <template>

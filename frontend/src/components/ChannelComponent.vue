@@ -15,62 +15,44 @@ const passOpen = ref<boolean>(false); // popup
 const inputPass = ref<string>("");
 
 const pwdStatusMsg = ref<string>("type in input");
-const pwdStatusInit = ref<boolean>("false");
+const pwdStatusInit = ref<boolean>(false);
 
-const itsMe = ref<Boolean>("false");
-userStore.chatsocket.on("leavetheChan", () => {
-  chan.value = [];
-  console.log("YOLO");
-  userStore.chatsocket.emit("testchan", {user:userStore.user},(data) =>{
-    chan.value = data;
-  })
-});
+const itsMe = ref<boolean>(false);
 
-watch(inputPass, () =>
-{
+watch(inputPass, () => {
   pwdStatusMsg.value = pwdStatus(false);
 });
 
-function pwdStatus(bool: boolean)
-{
-    if (hasPass.value)
-    {
-      if (inputPass.value)
-      {
-        pwdStatusInit.value = true;
-        if (bool) { 
-          passOpen.value = false;
-          changePassword(inputPass.value);
-          }
-        return "change";
+function pwdStatus(bool: boolean) {
+  if (hasPass.value) {
+    if (inputPass.value) {
+      pwdStatusInit.value = true;
+      if (bool) {
+        passOpen.value = false;
+        changePassword(inputPass.value);
       }
-      else
-      {
-        pwdStatusInit.value = true;
-        if (bool) { 
-          passOpen.value = false;
-          removePassword();
-          }
-        return "delete";
+      return "change";
+    } else {
+      pwdStatusInit.value = true;
+      if (bool) {
+        passOpen.value = false;
+        removePassword();
       }
+      return "delete";
     }
-    else
-    {
-      if (inputPass.value)
-      {
-        pwdStatusInit.value = true;
-        if (bool) {
-          addPassword(inputPass.value);
-          passOpen.value = false;
-          }
-        return "add";
+  } else {
+    if (inputPass.value) {
+      pwdStatusInit.value = true;
+      if (bool) {
+        addPassword(inputPass.value);
+        passOpen.value = false;
       }
-      else
-      {
-        pwdStatusInit.value = false;
-        return "";
-      }
+      return "add";
+    } else {
+      pwdStatusInit.value = false;
+      return "";
     }
+  }
 }
 
 function needPassword(name: string) {
@@ -80,8 +62,7 @@ function needPassword(name: string) {
   });
 }
 
-function modalCancelStatus()
-{
+function modalCancelStatus() {
   inputPass.value = "";
   passOpen.value = false;
 }
@@ -91,16 +72,18 @@ function getOwner() {
   if (channelName.value) {
     axios.defaults.withCredentials = true;
     axios
-        .get(`http://localhost:8090/chan-participants/owner/${channelName.value}`, {
+      .get(
+        `http://localhost:8090/chan-participants/owner/${channelName.value}`,
+        {
           name: channelName.value,
-        })
-        .then((response) => {
-          owner.value = response.data.login;
-          console.log(owner.value);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+        }
+      )
+      .then((response) => {
+        owner.value = response.data.login;
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }
 }
 
@@ -109,9 +92,9 @@ function toggleChannelMenu(id: number) {
   channelOptions.value = !channelOptions.value;
 }
 
- userStore.chatsocket.on('join', (data) => {
-   chan.value.push(data);
-})
+userStore.chatsocket.on("join", (data) => {
+  chan.value.push(data);
+});
 
 onMounted(() => {
   axios.defaults.withCredentials = true;
@@ -131,54 +114,59 @@ function selectChannel(name: string) {
   getOwner();
   channelName.value = name;
   needPassword(channelName.value);
+  console.log(channelName.value);
   emit("name", channelName.value);
 }
 
 function leaveChan() {
+  console.log(channelName.value);
   userStore.chatsocket.emit(
     "leavechan",
     { user: userStore.user, name: channelName.value },
     () => {}
   );
- // emit("name", null);
-
+  userStore.chatsocket.on("leavetheChan", () => {
+    chan.value = [];
+    console.log("YOLO");
+    userStore.chatsocket.emit("testchan", { user: userStore.user }, (data) => {
+      chan.value = data;
+    });
+  });
+  channelName.value = "";
+  console.log(channelName.value);
+  emit("name", channelName.value);
 }
 
 /* CHANGER LE PASSWORD*/
 function changePassword(password: string) {
-  if(channelName.value)
-      userStore.chatsocket.emit(
-          "changePassword",
-          {name: channelName.value, password: password},
-          () => {
-          }
-      );
-}
-  
-function  addPassword(pass:string)
-{
-  userStore.chatsocket.emit(
-      "addPassword",
-      {name: channelName.value, password:pass},
-      () => {
-      })
+  if (channelName.value)
+    userStore.chatsocket.emit(
+      "changePassword",
+      { name: channelName.value, password: password },
+      () => {}
+    );
 }
 
-function  removePassword()
-{
+function addPassword(pass: string) {
   userStore.chatsocket.emit(
-      "deletePassword",
-      {name: channelName.value},
-      () => {
-      })
+    "addPassword",
+    { name: channelName.value, password: pass },
+    () => {}
+  );
 }
 
-function openModal()
-{
+function removePassword() {
+  userStore.chatsocket.emit(
+    "deletePassword",
+    { name: channelName.value }
+  );
+}
+
+function openModal() {
   passOpen.value = true;
   pwdStatus(false);
   inputPass.value = "";
-  itsMe.value = (owner.value === userStore.user.login);
+  itsMe.value = owner.value === userStore.user.login;
 }
 
 const emit = defineEmits(["name", "msg"]);
@@ -187,7 +175,7 @@ const emit = defineEmits(["name", "msg"]);
 <template>
   <div class="contact-section mx-2">
     <div
-      @click="selectChannel(channel.name)"
+      @click.once="selectChannel(channel.name)"
       class="user-card rounded my-2 bg-black bg-opacity-10 font-medium hover:bg-opacity-30 transition duration-300"
       v-for="channel in chan"
       :key="channel.id"
@@ -195,7 +183,7 @@ const emit = defineEmits(["name", "msg"]);
       <div class="user-pseudo py-2">
         <p>{{ channel.name }}</p>
         <p class="icon" @click="toggleChannelMenu(channel.id, channel.name)">
-          <i class="fa-solid fa-gear"></i>
+          <i v-if="channel.name" class="fa-solid fa-gear"></i>
         </p>
       </div>
       <Transition name="slide-fade">
@@ -209,22 +197,23 @@ const emit = defineEmits(["name", "msg"]);
               <div v-if="passOpen" class="modal">
                 <div class="modal-inner">
                   <input
-                      v-if="itsMe"
-                      v-model="inputPass"
-                      type="text"
-                      class="message-input h-3/4 w-3/4 px-2 focus:outline-none border rounded"
+                    v-if="itsMe"
+                    v-model="inputPass"
+                    type="text"
+                    class="message-input h-3/4 w-3/4 px-2 focus:outline-none border rounded"
                   />
                   <p v-else>Your not owner :(</p>
                   <!-- if input isnt init hide buttons -->
-                  <button v-if="pwdStatusInit && itsMe"
-                      @click="pwdStatus(true)"
-                      class="primary-button valid-pass-button"
+                  <button
+                    v-if="pwdStatusInit && itsMe"
+                    @click="pwdStatus(true)"
+                    class="primary-button valid-pass-button"
                   >
                     {{ pwdStatusMsg }}
                   </button>
                   <button
-                      class="primary-button cancel-button"
-                      @click="modalCancelStatus()"
+                    class="primary-button cancel-button"
+                    @click="modalCancelStatus()"
                   >
                     Cancel
                   </button>
@@ -277,21 +266,21 @@ const emit = defineEmits(["name", "msg"]);
     .valid-button {
       background-color: green;
       grid-area: 2 / 1 / 3 / 2;
-      &:hover{
+      &:hover {
         background-color: darkgreen;
       }
     }
     .remove-pass-button {
       background-color: blue;
       grid-area: 2 / 2 / 3 / 3;
-      &:hover{
+      &:hover {
         background-color: blueviolet;
       }
     }
     .cancel-button {
       background-color: crimson;
       grid-area: 2 / 3 / 3 / 4;
-      &:hover{
+      &:hover {
         background-color: brown;
       }
     }
