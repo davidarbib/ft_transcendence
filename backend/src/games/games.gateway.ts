@@ -22,6 +22,8 @@ interface GameReadyPayload
   isP1: boolean,
   playerOneName: string,
   playerTwoName: string,
+  scoreP1: number,
+  scoreP2: number,
 }
 
 interface GameStatePayload
@@ -31,6 +33,12 @@ interface GameStatePayload
   playerTwoY: number,
   ballX: number,
   ballY: number,
+}
+
+interface ScorePayload
+{
+  scoreP1: number,
+  scoreP2: number
 }
 
 interface EndGamePayload
@@ -97,6 +105,8 @@ export class GamesGateway {
         isP1: true,
         playerOneName: playerOneUserRef.username,
         playerTwoName: playerTwoUserRef.username,
+        scoreP1: 0,
+        scoreP2: 0,
       };
       clients.clientOne.emit("gameReady", payload);
       
@@ -106,6 +116,8 @@ export class GamesGateway {
         isP1: false,
         playerOneName: playerOneUserRef.username,
         playerTwoName: playerTwoUserRef.username,
+        scoreP1: 0,
+        scoreP2: 0,
       }
       clients.clientTwo.emit("gameReady", payload);
     };
@@ -162,6 +174,8 @@ export class GamesGateway {
         isP1: false,
         playerOneName: playerOneName,
         playerTwoName: playerTwoName,
+        scoreP1: this.gamesService.getState(gameId).player1.score,
+        scoreP2: this.gamesService.getState(gameId).player2.score,
       }
       this.gamesService.setSpectateStatus(spectatorId);
       client.join(gameId); 
@@ -272,6 +286,8 @@ export class GamesGateway {
           isP1: true,
           playerOneName: user1.username,
           playerTwoName: user2.username,
+          scoreP1: 0,
+          scoreP2: 0,
         }
         hostSocket.emit("gameReady", payload);
         payload = {
@@ -280,6 +296,8 @@ export class GamesGateway {
           isP1: false,
           playerOneName: user1.username,
           playerTwoName: user2.username,
+          scoreP1: 0,
+          scoreP2: 0,
         }
         client.emit("gameReady", payload);
         this.gamesService.delInvite(hostId);
@@ -290,11 +308,15 @@ export class GamesGateway {
     }
   }
 
-  async handlePoint(gameId: string, playerId: string, isP1: boolean)
+  async handlePoint(gameId: string, playerId: string, scoreP1: number, scoreP2: number)
   {
     const player = await myDataSource.getRepository(Player).findOne({where : { id : playerId}})
     this.playerService.incrementScore(player);
-    this.server.to(gameId).emit('score', isP1);
+    const payload : ScorePayload = {
+      scoreP1: scoreP1,
+      scoreP2: scoreP2,
+    }
+    this.server.to(gameId).emit('score', payload);
   }
 
   async handleFinishGame
@@ -350,7 +372,7 @@ export class GamesGateway {
         playerId = gameState.player1.id;
       else
         playerId = gameState.player2.id;
-      this.handlePoint(gameId, playerId, details.isP1Score);
+      this.handlePoint(gameId, playerId, gameState.player1.score, gameState.player2.score);
     }
   }
 
@@ -381,6 +403,7 @@ export class GamesGateway {
         this.server.in(gameId).socketsLeave(gameId);
       }
     //}, 10); //~90fps for debugging
+    }, 66); //~15fps
     //}, 33); //~30fps
     }, 66); //~15fps
     //}, 25); //40fps
