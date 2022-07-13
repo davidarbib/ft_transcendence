@@ -1,15 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import * as passport from 'passport'
 import * as cookieParser from 'cookie-parser';
 import * as express from 'express';
-
-// maxime shit
-import { Module } from '@nestjs/common';
-import { ServeStaticModule } from '@nestjs/serve-static';
-import { join } from 'path';
-import { mainModule } from 'process'
 
 import { ValidationPipe } from '@nestjs/common';
 
