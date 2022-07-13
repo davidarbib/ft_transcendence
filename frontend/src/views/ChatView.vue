@@ -42,8 +42,8 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
-  userStore.gameSocket.off('inviteCreated');
-})
+  userStore.gameSocket.off("inviteCreated");
+});
 
 /* pour recevoir les message envoye */
 userStore.chatsocket.on("message", (message, chan) => {
@@ -267,7 +267,7 @@ function isalwaysMut() {
         }
       );
     }
-  )
+  );
 }
 function isalwaysban() {
   userStore.chatsocket.emit(
@@ -282,7 +282,7 @@ function isalwaysban() {
         }
       );
     }
-  )
+  );
 }
 function itsMe(login: string): boolean {
   return !(userStore.user.login === login);
@@ -319,16 +319,21 @@ watch(getName, () => {
 });
 
 userStore.chatsocket.on("UserNewStatus", (payload) => {
+  console.log(
+    `status -- Status:${payload.status} | chan:${payload.chan.name} | user:${payload.user.login}`
+  );
   if (payload.status === "ban") {
-    if (payload.chan !== getName.value) {
+    if (payload.chan.name !== getName.value) {
       return;
     }
+    console.log("USER IS BANNED WELL");
     allBanned.value.push(payload.user);
   }
   if (payload.status === "mute") {
-    if (payload.chan !== getName.value) {
+    if (payload.chan.name !== getName.value) {
       return;
     }
+    console.log("USER IS MUTED WELL");
     allMuted.value.push(payload.user);
   }
 });
