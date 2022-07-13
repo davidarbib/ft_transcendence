@@ -37,9 +37,12 @@ export class MessagesGateway
 
   @SubscribeMessage('createMessage')
   async create(@MessageBody('name') name:string,@MessageBody('login') login :string, @MessageBody() createMessageDto: CreateMessageDto, @ConnectedSocket() client:Socket) {
+    if (name)
+    {
     const {msg, chan} = await  this.messageService.create(login, name, createMessageDto);
    this.server.emit('message', msg, chan);
     return {msg};
+    }
   }
 
   @SubscribeMessage('findAllMessage')
@@ -90,6 +93,18 @@ export class MessagesGateway
       friendship.block = true;
       await myDataSource.getRepository(Contact).save(friendship);
     }
+  }
+
+  @SubscribeMessage('unblockUser')
+  async unBlockUser( @MessageBody('user') user:User, @MessageBody('target') target:User )
+  {
+    const contact = await myDataSource.getRepository(Contact).findOne( {where : {userLogin:user.login, followedLogin:target.login}});
+    if (contact)
+    {
+      contact.block = false;
+      await myDataSource.getRepository(Contact).save(contact);
+    }
+
   }
   @SubscribeMessage('isTimeToDemut')
   async isTimeTo(@MessageBody('user') usr:User, @MessageBody('name') name:string) 

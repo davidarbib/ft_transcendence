@@ -11,9 +11,11 @@ import { JwtGuard } from 'src/auth/guards/jwt.guard';
 import { Controller, Get, Post,
   Body, Patch, Param, Delete,
   BadRequestException, UseGuards,Request, Res} from '@nestjs/common';
+import { JwtTwoFaGuard } from 'src/auth/guards/jwtTwoFa.guard';
+
 
 @Controller('channels')
-@UseGuards(JwtGuard)
+@UseGuards(JwtTwoFaGuard)
 @ApiTags('channels')
 
 export class ChannelsController {

@@ -35,6 +35,11 @@ function private_msg(target:any) {
      userStore.chatsocket.emit("blockUser", {user: userStore.user, target:target}, () =>{
     })
   }
+    function unblockuser(target:never)
+  {
+     userStore.chatsocket.emit("unblockUser", {user: userStore.user, target:target}, () =>{
+    })
+  }
 
    function addFriend(target:string)
   {
@@ -114,6 +119,7 @@ onMounted(() => {
           <div class="secondary-button" @click="private_msg(user)">
             <router-link to="/chat">Send message</router-link>
           </div>
+          <button class="secondary-button" @click="unblockuser(user)">Unblock User</button>
         </div>
       </div>
     </div>

@@ -98,9 +98,9 @@ userStore.gameSocket.on("gameState", (gameStatePayload) => {
   draw();
 });
 
-userStore.gameSocket.on("score", (scorePayload: boolean) => {
-  if (scorePayload) scoreA.value++;
-  else scoreB.value++;
+userStore.gameSocket.on("score", (scorePayload) => {
+  scoreA.value = scorePayload.scoreP1;
+  scoreB.value = scorePayload.scoreP2;
 });
 
 userStore.gameSocket.on("endGame", (endGamePayload) => {
@@ -139,6 +139,8 @@ const movePad = (e: KeyboardEvent) => {
 };
 
 onMounted(() => {
+  scoreA.value = userStore.gameInfos.scoreP1;
+  scoreB.value = userStore.gameInfos.scoreP2;
   gameEnded.value = false;
   playerWin.value = false;
   canvas.value = document.getElementById("canvasRef") as HTMLCanvasElement;
@@ -151,10 +153,12 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
-  userStore.gameSocket.emit("endSpectate", {
-    gameId: userStore.gameInfos.gameId,
-    userId: userStore.user.id,
-  });
+  if (userStore.gameInfos.playerId === null) {
+    userStore.gameSocket.emit("endSpectate", {
+      gameId: userStore.gameInfos.gameId,
+      userId: userStore.user.id,
+    });
+  }
 });
 </script>
 
@@ -170,19 +174,33 @@ onUnmounted(() => {
       </div>
     </div>
   </Teleport>
-  <h1 class="text-8xl tracking-widest text-white my-42">
-    {{ scoreA + ":" + scoreB }}
-  </h1>
-  <div class="w-full text-center">
-    <canvas
-      tabindex="0"
-      class="inline"
-      :class="userStore.gameMode"
-      id="canvasRef"
-      :width="width"
-      :height="height"
-    >
-    </canvas>
+  <div>
+    <div class="game-infos flex justify-center items-center">
+      <p class="text-5xl text-white">Player 1</p>
+      <h1
+        class="score text-8xl tracking-widest text-white my-3 w-1/2 mx-auto text-center"
+      >
+        {{ scoreA + ":" + scoreB }}
+      </h1>
+      <p class="text-5xl text-white">Player 2</p>
+    </div>
+    <div>
+      <canvas
+        tabindex="0"
+        class="inline"
+        :class="userStore.gameMode"
+        id="canvasRef"
+        :width="width"
+        :height="height"
+      >
+      </canvas>
+      <router-link
+        to="/main"
+        class="primary-button my-3 w-1/2 mx-auto"
+        v-if="userStore.gameMode.userId === null"
+        >Quit Spectate</router-link
+      >
+    </div>
     <ConfettiExplosion
       v-if="playerWin"
       :particleCount="642"
@@ -195,6 +213,19 @@ onUnmounted(() => {
 
 <style scoped lang="scss">
 @use "@/assets/variables.scss" as v;
+
+@media only screen and (max-width: 940px) {
+  .game-infos {
+    flex-direction: column;
+    .score {
+      order: 3;
+    }
+    p {
+      margin-top: 1rem;
+      margin-bottom: 1rem;
+    }
+  }
+}
 
 .default {
   background-color: black;

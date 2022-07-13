@@ -6,14 +6,13 @@ import { useUserStore } from "@/stores/auth";
 const props = defineProps({login : String})
 const counter = ref(props.login)
 const userStore = useUserStore();
-const historic = ref([""])
+const historic = ref([])
 onMounted(() => {
   console.log(props.login);
 axios.defaults.withCredentials = true;
   axios
     .get(`http://localhost:8090/users/${props.login}/test/historic/`)
     .then((response) => {
-      console.log(response.data)
       historic.value = response.data;
     })
     .catch(() => {
