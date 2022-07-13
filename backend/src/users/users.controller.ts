@@ -105,6 +105,7 @@ uploadFile(@UploadedFile() file , @Request()  req) : any {
 */
   @Patch(':login')
   update(@Request() req, @Body() updateUserDto: UpdateUserDto) {
+    plainToClass(UpdateUserDto, updateUserDto);
     const usr :User = req.user;
     return this.usersService.update(usr, updateUserDto);
   }

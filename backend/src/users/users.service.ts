@@ -69,9 +69,18 @@ export class UsersService {
   }
 
   async update(usr: User, updateUserDto: UpdateUserDto) {
+    let bool = true;
     const {username} = updateUserDto;
+    const listUser = await myDataSource.getRepository(User).find();
+    listUser.forEach( element => {
+      if ( element.username == username)
+          bool = false;
+    })
+    if ( bool == true)
+    {
     usr.username = username;
     return  myDataSource.getRepository(User).save(usr);
+    }
   }
 
   async dfa_update(usr:User, updatedto : UpdateUserDto)

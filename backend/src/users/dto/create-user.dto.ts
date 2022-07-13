@@ -10,7 +10,6 @@ export class CreateUserDto {
 
     
     @IsString()
-    @Length(1,9)
     @IsLoginlNotExisting()
     username: string;
 

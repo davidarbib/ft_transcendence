@@ -55,14 +55,9 @@ const updatePseudo = () => {
     })
     .then(() => {
       userStore.user.username = pseudo.value;
-      error2fa.value = true;
-      success2fa.value = false;
-      notifyMessage.value = "SuccessFully updated username";
     })
     .catch(() => {
-      error2fa.value = true;
-      success2fa.value = false;
-      notifyMessage.value = "This username is invalid try another one....";
+
     });
 };
 

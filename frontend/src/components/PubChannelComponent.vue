@@ -36,17 +36,17 @@ function needPassword(name: string) {
 }
 
 function isGoodPassword(name: string, password: string) {
+  console.log('good pass');
   userStore.chatsocket.emit(
     "isPassword",
     { name: name, password: password }, (data: never) => {
       if (data) // if pwd is good
       {
-        // console.log('good pass');
         passOpen.value = false;
         joinChan(name);
         correctPass.value = false;
       } else {
-        // console.log('bad pass');
+         console.log('bad pass');
         correctPass.value = true;
       }
     }

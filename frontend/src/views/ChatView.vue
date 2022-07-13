@@ -41,6 +41,7 @@ const allBanned = ref<User[]>([]); // list banned user
 /* permet de Set la connexion quand ca refresh essentiel pour les dm */
 onMounted(() => {
   userStore.chatsocket.emit("setConnexion", { user: userStore.user });
+
 });
 
 onUnmounted(() => {
@@ -238,7 +239,26 @@ function addAdmin(login: string) {
   });
   // console.log("add admin");
 }
-
+function isalwaysMut(){
+  userStore.chatsocket.emit("isTimeToDeMut", {user:userStore.user, name:getName.value}, (data) =>{
+      userStore.chatsocket.emit(
+    "geMuteInChan",
+    { name: getName.value },
+    (data) => {
+      allMuted.value = data;
+    })
+  })
+}
+function isalwaysban(){
+  userStore.chatsocket.emit("isTimeToDeBan", {user:userStore.user, name:getName.value}, (data) =>{
+            userStore.chatsocket.emit(
+    "getBanInChan",
+    { name: getName.value },
+    (data) => {
+      allMuted.value = data;
+    })
+  })
+}
 function itsMe(login: string): boolean {
   return !(userStore.user.login === login);
 }
@@ -257,12 +277,8 @@ watch(getName, () => {
   listMute();
   listBan();
   getOwner();
-  ListBan();
-  console.log(allBanned.value)
-  ListMute();
   isalwaysMut();
   isalwaysban();
-  console.log(allBanned.value)
 
   getUserInChan();
   messages.value = [];

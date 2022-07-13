@@ -29,6 +29,7 @@ const login1 = ref(router.currentRoute.value.params.pseudo)
 function private_msg(target:any) {
     userStore.chatsocket.emit("createDM", {user: userStore.user, target:target}, (data) =>{
     })
+    router.push("/chat");
   }
   function block_user(target:never)
   {
@@ -48,6 +49,7 @@ function private_msg(target:any) {
   }
 
 onMounted(() => {
+  
   axios.defaults.withCredentials = true;
 
   login.value = router.currentRoute.value.params.pseudo;
@@ -66,6 +68,7 @@ onMounted(() => {
       console.log(error);
       router.push({ path: "/profile_not_found" });
     });
+      userStore.chatsocket.emit("setConnexion", { user: userStore.user });
     console.log(user.value.login)
 });
 </script>
@@ -117,7 +120,7 @@ onMounted(() => {
             {{ user.username }}
           </h1>
           <div class="secondary-button" @click="private_msg(user)">
-            <router-link to="/chat">Send message</router-link>
+            <p>Send message</p>
           </div>
           <button class="secondary-button" @click="unblockuser(user)">Unblock User</button>
         </div>

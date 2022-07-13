@@ -50,6 +50,8 @@ onMounted(() => {
     .catch((error) => {
       console.log(error);
     });
+    if (userStore.user.login)
+    {
   axios
     .get(`${api.url}/contacts/${userStore.user.login}/friend`)
     .then((response) => {
@@ -58,6 +60,7 @@ onMounted(() => {
     .catch((error) => {
       console.log(error);
     });
+    }
 });
 </script>
 

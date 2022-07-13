@@ -16,7 +16,7 @@ import { Channel, ChanType } from 'src/channels/entities/channel.entity';
 import { UpdateChanParticipantDto } from 'src/chan-participants/dto/update-chan-participant.dto';
 import {bcrypt} from 'bcryptjs'
 import { IsLoginlNotExisting } from 'src/users/validator/is-login-already-exist.validator';
-//var bcrypt = require('bcryptjs');
+var bcrypt = require('bcryptjs');
 
 @WebSocketGateway({
   cors:{
@@ -50,6 +50,7 @@ export class MessagesGateway
     const msg = await this.messageService.findAll();
     return msg;
   }
+  // NEED TO TRANSFORM IN DTO
   @SubscribeMessage('addPassword')
   async addPass(@MessageBody('name') name:string,@MessageBody('password') password:string ) {
     const chan =await myDataSource.getRepository(Channel).findOne({where:{name:name}});
@@ -169,7 +170,7 @@ export class MessagesGateway
                 await myDataSource.getRepository(ChanParticipant).save(chanPart);
             }
   }
-
+// TRANSFORM DTO
   @SubscribeMessage('createChannel')
   async createChan(@MessageBody('user') usr:User , @MessageBody('name')name : string, @MessageBody('type')type : ChanType, @MessageBody('password')password : string,  @ConnectedSocket() client:Socket) 
   {
@@ -206,6 +207,7 @@ export class MessagesGateway
       }
     }
   })
+  // FAIRE UN SOCKET 
   }
   
   @SubscribeMessage('userChanStatus')
@@ -245,6 +247,7 @@ export class MessagesGateway
   @SubscribeMessage('isPassword')
   async isPassword(@MessageBody('name') name:string, @MessageBody('password') password:string)
   {
+    console.log(password);
     const chan = await myDataSource.getRepository(Channel).findOne({where:{name:name}});
     if(chan.password)
     {
@@ -253,7 +256,7 @@ export class MessagesGateway
       }
     return false;
   }
-  
+  // DTO 
   @SubscribeMessage('changePassword')
   async changePassword(@MessageBody('name') name:string, @MessageBody('password') password:string)
   {
@@ -317,7 +320,7 @@ export class MessagesGateway
     })
     return arr;
   }
-
+// DTO
   @SubscribeMessage('createDM')
   async createDM( @MessageBody('user') user:User, @MessageBody('target') target:User, @ConnectedSocket() client:Socket)
   {
