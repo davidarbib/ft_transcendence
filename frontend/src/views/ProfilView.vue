@@ -26,15 +26,6 @@ let user = ref({
 });
 const login1 = ref(router.currentRoute.value.params.pseudo) 
 
-<<<<<<< HEAD
-function private_msg(target: any) {
-  userStore.chatsocket.emit(
-    "createDM",
-    { user: userStore.user, target: target },
-    (data) => {}
-  );
-}
-=======
 function private_msg(target:any) {
     userStore.chatsocket.emit("createDM", {user: userStore.user, target:target}, (data) =>{
     })
@@ -50,7 +41,6 @@ function private_msg(target:any) {
      userStore.chatsocket.emit("addfriend", {user: userStore.user.login, target:target}, () =>{
     })
   }
->>>>>>> profil_user_mel1
 
 onMounted(() => {
   axios.defaults.withCredentials = true;

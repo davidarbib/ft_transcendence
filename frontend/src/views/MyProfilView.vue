@@ -22,13 +22,7 @@ let closeNotification = ref();
 let notifyMessage = ref<string>("Success");
 let is2faEnabled = ref<boolean>(userStore.user.twoFactorEnabled);
 let pseudo = ref<string>(userStore.user.username);
-<<<<<<< HEAD
 const file = ref<File | undefined>();
-=======
-const file = ref<File | null>();
-const form = ref<HTMLFormElement>();
-const login = ref(userStore.user.login)
->>>>>>> profil_user_mel1
 axios.defaults.withCredentials = true;
 
 const handleFileUpload = async() => {
