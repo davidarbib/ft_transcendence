@@ -299,6 +299,13 @@ export class GamesGateway {
           scoreP1: 0,
           scoreP2: 0,
         }
+        console.log(payload.gameId);
+        console.log(payload.playerId);
+        console.log(payload.isP1);
+        console.log(payload.playerOneName);
+        console.log(payload.playerTwoName);
+        console.log(payload.scoreP1);
+        console.log(payload.scoreP2);
         client.emit("gameReady", payload);
         this.gamesService.delInvite(hostId);
       })

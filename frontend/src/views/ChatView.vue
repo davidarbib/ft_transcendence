@@ -45,7 +45,7 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
-  userStore.gameSocket.removeAllListeners();
+  userStore.gameSocket.off('inviteCreated');
 })
 
 /* pour recevoir les message envoye */
