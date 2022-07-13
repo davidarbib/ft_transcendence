@@ -87,6 +87,13 @@ export class MessagesGateway
     this.server.emit('chan', chan);
     return  chan;
   }
+  @SubscribeMessage('testchan')
+  async findChane( @MessageBody('user') user:User )
+  {
+    const chan = await this.messageService.findChan(user);
+    console.log(chan);
+    return  chan;
+  }
   @SubscribeMessage('blockUser')
   async BlockUser( @MessageBody('user') user:User, @MessageBody('target') target:User )
   {
@@ -187,30 +194,46 @@ export class MessagesGateway
     const userToJoin =  await this.messageService.identify(usr, name, client);
     if (userToJoin == false)
     {
-      this.server.to(chan.id).emit('newUser', usr, chan);
-      client.join(chan.id);
+      this.server.emit('newUser', usr, chan);
+      //client.join(chan.id);
       this.server.in(client.id).emit('join', chan);
   }
 }
+
+@SubscribeMessage('getUserChan')
+async getUserinChan( @MessageBody('name') name:string) {
+  const test = await myDataSource.getRepository(ChanParticipant).find({ relations: ['participant', 'chan'] });
+  let arr: any = [];
+  test.forEach(element => {
+    if (element.chan.name == name)
+      arr.push(element.participant)
+  });
+  console.log(arr);
+  return arr;
+
+}
+
   @SubscribeMessage('leavechan')
   async LeaveRoom( @MessageBody('user') user:User, @MessageBody('name') name:string, @ConnectedSocket() client:Socket)
   {
+    let chanPartleave;
     const chan = await myDataSource.getRepository(Channel).findOne({where: {name :name}})
     const chanPart = await myDataSource.getRepository(ChanParticipant).find({relations:['participant', 'chan']})
-   chanPart.forEach( async element => {
+   chanPart.forEach( element => {
     if (element.participant && element.chan)
     {
       if (element.participant.login == user.login && element.chan.name == name)
       {
-        const chanPartDelete = await myDataSource.getRepository(ChanParticipant).findOneBy({id : element.id});
-        chanPartDelete.remove();
-        this.server.in(client.id).emit("userleaveChan",);
-        this.server.in(client.id).emit("leavetheChan",);
-        this.server.emit("userleavetheChan", chan);
-        return ;
+        chanPartleave= element;
+        return;
       }
     }
   })
+  const chanPartDelete = await myDataSource.getRepository(ChanParticipant).findOneBy({id : chanPartleave.id});
+  chanPartDelete.remove();
+  this.server.in(client.id).emit("leavetheChan", chan); // enlever ourchan
+  this.server.in(client.id).emit("userleaveChan", ); // pour la personne qui part
+  this.server.emit("userleavetheChan",chan, chanPartleave.participant );  // pour que les autres aient la notif
   }
   
   @SubscribeMessage('userChanStatus')
