@@ -41,24 +41,29 @@ const allBanned = ref<User[]>([]); // list banned user
 /* permet de Set la connexion quand ca refresh essentiel pour les dm */
 onMounted(() => {
   userStore.chatsocket.emit("setConnexion", { user: userStore.user });
-
 });
 
 onUnmounted(() => {
   userStore.gameSocket.removeAllListeners();
-})
+});
 
 /* pour recevoir les message envoye */
 userStore.chatsocket.on("message", (message, chan) => {
-  let bloock:Boolean = false;
-  userStore.chatsocket.emit("isBlock", {user:userStore.user.login, target:message.author.login}, (block) => {
-  if (block) // pour ne pas recevoir de message si la personne est bloque 
-    {
-      bloock = block;
+  let bloock = false;
+  userStore.chatsocket.emit(
+    "isBlock",
+    { user: userStore.user.login, target: message.author.login },
+    (block) => {
+      if (block) {
+        // pour ne pas recevoir de message si la personne est bloque
+        bloock = block;
+      }
+      if (bloock == false) {
+        if (chan.name == getName.value) return messages.value.push(message);
+      }
     }
-    if (bloock == false)
-    {if (chan.name == getName.value) return messages.value.push(message);}}) }
-);
+  );
+});
 
 /* event il ya un new user dans le chan */
 userStore.chatsocket.on("newUser", (usr: never, chan) => {
@@ -67,7 +72,7 @@ userStore.chatsocket.on("newUser", (usr: never, chan) => {
 
 /* event le user est devenu admin dans le chan */
 userStore.chatsocket.on("newadmin", (chan: never, user: never) => {
-    if (chan.name == getName.value) allAdmins.value.push(user);
+  if (chan.name == getName.value) allAdmins.value.push(user);
   // need to put data in tab of admin
 });
 
@@ -197,7 +202,10 @@ function muteClient(login: string) {
 }
 
 function addFriend(login: string) {
-  userStore.chatsocket.emit("addfriend", {user:userStore.user.login, target:login});
+  userStore.chatsocket.emit("addfriend", {
+    user: userStore.user.login,
+    target: login,
+  });
 }
 
 // get all admins
@@ -239,25 +247,35 @@ function addAdmin(login: string) {
   });
   // console.log("add admin");
 }
-function isalwaysMut(){
-  userStore.chatsocket.emit("isTimeToDeMut", {user:userStore.user, name:getName.value}, (data) =>{
+function isalwaysMut() {
+  userStore.chatsocket.emit(
+    "isTimeToDeMut",
+    { user: userStore.user, name: getName.value },
+    (data) => {
       userStore.chatsocket.emit(
-    "geMuteInChan",
-    { name: getName.value },
-    (data) => {
-      allMuted.value = data;
-    })
-  })
+        "geMuteInChan",
+        { name: getName.value },
+        (data) => {
+          allMuted.value = data;
+        }
+      );
+    }
+  );
 }
-function isalwaysban(){
-  userStore.chatsocket.emit("isTimeToDeBan", {user:userStore.user, name:getName.value}, (data) =>{
-            userStore.chatsocket.emit(
-    "getBanInChan",
-    { name: getName.value },
+function isalwaysban() {
+  userStore.chatsocket.emit(
+    "isTimeToDeBan",
+    { user: userStore.user, name: getName.value },
     (data) => {
-      allMuted.value = data;
-    })
-  })
+      userStore.chatsocket.emit(
+        "getBanInChan",
+        { name: getName.value },
+        (data) => {
+          allMuted.value = data;
+        }
+      );
+    }
+  );
 }
 function itsMe(login: string): boolean {
   return !(userStore.user.login === login);
@@ -287,11 +305,10 @@ watch(getName, () => {
     { name: getName.value, login: userStore.user.login },
     (data: never) => {
       messages.value = data;
-      console.log(messages.value)
+      console.log(messages.value);
     }
   );
 });
-
 </script>
 
 <template>
@@ -353,8 +370,9 @@ watch(getName, () => {
           <!--        mute (admin + owner)-->
           <p
             v-if="
-              isUserAdmin(userStore.user.login) ||
-              isUserOwner(userStore.user.login)
+              (isUserAdmin(userStore.user.login) ||
+                isUserOwner(userStore.user.login)) &&
+              !isUserOwner(login.login)
             "
             class="admin-icons"
             @click="muteClient(login.login)"
@@ -364,8 +382,9 @@ watch(getName, () => {
           <!--        ban (admin + owner)-->
           <p
             v-if="
-              isUserAdmin(userStore.user.login) ||
-              isUserOwner(userStore.user.login)
+              (isUserAdmin(userStore.user.login) ||
+                isUserOwner(userStore.user.login)) &&
+              !isUserOwner(login.login)
             "
             class="admin-icons"
             @click="banUser(login.login)"
@@ -374,7 +393,9 @@ watch(getName, () => {
           </p>
           <!--        add admin (owner)-->
           <p
-            v-if="isUserOwner(userStore.user.login)"
+            v-if="
+              isUserOwner(userStore.user.login) && !isUserAdmin(login.login)
+            "
             class="admin-icons"
             @click="addAdmin(login.login)"
           >
@@ -383,7 +404,10 @@ watch(getName, () => {
         </div>
       </div>
     </div>
-    <div class="messages text-gray-300">
+    <div
+      v-if="isUserBanned(userStore.user.login) === false"
+      class="messages text-gray-300"
+    >
       <p class="text-2xl">{{ getName }}</p>
       <div
         class="message bg-black bg-opacity-20 w-3/4 mx-2 rounded p-2"
@@ -399,36 +423,28 @@ watch(getName, () => {
           class="secondary-button"
           >Play a pong game ? 🌚</router-link
         >
-        <span v-if="!isUserBanned(userStore.user.login)">
+        <div>
           {{ message.login }} :
           {{ message.time }}
           <p>{{ message.content }}</p>
-        </span>
+        </div>
       </div>
     </div>
-    <div class="message-input">
+    <div
+      v-if="
+        isUserMuted(userStore.user.login) === false &&
+        isUserBanned(userStore.user.login) === false
+      "
+      class="message-input"
+    >
       <input
         type="text"
-        v-if="
-          !isUserMuted(userStore.user.login) ||
-          !isUserBanned(userStore.user.login)
-        "
         v-on:keyup.enter="sendMessage"
         v-model="myInput"
         class="h-3/4 w-3/4 px-2 focus:outline-none border rounded border-gray-300"
       />
-      <button
-        v-if="
-          !isUserMuted(userStore.user.login) ||
-          !isUserBanned(userStore.user.login)
-        "
-        @click="sendMessage"
-        class="valid primary-button"
-      >
-        <i
-          v-if="!isUserMuted(userStore.user.login)"
-          class="fa-solid fa-paper-plane"
-        ></i>
+      <button @click="sendMessage" class="valid primary-button">
+        <i class="fa-solid fa-paper-plane"></i>
       </button>
     </div>
   </div>

@@ -166,7 +166,7 @@ const emit = defineEmits(["name", "msg"]);
       <div class="user-pseudo py-2">
         <p>{{ channel.name }}</p>
         <p
-          v-if="channel.type === 'dm'"
+          v-if="!(channel.type === 'dm')"
           class="icon"
           @click="toggleChannelMenu(channel.id, channel.name)"
         >
