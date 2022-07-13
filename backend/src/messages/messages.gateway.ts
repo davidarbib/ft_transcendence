@@ -44,6 +44,22 @@ export class MessagesGateway
     const msg = await this.messageService.findAll();
     return msg;
   }
+  @SubscribeMessage('addPassword')
+  async addPass(@MessageBody('name') name:string,@MessageBody('password') password:string ) {
+    const chan =await myDataSource.getRepository(Channel).findOne({where:{name:name}});
+    if (password) {
+      const hash = bcrypt.hashSync(password, 8);
+      chan.password = hash;
+    }
+    await myDataSource.getRepository(Channel).save(chan);
+  }
+  @SubscribeMessage('deletePassword')
+  async deletePass(@MessageBody('name') name:string ) {
+    const chan =await myDataSource.getRepository(Channel).findOne({where:{name:name}});
+    if ( chan.password)
+        chan.password = null;
+    await myDataSource.getRepository(Channel).save(chan);
+  }
 
   @SubscribeMessage('findMessageFromChan')
   async findMsg(@MessageBody('name') name:string, @MessageBody('login') login:string)

@@ -78,12 +78,6 @@ function listBan() {
   );
 }
 
-
-
-/* EST CE QUE LE PASSWORD  EST BON */
-
-
-
 function isUserAdmin(login: string): boolean {
   for (let x = 0; allAdmins.value[x]; x++) {
     let i = allAdmins.value[x];

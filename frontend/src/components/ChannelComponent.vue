@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import axios from "axios";
 import { useUserStore } from "@/stores/auth";
 
@@ -9,9 +9,69 @@ const channelOptions = ref(false);
 const channelSelected = ref(-1);
 const channelName = ref<string>("");
 const owner = ref<string>("");
+const hasPass = ref<boolean>(true);
 
 const passOpen = ref<boolean>(false); // popup
 const inputPass = ref<string>("");
+
+const pwdStatusMsg = ref<string>("type in input");
+const pwdStatusInit = ref<boolean>("false");
+
+const itsMe = ref<Boolean>("false");
+
+watch(inputPass, () =>
+{
+  pwdStatusMsg.value = pwdStatus(false);
+});
+
+function pwdStatus(bool: boolean)
+{
+    if (hasPass.value)
+    {
+      if (inputPass.value)
+      {
+        pwdStatusInit.value = true;
+        if (bool) { 
+          passOpen.value = false;
+          changePassword(inputPass.value);
+          }
+        return "change";
+      }
+      else
+      {
+        pwdStatusInit.value = true;
+        if (bool) { 
+          passOpen.value = false;
+          removePassword();
+          }
+        return "delete";
+      }
+    }
+    else
+    {
+      if (inputPass.value)
+      {
+        pwdStatusInit.value = true;
+        if (bool) {
+          addPassword(inputPass.value);
+          passOpen.value = false;
+          }
+        return "add";
+      }
+      else
+      {
+        pwdStatusInit.value = false;
+        return "";
+      }
+    }
+}
+
+function needPassword(name: string) {
+  userStore.chatsocket.emit("needPassword", { name: name }, (data: never) => {
+    // console.log(data);
+    data ? (hasPass.value = true) : (hasPass.value = false);
+  });
+}
 
 function modalCancelStatus()
 {
@@ -60,8 +120,10 @@ onMounted(() => {
 });
 
 function selectChannel(name: string) {
+  pwdStatusMsg.value = pwdStatus(false);
   getOwner();
   channelName.value = name;
+  needPassword(channelName.value);
   emit("name", channelName.value);
 }
 
@@ -75,33 +137,24 @@ function leaveChan() {
 
 /* CHANGER LE PASSWORD*/
 function changePassword(password: string) {
-  if (channelName.value) {
-// value    if (password === "")
-//     {
-//       userStore.chatsocket.emit(
-//           "deletePassword",
-//           {name: channelName.value},
-//           () => {
-//           }
-//     }
-//     else {
+  if(channelName.value)
       userStore.chatsocket.emit(
           "changePassword",
           {name: channelName.value, password: password},
           () => {
           }
       );
-    }
-  }
 }
+  
 function  addPassword(pass:string)
 {
   userStore.chatsocket.emit(
       "addPassword",
-      {name: channelName.value, pass:pass},
+      {name: channelName.value, password:pass},
       () => {
       })
 }
+
 function  removePassword()
 {
   userStore.chatsocket.emit(
@@ -109,6 +162,14 @@ function  removePassword()
       {name: channelName.value},
       () => {
       })
+}
+
+function openModal()
+{
+  passOpen.value = true;
+  pwdStatus(false);
+  inputPass.value = "";
+  itsMe.value = (owner.value === userStore.user.login);
 }
 
 const emit = defineEmits(["name", "msg"]);
@@ -132,23 +193,25 @@ const emit = defineEmits(["name", "msg"]);
         <div v-if="channelOptions && channelSelected === channel.id">
           <div class="list">
             <!--        add pass-->
-            <p @click="passOpen = true">
+            <div @click="openModal">
               <i class="fa-solid fa-key mx-1"></i>
-            </p>
+            </div>
             <Teleport to="body">
               <div v-if="passOpen" class="modal">
                 <div class="modal-inner">
                   <input
+                      v-if="itsMe"
                       v-model="inputPass"
-                      v-on:keyup.enter="changePassword(inputPass)"
                       type="text"
                       class="message-input h-3/4 w-3/4 px-2 focus:outline-none border rounded"
                   />
-                  <button
-                      class="primary-button valid-button"
-                      @click="changePassword(inputPass)"
+                  <p v-else>Your not owner :(</p>
+                  <!-- if input isnt init hide buttons -->
+                  <button v-if="pwdStatusInit && itsMe"
+                      @click="pwdStatus(true)"
+                      class="primary-button valid-pass-button"
                   >
-                    Change
+                    {{ pwdStatusMsg }}
                   </button>
                   <button
                       class="primary-button cancel-button"
@@ -204,9 +267,16 @@ const emit = defineEmits(["name", "msg"]);
     }
     .valid-button {
       background-color: green;
-      grid-area: 2 / 1 / 3 / 3;
+      grid-area: 2 / 1 / 3 / 2;
       &:hover{
         background-color: darkgreen;
+      }
+    }
+    .remove-pass-button {
+      background-color: blue;
+      grid-area: 2 / 2 / 3 / 3;
+      &:hover{
+        background-color: blueviolet;
       }
     }
     .cancel-button {
