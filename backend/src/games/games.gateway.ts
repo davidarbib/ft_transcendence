@@ -402,12 +402,6 @@ export class GamesGateway {
         this.handleFinishGame(gameId, winnerId, loserId, isP1Win);
         this.server.in(gameId).socketsLeave(gameId);
       }
-    //}, 10); //~90fps for debugging
-    }, 66); //~15fps
-    //}, 33); //~30fps
-    }, 66); //~15fps
-    //}, 25); //40fps
-    //}, 20); //50fps
-    //}, 10000); //slow for debugging
+    }, 66);
   }
 }
