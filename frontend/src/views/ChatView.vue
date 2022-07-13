@@ -421,9 +421,9 @@ watch(getName, () => {
             params: { inviteId: message.content },
           }"
           class="secondary-button"
-          >Play a pong game ? 🌚</router-link
-        >
-        <span
+          >Play a pong game ? 🌚
+        </router-link>
+        <div
           v-if="!isUserBanned(userStore.user.login) && !isUid(message.content)"
         >
           {{ message.login }} :
