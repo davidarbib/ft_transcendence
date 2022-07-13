@@ -411,6 +411,6 @@ export class GamesGateway {
         this.handleFinishGame(gameId, winnerId, loserId, isP1Win);
         this.server.in(gameId).socketsLeave(gameId);
       }
-    }, 66);
+    }, 33);
   }
 }
