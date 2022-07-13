@@ -114,6 +114,7 @@ onMounted(() => {
           <div class="secondary-button" @click="private_msg(user)">
             <router-link to="/chat">Send message</router-link>
           </div>
+          <button class="secondary-button">Unblock User</button>
         </div>
       </div>
     </div>
