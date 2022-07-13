@@ -71,7 +71,7 @@ onMounted(() => {
           <img src="@/assets/sphere_mini.png" alt="user profile picture" />
         </div>
         <div v-else class="profile-picture h-36 w-36">
-          <img :src="user.avatarRef" alt="user profile picture" />
+          <img :src="`http://localhost:8090/${user.avatarRef}`" alt="user profile picture" />
         </div>
         <div class="secondary-button">
           <button>+ add friend</button>

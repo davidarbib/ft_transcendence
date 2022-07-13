@@ -44,14 +44,7 @@ async function bootstrap()
     origin:true
   }); // pour connecter le back et le front !!!
 
-  //app.use(express.static('public'));
-@Module({
-  imports: [
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'public'),
-    }),
-  ],
-})
+  app.use(express.static('public'));
   await app.listen(PORT, () => console.log(`Running on Port : ${PORT}`));
 }
 

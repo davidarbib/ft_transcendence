@@ -40,6 +40,7 @@ const uploadProfilePicture = () => {
     }
   };
   axios.post("http://localhost:8090/users/upload", data, config).then((response) => {
+    console.log(response.data);
     userStore.user.avatarRef = response.data.avatarRef;
     console.log(`AVATAR : ${userStore.user.avatarRef}`);
   }).catch((error) => {
@@ -168,7 +169,7 @@ onMounted(() => {
         </div>
         <div class="profile-picture h-36 w-36">
           <img v-if="!userStore.user.avatarRef" src="@/assets/sphere_mini.png" alt="user profile picture" />
-          <img v-else :src="userStore.user.avatarRef" alt="user profile picture" />
+          <img v-else :src="`http://localhost:8090/${userStore.user.avatarRef}`" alt="user profile picture" />
         </div>
         <div class="secondary-button" @click="updatePseudo">
           <p>Edit username</p>
