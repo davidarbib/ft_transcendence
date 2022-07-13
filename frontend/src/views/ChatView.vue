@@ -6,7 +6,6 @@ import { onMounted, onUnmounted, ref, watch } from "vue";
 import { useUserStore } from "@/stores/auth";
 import { useRouter } from "vue-router";
 import axios from "axios";
-import { apiStore } from "@/stores/api";
 
 axios.defaults.withCredentials = true;
 
@@ -25,8 +24,7 @@ interface User {
 const router = useRouter();
 const userStore = useUserStore();
 const getName = ref<string>("");
-let messages = ref([]);
-const api = apiStore();
+let messages = ref<Message[]>([]);
 const messageText = ref<string>("");
 const myInput = ref<string>("");
 let inviteUid = ref<string>("");
@@ -41,24 +39,29 @@ const allBanned = ref<User[]>([]); // list banned user
 /* permet de Set la connexion quand ca refresh essentiel pour les dm */
 onMounted(() => {
   userStore.chatsocket.emit("setConnexion", { user: userStore.user });
-
 });
 
 onUnmounted(() => {
   userStore.gameSocket.removeAllListeners();
-})
+});
 
 /* pour recevoir les message envoye */
 userStore.chatsocket.on("message", (message, chan) => {
-  let bloock:Boolean = false;
-  userStore.chatsocket.emit("isBlock", {user:userStore.user.login, target:message.author.login}, (block) => {
-  if (block) // pour ne pas recevoir de message si la personne est bloque 
-    {
-      bloock = block;
+  let bloock = false;
+  userStore.chatsocket.emit(
+    "isBlock",
+    { user: userStore.user.login, target: message.author.login },
+    (block) => {
+      if (block) {
+        // pour ne pas recevoir de message si la personne est bloque
+        bloock = block;
+      }
+      if (!bloock) {
+        if (chan.name == getName.value) return messages.value.push(message);
+      }
     }
-    if (bloock == false)
-    {if (chan.name == getName.value) return messages.value.push(message);}}) }
-);
+  );
+});
 
 /* event il ya un new user dans le chan */
 userStore.chatsocket.on("newUser", (usr: never, chan) => {
@@ -67,7 +70,7 @@ userStore.chatsocket.on("newUser", (usr: never, chan) => {
 
 /* event le user est devenu admin dans le chan */
 userStore.chatsocket.on("newadmin", (chan: never, user: never) => {
-    if (chan.name == getName.value) allAdmins.value.push(user);
+  if (chan.name == getName.value) allAdmins.value.push(user);
   // need to put data in tab of admin
 });
 
@@ -197,7 +200,10 @@ function muteClient(login: string) {
 }
 
 function addFriend(login: string) {
-  userStore.chatsocket.emit("addfriend", {user:userStore.user.login, target:login});
+  userStore.chatsocket.emit("addfriend", {
+    user: userStore.user.login,
+    target: login,
+  });
 }
 
 // get all admins
@@ -239,25 +245,35 @@ function addAdmin(login: string) {
   });
   // console.log("add admin");
 }
-function isalwaysMut(){
-  userStore.chatsocket.emit("isTimeToDeMut", {user:userStore.user, name:getName.value}, (data) =>{
+function isalwaysMut() {
+  userStore.chatsocket.emit(
+    "isTimeToDeMut",
+    { user: userStore.user, name: getName.value },
+    () => {
       userStore.chatsocket.emit(
-    "geMuteInChan",
-    { name: getName.value },
-    (data) => {
-      allMuted.value = data;
-    })
-  })
+        "geMuteInChan",
+        { name: getName.value },
+        (data) => {
+          allMuted.value = data;
+        }
+      );
+    }
+  );
 }
-function isalwaysban(){
-  userStore.chatsocket.emit("isTimeToDeBan", {user:userStore.user, name:getName.value}, (data) =>{
-            userStore.chatsocket.emit(
-    "getBanInChan",
-    { name: getName.value },
-    (data) => {
-      allMuted.value = data;
-    })
-  })
+function isalwaysban() {
+  userStore.chatsocket.emit(
+    "isTimeToDeBan",
+    { user: userStore.user, name: getName.value },
+    () => {
+      userStore.chatsocket.emit(
+        "getBanInChan",
+        { name: getName.value },
+        (data) => {
+          allMuted.value = data;
+        }
+      );
+    }
+  );
 }
 function itsMe(login: string): boolean {
   return !(userStore.user.login === login);
@@ -287,11 +303,10 @@ watch(getName, () => {
     { name: getName.value, login: userStore.user.login },
     (data: never) => {
       messages.value = data;
-      console.log(messages.value)
+      console.log(messages.value);
     }
   );
 });
-
 </script>
 
 <template>
@@ -399,7 +414,9 @@ watch(getName, () => {
           class="secondary-button"
           >Play a pong game ? 🌚</router-link
         >
-        <span v-if="!isUserBanned(userStore.user.login)">
+        <span
+          v-if="!isUserBanned(userStore.user.login) && !isUid(message.content)"
+        >
           {{ message.login }} :
           {{ message.time }}
           <p>{{ message.content }}</p>
