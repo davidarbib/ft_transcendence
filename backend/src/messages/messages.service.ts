@@ -88,8 +88,11 @@ export class MessagesService {
             if (element.participant.login == target && element.chan.name == name)
             {    
             chanPart = element;
-                let date =   new Date(Date.now());
-                date.setHours(date.getHours() +2);
+                let date =   new Date( Date.now());
+                console.log(date);
+                date.setMinutes(date.getMinutes() +2);
+                console.log(date);
+
                  chanPart.mute = mute;
                  chanPart.ban = ban;
                  if ( mute == true  || ban == true)

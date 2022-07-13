@@ -41,6 +41,7 @@ export class MessagesGateway
    this.server.emit('message', msg, chan);
     return {msg};
   }
+
   @SubscribeMessage('findAllMessage')
   async findAll() {
     const msg = await this.messageService.findAll();
@@ -89,6 +90,52 @@ export class MessagesGateway
       friendship.block = true;
       await myDataSource.getRepository(Contact).save(friendship);
     }
+  }
+  @SubscribeMessage('isTimeToDemut')
+  async isTimeTo(@MessageBody('user') usr:User, @MessageBody('name') name:string) 
+  {
+    let date = new Date();
+    let chanPart;
+      const listchanPart = await myDataSource.getRepository(ChanParticipant).find({relations:['chan', 'participant']});
+        listchanPart.forEach(element => {
+            if (element.chan.name == name && element.participant.login == usr.login)
+              {
+                if (element.end_timestamp < date && element.ban != true)
+                {
+                  element.end_timestamp = null;
+                  element.mute = false;
+                  chanPart = element;
+                }
+              }
+            });
+           if ( chanPart.ban == false && chanPart.mute == false)
+           {
+
+            await myDataSource.getRepository(ChanParticipant).save(chanPart);
+            return true;
+           }
+        
+  } 
+  @SubscribeMessage('isTimeToDeBan')
+  async isTimeTodeban(@MessageBody('user') usr:User, @MessageBody('name') name:string) 
+  {
+    let date = new Date();
+    let chanPart;
+      const listchanPart = await myDataSource.getRepository(ChanParticipant).find({relations:['chan', 'participant']});
+        listchanPart.forEach(element => {
+            if (element.chan.name == name && element.participant.login == usr.login)
+              {
+                if (element.end_timestamp < date && element.mute != true)
+                {
+                  element.end_timestamp = null;
+                  element.ban = false;
+                  chanPart = element;
+                }
+              }
+            });
+           if ( chanPart.ban == false && chanPart.mute == false)
+            await myDataSource.getRepository(ChanParticipant).save(chanPart);
+        
   }
 
   @SubscribeMessage('createChannel')

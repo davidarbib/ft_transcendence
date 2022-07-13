@@ -4,6 +4,14 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { User, UserStatus } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { myDataSource } from 'src/app-data-source';
+import { Match } from 'src/matches/entities/match.entity';
+export interface historic
+{
+  winner:boolean;
+  vs:string;
+  score1:number;
+  score2:number;
+}
 
 @Injectable()
 export class UsersService {
@@ -12,11 +20,38 @@ export class UsersService {
   {
     this.userRepo = myDataSource.getRepository(User);
   }
-
+  payload : historic[] = [];
   create(createUserDto: CreateUserDto) {
     return myDataSource.getRepository(User).save(createUserDto);
   }
 
+  async findHistoric(login:string)
+  {
+    console.log(login)
+    this.payload =[];
+    const arr= [];
+    const match = await myDataSource.getRepository(Match).find({relations: ['players']});
+    match.forEach(element => {
+
+       arr.push(element.players);
+    //   console.log(element.players);
+     });
+     arr.forEach(element => {
+       if (element[0].userRef.login == login)
+       {
+        console.log("1");
+         this.payload.push({winner:element[0].winner, vs:element[1].userRef.login, score1:element[0].score, score2:element[1].score, });
+       }
+       else if (element[1].userRef.login == login)
+       {
+        console.log("2");
+
+         this.payload.push({winner:element[1].winner, vs:element[0].userRef.login, score1:element[1].score, score2:element[0].score, });
+       }
+     })
+
+     return this.payload;
+  }
   findAll() {
     return this.userRepo.find();
   }

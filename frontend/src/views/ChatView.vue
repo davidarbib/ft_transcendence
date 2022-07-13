@@ -111,6 +111,16 @@ function changePassword(password: string) {
   );
 }
 
+function isalwaysMut(){
+  userStore.chatsocket.emit("isTimeToDeMut", {user:userStore.user, name:getName.value}, (data) =>{
+
+  })
+}
+function isalwaysban(){
+  userStore.chatsocket.emit("isTimeToDeBan", {user:userStore.user, name:getName.value}, (data) =>{
+
+  })
+
 // /* event pour savoir le new status ddu user */
 // userStore.chatsocket.on(
 //   "UsernewStatus",
@@ -298,6 +308,7 @@ function banUser(login: string) {
 watch(getName, () => {
   getAdmins();
   getOwner();
+  isalwaysMut();
   getUserInChan();
   messages.value = [];
   userStore.chatsocket.emit(

@@ -85,16 +85,9 @@ uploadFile(@UploadedFile() file , @Request()  req) : any {
   }
   @Get(':login/test/historic')
   async findHistoric(@Param('login') login:string ) {
-    console.log(login);
-    const arr= [];
-     const match = await myDataSource.getRepository(Match).find({relations: ['players']});
-     match.forEach(element => {
-
-        arr.push(element.players);
-     //   console.log(element.players);
-      });
-      
-     };
+    const payload = await this.usersService.findHistoric(login);
+    return payload;
+    };
   
 
 
