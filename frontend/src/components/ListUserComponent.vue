@@ -50,7 +50,8 @@ userStore.gameSocket.on("gameReady", function (game) {
     @click="toggleFriendMenu(user.id)"
   >
     <div class="user-icon">
-      <img src="@/assets/sphere.png" alt="" class="h-10 w-10" />
+      <img v-if="!user.avatarRef" src="@/assets/sphere.png" alt="" class="h-10 w-10" />
+      <img v-else :src="`http://localhost:8090/${user.avatarRef}`" alt="user profile picture" class="h-10 w-10" />
       <p :class="user.status">
         <i class="fa-solid fa-circle status-dot outline-inherit"></i>
       </p>

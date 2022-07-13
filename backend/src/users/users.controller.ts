@@ -55,6 +55,7 @@ export class UsersController {
     },
   })
 uploadFile(@UploadedFile() file , @Request()  req) : any {
+  if (file){
   const allowMimeType: ValidMimeTYpe[] = validMimeTYpe;
   const fileext = allowMimeType.includes(file.mimetype);
   if (!fileext) return of({error: 'File must be a png'});
@@ -62,6 +63,7 @@ uploadFile(@UploadedFile() file , @Request()  req) : any {
   user.avatarRef = file.filename;
   console.log(user.avatarRef);
   return myDataSource.getRepository(User).save(user);
+  }
 }
 /*
 * GET 
