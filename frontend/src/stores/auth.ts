@@ -28,6 +28,8 @@ export const useUserStore = defineStore("user", () => {
     isP1: false,
     scoreP1: 0,
     scoreP2: 0,
+    playerOneName: "",
+    playerTwoName: "",
   });
 
   if (localStorage.getItem("user")) {

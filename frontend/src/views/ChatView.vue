@@ -6,7 +6,6 @@ import { onMounted, onUnmounted, ref, watch } from "vue";
 import { useUserStore } from "@/stores/auth";
 import { useRouter } from "vue-router";
 import axios from "axios";
-import { apiStore } from "@/stores/api";
 
 axios.defaults.withCredentials = true;
 
@@ -25,8 +24,7 @@ interface User {
 const router = useRouter();
 const userStore = useUserStore();
 const getName = ref<string>("");
-let messages = ref([]);
-const api = apiStore();
+let messages = ref<Message[]>([]);
 const messageText = ref<string>("");
 const myInput = ref<string>("");
 let inviteUid = ref<string>("");
@@ -58,7 +56,7 @@ userStore.chatsocket.on("message", (message, chan) => {
         // pour ne pas recevoir de message si la personne est bloque
         bloock = block;
       }
-      if (bloock == false) {
+      if (!bloock) {
         if (chan.name == getName.value) return messages.value.push(message);
       }
     }
@@ -113,6 +111,8 @@ userStore.gameSocket.on("gameReady", function (game) {
   userStore.gameInfos.gameId = game.gameId;
   userStore.gameInfos.playerId = game.playerId;
   userStore.gameInfos.isP1 = game.isP1;
+  userStore.gameInfos.playerOneName = game.playerOneName;
+  userStore.gameInfos.playerTwoName = game.playerTwoName;
   router.push("pong");
 });
 
@@ -251,7 +251,7 @@ function isalwaysMut() {
   userStore.chatsocket.emit(
     "isTimeToDeMut",
     { user: userStore.user, name: getName.value },
-    (data) => {
+    () => {
       userStore.chatsocket.emit(
         "geMuteInChan",
         { name: getName.value },
@@ -266,7 +266,7 @@ function isalwaysban() {
   userStore.chatsocket.emit(
     "isTimeToDeBan",
     { user: userStore.user, name: getName.value },
-    (data) => {
+    () => {
       userStore.chatsocket.emit(
         "getBanInChan",
         { name: getName.value },
@@ -423,7 +423,9 @@ watch(getName, () => {
           class="secondary-button"
           >Play a pong game ? 🌚</router-link
         >
-        <div>
+        <span
+          v-if="!isUserBanned(userStore.user.login) && !isUid(message.content)"
+        >
           {{ message.login }} :
           {{ message.time }}
           <p>{{ message.content }}</p>

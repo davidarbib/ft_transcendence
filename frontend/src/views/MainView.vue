@@ -63,6 +63,8 @@ userStore.gameSocket.on("gameReady", function (game) {
   userStore.gameInfos.isP1 = game.isP1;
   userStore.gameInfos.scoreP1 = game.scoreP1;
   userStore.gameInfos.scoreP2 = game.scoreP2;
+  userStore.gameInfos.playerOneName = game.playerOneName;
+  userStore.gameInfos.playerTwoName = game.playerTwoName;
   router.push("pong");
 });
 
