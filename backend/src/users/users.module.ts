@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport'
+import { UsersGateway } from './users.gateway';
 
 
 
@@ -25,7 +26,7 @@ import { PassportModule } from '@nestjs/passport'
     }),
   ],
   controllers: [UsersController],
-  providers: [UsersService, Repository],
-  exports: [UsersService]
+  providers: [UsersService, Repository, UsersGateway],
+  exports: [UsersService, UsersGateway]
 })
 export class UsersModule {}

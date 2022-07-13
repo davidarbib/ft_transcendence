@@ -44,11 +44,10 @@ export class MessagesService {
     //return ; // need to implement HTTPrequest
     createMessageDto.author = usr;
     createMessageDto.time = new Date();
-    createMessageDto.chan = chan;
-    createMessageDto.login = login;
+    createMessageDto.chan = chan; 
+    createMessageDto.login = login; 
     const msg = await this.msgRepo.save(createMessageDto);
-    console.log(this.userSocket);
-    return { msg: msg, chan: chan };
+    return {msg : msg, chan:chan};
   }
   async CreateChan(
     usr: User,
@@ -107,16 +106,18 @@ export class MessagesService {
             element.chan.name == name
           ) {
             chanPart = element;
-            const date = new Date(Date.now());
-            date.setHours(date.getHours() + 2);
-            chanPart.mute = mute;
-            chanPart.ban = ban;
-            if (mute == true || ban == true) chanPart.end_timestamp = date;
-            if (mute == false && ban == false)
-              chanPart.end_timestamp = new Date(null);
-            return await myDataSource
-              .getRepository(ChanParticipant)
-              .save(chanPart);
+                let date =   new Date( Date.now());
+                console.log(date);
+                date.setMinutes(date.getMinutes() +2);
+                console.log(date);
+
+                 chanPart.mute = mute;
+                 chanPart.ban = ban;
+                 if ( mute == true  || ban == true)
+                 chanPart.end_timestamp = date;
+                 if (mute == false && ban ==false)
+                   chanPart.end_timestamp = null;
+                   return await myDataSource.getRepository(ChanParticipant).save(chanPart);
           }
         }
       }
@@ -132,19 +133,14 @@ export class MessagesService {
 
   async is_block(login: string, target: string) {
     let userblock = false;
-    let targetblock = false;
     const list_contact = await myDataSource.getRepository(Contact).find();
     list_contact.forEach((element) => {
       if (element.userLogin == login && element.followedLogin == target) {
         if (element.block == true) {
           userblock = true;
         }
-      }
-      if (element.userLogin == target && element.followedLogin == login) {
-        targetblock = true;
-      }
-    });
-    return { userblock: userblock, targetblock: targetblock };
+      }});
+      return userblock;
   }
 
   async is_chan_exist(name: string): Promise<boolean> {
@@ -155,9 +151,17 @@ export class MessagesService {
     });
     return chan_exist;
   }
-  async createChanDm(user: User, target: User) {
-    const chan: Channel = new Channel();
-    chan.name = user.login + '_' + target.login;
+  async friendship(user:string, target:string)
+  {
+    const newContact = new Contact;
+    newContact.userLogin = user;
+    newContact.followedLogin = target;
+    return myDataSource.getRepository(Contact).save(newContact);
+  }
+  async createChanDm(user:User, target:User)
+  {
+    const chan: Channel =  new Channel();
+    chan.name = user.login+"_"+ target.login;
     chan.type = ChanType.DM;
     await myDataSource.getRepository(Channel).save(chan);
     const chanPart: ChanParticipant = new ChanParticipant();
@@ -172,18 +176,17 @@ export class MessagesService {
     await myDataSource.getRepository(ChanParticipant).save(chanPart1);
     return chan;
   }
-  async createDM(user: User, target: User) {
-    const is_chan_exist = await this.is_chan_exist(
-      user.login + '_' + target.login,
-    );
-    if (is_chan_exist == true) return {};
-    const { userblock, targetblock } = await this.is_block(
-      user.login,
-      target.login,
-    );
-    if (userblock || targetblock) return {};
-    const socketTarget: Socket = this.userSocket[target.id];
-    /* this.userSocket.forEach(element => {
+  async createDM(user:User, target:User)
+  { 
+    const is_chan_exist = await this.is_chan_exist(user.login+'_'+target.login); 
+    if (is_chan_exist == true)
+      return { };
+      const userblock = await  this.is_block(user.login, target.login);
+      const  targetblock = await  this.is_block(target.login, user.login);
+      if (userblock || targetblock)
+        return {};
+      let socketTarget:Socket = this.userSocket[target.id];
+   /* this.userSocket.forEach(element => {
       if (element.== target.login )
       {
           socketTarget = element.socket;
@@ -192,16 +195,30 @@ export class MessagesService {
     const chan = await this.createChanDm(user, target);
     return { chan: chan, targetsocket: socketTarget };
   }
-  async findMsg(name: string, login: string) {
-    const msg = await this.msgRepo.find({ relations: ['chan', 'author'] });
-    const arr: any = [];
-    msg.forEach((element) => {
-      if (element.chan) {
-        if (element.chan.name == name) {
-          //if (!this.contactsService.block_bool(login, element.author.login))
-          arr.push(element);
+  
+  async findMsg(name: string, login: string )
+  {
+    const msg = await this.msgRepo.find({ relations: [ 'chan', 'author'] })
+    const listContact = await myDataSource.getRepository(Contact).find({where:{userLogin: login, block:true}});
+    let arr : any = [];
+    msg.forEach(async element => {
+      if (element.chan)
+      {
+     if (element.chan.name == name)
+      {
+          var found = false;
+          for(let i = 0; i < listContact.length; i++) {
+          if (listContact[i].followedLogin == element.author.login) {
+           found = true;
+        break;
         }
       }
+          if (found == false)
+          {
+             arr.push(element);
+          }
+      }
+    }
     });
     return arr;
   }

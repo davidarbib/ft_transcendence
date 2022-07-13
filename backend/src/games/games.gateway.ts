@@ -22,6 +22,8 @@ interface GameReadyPayload
   isP1: boolean,
   playerOneName: string,
   playerTwoName: string,
+  scoreP1: number,
+  scoreP2: number,
 }
 
 interface GameStatePayload
@@ -31,6 +33,12 @@ interface GameStatePayload
   playerTwoY: number,
   ballX: number,
   ballY: number,
+}
+
+interface ScorePayload
+{
+  scoreP1: number,
+  scoreP2: number
 }
 
 interface EndGamePayload
@@ -75,25 +83,30 @@ export class GamesGateway {
     console.log('try to join');
 
     this.gamesService.userWaiting(usr, client);
-    const { match, clients, playerOneId, playerTwoId, playerOneName, playerTwoName } =
-      await this.gamesService.matchmaking()
+    const { match, clients,
+            playerOneId, playerTwoId,
+            playerOneUserRef, playerTwoUserRef
+          } = await this.gamesService.matchmaking()
     if (match)
     {
       console.log("match created");
       this.gamesService.createGame(
         match.id,
         playerOneId,
-        playerOneName,
+        playerOneUserRef.username,
         playerTwoId,
-        playerTwoName,
+        playerTwoUserRef.username,
       )
-
+      this.gamesService.setIngameStatus(playerOneUserRef.id);
+      this.gamesService.setIngameStatus(playerTwoUserRef.id);
       let payload : GameReadyPayload = {
         gameId: match.id,
         playerId: playerOneId,
         isP1: true,
-        playerOneName: playerOneName,
-        playerTwoName: playerTwoName,
+        playerOneName: playerOneUserRef.username,
+        playerTwoName: playerTwoUserRef.username,
+        scoreP1: 0,
+        scoreP2: 0,
       };
       clients.clientOne.emit("gameReady", payload);
       
@@ -101,8 +114,10 @@ export class GamesGateway {
         gameId: match.id,
         playerId: playerTwoId,
         isP1: false,
-        playerOneName: playerOneName,
-        playerTwoName: playerTwoName,
+        playerOneName: playerOneUserRef.username,
+        playerTwoName: playerTwoUserRef.username,
+        scoreP1: 0,
+        scoreP2: 0,
       }
       clients.clientTwo.emit("gameReady", payload);
     };
@@ -142,6 +157,7 @@ export class GamesGateway {
   @SubscribeMessage('spectate')
   async spectate
   (
+    @MessageBody('spectatorId') spectatorId: string,
     @MessageBody('userId') userId: string,
     @ConnectedSocket() client: Socket,
   )
@@ -149,6 +165,7 @@ export class GamesGateway {
     //find game played par user
     this.gamesService.getGamePlayedByUser(userId)
     .then((gameId) => {
+      console.log(`game to spectate : ${gameId}`);
       const playerOneName = this.gamesService.getPlayerOneName(gameId);
       const playerTwoName = this.gamesService.getPlayerTwoName(gameId);
       const payload : GameReadyPayload = {
@@ -157,11 +174,15 @@ export class GamesGateway {
         isP1: false,
         playerOneName: playerOneName,
         playerTwoName: playerTwoName,
+        scoreP1: this.gamesService.getState(gameId).player1.score,
+        scoreP2: this.gamesService.getState(gameId).player2.score,
       }
+      this.gamesService.setSpectateStatus(spectatorId);
       client.join(gameId); 
       client.emit('gameReady', payload);
     })
     .catch((error) => {
+      console.log("impossible to spectate");
       client.emit('spectateFailure', error);
     });
   }
@@ -170,9 +191,11 @@ export class GamesGateway {
   async endSpectate 
   (
     @MessageBody('gameId') gameId: string,
+    @MessageBody('userId') userId: string,
     @ConnectedSocket() client: Socket,
   )
   {
+    this.gamesService.setEndGameStatus(userId)
     client.leave(gameId);
   }
 
@@ -226,7 +249,7 @@ export class GamesGateway {
     const inviteId = this.gamesService.userInvit.get(hostId);
     //-----------------
     this.gamesService.delInvite(hostId);
-    console.log(`invite ${inviteId} exist : ${this.gamesService.userInvit.get(hostId)}`);
+    (`invite ${inviteId} exist : ${this.gamesService.userInvit.get(hostId)}`);
   }
 
   @SubscribeMessage('acceptInvite')
@@ -255,12 +278,16 @@ export class GamesGateway {
         );
         console.log("game created by invite");
         console.log(`match id : ${match.id}`);
+        this.gamesService.setIngameStatus(user1.id);
+        this.gamesService.setIngameStatus(user2.id);
         let payload : GameReadyPayload = {
           gameId: match.id,
           playerId: playerOneId,
           isP1: true,
           playerOneName: user1.username,
           playerTwoName: user2.username,
+          scoreP1: 0,
+          scoreP2: 0,
         }
         hostSocket.emit("gameReady", payload);
         payload = {
@@ -269,6 +296,8 @@ export class GamesGateway {
           isP1: false,
           playerOneName: user1.username,
           playerTwoName: user2.username,
+          scoreP1: 0,
+          scoreP2: 0,
         }
         client.emit("gameReady", payload);
         this.gamesService.delInvite(hostId);
@@ -279,11 +308,15 @@ export class GamesGateway {
     }
   }
 
-  async handlePoint(gameId: string, playerId: string, isP1: boolean)
+  async handlePoint(gameId: string, playerId: string, scoreP1: number, scoreP2: number)
   {
     const player = await myDataSource.getRepository(Player).findOne({where : { id : playerId}})
     this.playerService.incrementScore(player);
-    this.server.to(gameId).emit('score', isP1);
+    const payload : ScorePayload = {
+      scoreP1: scoreP1,
+      scoreP2: scoreP2,
+    }
+    this.server.to(gameId).emit('score', payload);
   }
 
   async handleFinishGame
@@ -307,12 +340,14 @@ export class GamesGateway {
     const loser = await this.playerService.findOne(loserId);
     this.matchesService.finish(match);
     this.playerService.setWinner(winner);
-    let user:User = winner.userRef;
-    user.winCount++;
-    myDataSource.getRepository(User).save(user); 
-    user = loser.userRef;
-    user.lossCount++;
-    myDataSource.getRepository(User).save(user); 
+    let userWinner:User = winner.userRef;
+    let userLoser:User = loser.userRef;
+    userWinner.winCount++;
+    userLoser.lossCount++;
+    myDataSource.getRepository(User).save(userWinner); 
+    myDataSource.getRepository(User).save(userLoser); 
+    this.gamesService.setEndGameStatus(userWinner.id);
+    this.gamesService.setEndGameStatus(userLoser.id);
   }
   
   async handleLoopOutput(gameId: string, details: LoopDetails)
@@ -337,7 +372,7 @@ export class GamesGateway {
         playerId = gameState.player1.id;
       else
         playerId = gameState.player2.id;
-      this.handlePoint(gameId, playerId, details.isP1Score);
+      this.handlePoint(gameId, playerId, gameState.player1.score, gameState.player2.score);
     }
   }
 
@@ -367,9 +402,6 @@ export class GamesGateway {
         this.handleFinishGame(gameId, winnerId, loserId, isP1Win);
         this.server.in(gameId).socketsLeave(gameId);
       }
-    //}, 10); //~90fps for debugging
-    //}, 33); //~30fps
-    }, 25); //40fps
-    //}, 10000); //slow for debugging
+    }, 66);
   }
 }

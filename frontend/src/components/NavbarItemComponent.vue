@@ -1,10 +1,18 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { logoutUser } from "@/utils/auth";
+import { useRouter } from "vue-router";
 
+const router = useRouter();
 const visible = ref(true);
 const visibleToggle = () => {
   visible.value = !visible.value;
+};
+
+const logoutRedirect = () => {
+  logoutUser().then(() => {
+    router.push({ path: "/" });
+  });
 };
 </script>
 
@@ -34,12 +42,13 @@ const visibleToggle = () => {
       </div>
       <!-- Secondary Navbar items -->
       <div class="hidden md:flex items-center space-x-3">
-        <a
-          href="#"
-          @click="logoutUser"
+        <router-link
+          to="/"
           class="py-2 px-2 font-medium text-gray-300 rounded hover:bg-red-700 transition duration-700"
-          >Disconnect</a
+          @click="logoutRedirect"
         >
+          Disconnect
+        </router-link>
       </div>
       <!-- Mobile menu button -->
       <div class="md:hidden flex items-center">

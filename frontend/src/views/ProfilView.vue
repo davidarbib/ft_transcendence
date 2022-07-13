@@ -24,14 +24,27 @@ let user = ref({
   winCount: "",
   lossCount: "",
 });
+const login1 = ref(router.currentRoute.value.params.pseudo) 
 
 function private_msg(target:any) {
     userStore.chatsocket.emit("createDM", {user: userStore.user, target:target}, (data) =>{
     })
   }
+  function block_user(target:never)
+  {
+     userStore.chatsocket.emit("blockUser", {user: userStore.user, target:target}, () =>{
+    })
+  }
+
+   function addFriend(target:string)
+  {
+     userStore.chatsocket.emit("addfriend", {user: userStore.user.login, target:target}, () =>{
+    })
+  }
 
 onMounted(() => {
   axios.defaults.withCredentials = true;
+
   login.value = router.currentRoute.value.params.pseudo;
   axios
     .get(`${api.url}/users/login/${login.value}/`)
@@ -42,12 +55,13 @@ onMounted(() => {
         console.log("response.data is empty");
       }
       if (user.value.username === userStore.$state.user.username)
-        isCurrentUserProfile.value = true;
+        router.push({ path: "/my_profile" });
     })
     .catch((error) => {
       console.log(error);
       router.push({ path: "/profile_not_found" });
     });
+    console.log(user.value.login)
 });
 </script>
 
@@ -57,20 +71,20 @@ onMounted(() => {
       <NavbarItem />
     </div>
     <div class="historic">
-      <Historic />
+      <Historic :login="login1"/>
     </div>
     <div class="profile-card bg-black bg-opacity-10">
       <header>
-        <div class="secondary-button">
+        <div class="secondary-button" @click="block_user(user)">
           <button>Block user</button>
         </div>
         <div v-if="user.avatarRef === null" class="profile-picture h-36 w-36">
           <img src="@/assets/sphere_mini.png" alt="user profile picture" />
         </div>
         <div v-else class="profile-picture h-36 w-36">
-          <img :src="user.avatarRef" alt="user profile picture" />
+          <img :src="`http://localhost:8090/${user.avatarRef}`" alt="user profile picture" />
         </div>
-        <div class="secondary-button">
+        <div class="secondary-button" @click="addFriend(user.login)">
           <button>+ add friend</button>
         </div>
       </header>
@@ -97,14 +111,12 @@ onMounted(() => {
           <h1>
             {{ user.username }}
           </h1>
-          <div class="secondary-button">
+          <div class="secondary-button" @click="private_msg(user)">
             <router-link to="/chat">Send message</router-link>
           </div>
+          <button class="secondary-button">Unblock User</button>
         </div>
       </div>
-    </div>
-    <div class="contact-bar">
-      <Contact />
     </div>
   </div>
 </template>

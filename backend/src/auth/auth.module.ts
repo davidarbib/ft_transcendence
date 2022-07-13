@@ -17,6 +17,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtGuard } from './guards/jwt.guard';
 import { TwoFactorAuthController } from './twoFactorAuth.controller';
 import { TwoFactorAuthService } from './services/twoFactorAuth.service';
+import { UsersGateway } from 'src/users/users.gateway';
 
 @Module({
   imports: [
@@ -52,6 +53,7 @@ import { TwoFactorAuthService } from './services/twoFactorAuth.service';
     Repository,
     AuthService,
     TwoFactorAuthService,
+    UsersGateway,
   ],
   //exports: []
 })

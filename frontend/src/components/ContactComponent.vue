@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
 import axios from "axios";
 import { apiStore } from "@/stores/api";
 import ListUserComponent from "@/components/ListUserComponent.vue";
+import { useUserStore } from "@/stores/auth";
 
 interface User {
   id: string;
@@ -19,10 +20,28 @@ interface User {
 }
 
 const api = apiStore();
+const userStore = useUserStore();
 const friends = ref<User[]>([]);
 let users = ref<User[]>([]);
 
+onUnmounted(() => {
+  userStore.statusSocket.removeAllListeners();
+})
+
+userStore.statusSocket.on("switchStatus", (payload) => {
+  console.log(`switch status : ${payload.status}`);
+  let index_users = users.value.findIndex((e) => e.id === payload.userId);
+  if (index_users !== -1) {
+    users.value[index_users].status = payload.status;
+  }
+  let index_friend = friends.value.findIndex((e) => e.id === payload.userId);
+  if (index_friend !== -1) {
+    friends.value[index_friend].status = payload.status;
+  }
+});
+
 onMounted(() => {
+  axios.defaults.withCredentials = true;
   axios
     .get(`${api.url}/users`)
     .then((response) => {

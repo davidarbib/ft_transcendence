@@ -22,6 +22,8 @@ type ValidMimeTYpe = 'image/png' |'image/jpg' | 'image/jpeg ';
 
 const validMimeTYpe  : ValidMimeTYpe[] = [ 'image/png' , 'image/jpg' , 'image/jpeg ',];
 import { JwtGuard } from 'src/auth/guards/jwt.guard';
+import { Match } from 'src/matches/entities/match.entity';
+import { Player } from 'src/players/entities/player.entity';
 
 @Controller('users')
 @UseGuards(JwtGuard)
@@ -55,13 +57,15 @@ export class UsersController {
     },
   })
 uploadFile(@UploadedFile() file , @Request()  req) : any {
+  if (file){
   const allowMimeType: ValidMimeTYpe[] = validMimeTYpe;
-  const fileext = allowMimeType.includes(file.mimetype);
-  if (!fileext) return of({error: 'File must be a png'});
+ // const fileext = allowMimeType.includes(file.mimetype);
+  //if (!fileext) return of({error: 'File must be a png'});
   const user: User = req.user;
   user.avatarRef = file.filename;
   console.log(user.avatarRef);
   return myDataSource.getRepository(User).save(user);
+  }
 }
 /*
 * GET 
@@ -81,6 +85,13 @@ uploadFile(@UploadedFile() file , @Request()  req) : any {
     const usr = await myDataSource.getRepository(User).findOneBy({login})
     return usr.avatarRef;
   }
+  @Get(':login/test/historic')
+  async findHistoric(@Param('login') login:string ) {
+    const payload = await this.usersService.findHistoric(login);
+    return payload;
+    };
+  
+
 
   @Get(':login/2FA')
   dfa_bool(@Request() req) {

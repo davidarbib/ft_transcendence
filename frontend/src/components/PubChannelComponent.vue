@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import ChatModal from "@/components/ChatModalComponent.vue";
 import axios from "axios";
-import { io } from "socket.io-client";
 import { useUserStore } from "@/stores/auth";
 import { ref, onMounted, watch } from "vue";
 

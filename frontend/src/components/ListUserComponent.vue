@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import axios from "axios";
+import { useUserStore } from "@/stores/auth";
+import { useRouter } from "vue-router";
 
 interface User {
   id: string;
@@ -19,15 +20,26 @@ defineProps<{
   users: User[];
 }>();
 
+const router = useRouter();
+const userStore = useUserStore();
 const friendMenu = ref(false);
 const friendSelected = ref<string>("");
-
-axios.defaults.withCredentials = true;
 
 function toggleFriendMenu(id: string) {
   friendSelected.value = id;
   friendMenu.value = !friendMenu.value;
 }
+
+function startSpectating(spectatorId: string, userId: string) {
+  userStore.gameSocket.emit("spectate", { spectatorId: spectatorId, userId: userId });
+}
+
+userStore.gameSocket.on("gameReady", function (game) {
+  userStore.gameInfos.gameId = game.gameId;
+  userStore.gameInfos.playerId = game.playerId;
+  userStore.gameInfos.isP1 = game.isP1;
+  router.push("pong");
+});
 </script>
 
 <template>
@@ -38,31 +50,25 @@ function toggleFriendMenu(id: string) {
     @click="toggleFriendMenu(user.id)"
   >
     <div class="user-icon">
-      <img src="@/assets/sphere.png" alt="" class="h-10 w-10" />
-      <p v-if="user.status" class="online">
-        <i class="fa-solid fa-circle status-dot outline-inherit"></i>
-      </p>
-      <p v-else class="offline">
+      <img v-if="!user.avatarRef" src="@/assets/sphere.png" alt="" class="h-10 w-10" />
+      <img v-else :src="`http://localhost:8090/${user.avatarRef}`" alt="user profile picture" class="h-10 w-10" />
+      <p :class="user.status">
         <i class="fa-solid fa-circle status-dot outline-inherit"></i>
       </p>
     </div>
     <div class="user-pseudo py-2">
       <p>{{ user.username }}</p>
-      <p v-if="user.status" class="online">online</p>
-      <p v-else class="offline">offline</p>
+      <p :class="user.status">{{ user.status }}</p>
       <Transition name="slide-fade">
         <div v-if="friendMenu && friendSelected === user.id">
           <ul class="list">
-            <li><router-link to="/chat">chat</router-link></li>
             <li>
               <router-link
                 :to="{ name: 'profile', params: { pseudo: user.login } }"
                 >profile</router-link
               >
             </li>
-            <li><router-link to="/">invite</router-link></li>
-            <li><router-link to="/">block</router-link></li>
-            <li><router-link to="/">spectate</router-link></li>
+            <li v-if="user.status === 'ingame'" @click="startSpectating(userStore.user.id, user.id)">spectate</li>
           </ul>
         </div>
       </Transition>
@@ -112,6 +118,14 @@ function toggleFriendMenu(id: string) {
 
   .offline {
     color: gray;
+  }
+
+  .ingame {
+    color: deepskyblue;
+  }
+
+  .spectate {
+    color: yellow;
   }
 }
 
