@@ -159,6 +159,8 @@ onUnmounted(() => {
       userId: userStore.user.id,
     });
   }
+  console.log(`P1 : ${userStore.gameInfos.playerOneName}`);
+  console.log(`P2 : ${userStore.gameInfos.playerTwoName}`);
 });
 </script>
 
@@ -176,13 +178,13 @@ onUnmounted(() => {
   </Teleport>
   <div>
     <div class="game-infos flex justify-center items-center">
-      <p class="text-5xl text-white">Player 1</p>
+      <p class="text-5xl text-white">{{ userStore.gameInfos.playerOneName }}</p>
       <h1
         class="score text-8xl tracking-widest text-white my-3 w-1/2 mx-auto text-center"
       >
         {{ scoreA + ":" + scoreB }}
       </h1>
-      <p class="text-5xl text-white">Player 2</p>
+      <p class="text-5xl text-white">{{ userStore.gameInfos.playerTwoName }}</p>
     </div>
     <div>
       <canvas

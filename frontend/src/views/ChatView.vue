@@ -111,6 +111,8 @@ userStore.gameSocket.on("gameReady", function (game) {
   userStore.gameInfos.gameId = game.gameId;
   userStore.gameInfos.playerId = game.playerId;
   userStore.gameInfos.isP1 = game.isP1;
+  userStore.gameInfos.playerOneName = game.playerOneName;
+  userStore.gameInfos.playerTwoName = game.playerTwoName;
   router.push("pong");
 });
 
