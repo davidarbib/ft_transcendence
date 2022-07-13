@@ -7,7 +7,7 @@ import { UpdateGameDto } from './dto/update-game.dto';
 import { MatchesService } from 'src/matches/matches.service';
 import { Match } from 'src/matches/entities/match.entity';
 import { myDataSource } from 'src/app-data-source';
-import { User } from 'src/users/entities/user.entity';
+import { User, UserStatus } from 'src/users/entities/user.entity';
 import { Player } from 'src/players/entities/player.entity';
 import { PlayersService } from 'src/players/players.service';
 import { ScoreEvent, GameFinishEvent} from 'src/games/game/game.event';
@@ -350,9 +350,11 @@ export class GamesGateway {
     let userWinner:User = winner.userRef;
     let userLoser:User = loser.userRef;
     userWinner.winCount++;
+    //userWinner.status = UserStatus.ONLINE;
     userLoser.lossCount++;
-    myDataSource.getRepository(User).save(userWinner); 
-    myDataSource.getRepository(User).save(userLoser); 
+    //userLoser.status = UserStatus.ONLINE;
+    await myDataSource.getRepository(User).save(userWinner); 
+    await myDataSource.getRepository(User).save(userLoser); 
     this.gamesService.setEndGameStatus(userWinner.id);
     this.gamesService.setEndGameStatus(userLoser.id);
   }
