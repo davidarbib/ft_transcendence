@@ -66,6 +66,13 @@ userStore.chatsocket.on("newadmin", (chan: never, user: never) => {
   // need to put data in tab of admin
 });
 
+userStore.chatsocket.on("UserNewStatus", (status: never, bool:boolean, chan:never, user: never) => {
+   if ( user.login == userStore.user.login)
+   {
+    console.log(status);
+   }
+  // need to put data in tab of admin
+});
 function ListMute() {
   userStore.chatsocket.emit(
     "getMuteInChan",
@@ -113,13 +120,24 @@ function changePassword(password: string) {
 
 function isalwaysMut(){
   userStore.chatsocket.emit("isTimeToDeMut", {user:userStore.user, name:getName.value}, (data) =>{
-
+      userStore.chatsocket.emit(
+    "geMuteInChan",
+    { name: getName.value },
+    (data) => {
+      allMuted.value = data;
+    })
   })
 }
 function isalwaysban(){
   userStore.chatsocket.emit("isTimeToDeBan", {user:userStore.user, name:getName.value}, (data) =>{
-
+            userStore.chatsocket.emit(
+    "getBanInChan",
+    { name: getName.value },
+    (data) => {
+      allMuted.value = data;
+    })
   })
+}
 
 // /* event pour savoir le new status ddu user */
 // userStore.chatsocket.on(
@@ -308,7 +326,13 @@ function banUser(login: string) {
 watch(getName, () => {
   getAdmins();
   getOwner();
+  ListBan();
+  console.log(allBanned.value)
+  ListMute();
   isalwaysMut();
+  isalwaysban();
+  console.log(allBanned.value)
+
   getUserInChan();
   messages.value = [];
   userStore.chatsocket.emit(
@@ -320,6 +344,7 @@ watch(getName, () => {
     }
   );
 });
+
 </script>
 
 <template>

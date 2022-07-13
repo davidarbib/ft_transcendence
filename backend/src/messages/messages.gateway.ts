@@ -125,7 +125,7 @@ export class MessagesGateway
         listchanPart.forEach(element => {
             if (element.chan.name == name && element.participant.login == usr.login)
               {
-                if (element.end_timestamp < date && element.mute != true)
+                if (element.end_timestamp < date && element.mute == false)
                 {
                   element.end_timestamp = null;
                   element.ban = false;
@@ -133,9 +133,10 @@ export class MessagesGateway
                 }
               }
             });
-           if ( chanPart.ban == false && chanPart.mute == false)
-            await myDataSource.getRepository(ChanParticipant).save(chanPart);
-        
+            if (chanPart){
+             if (chanPart.ban == false && chanPart.mute == false)
+                await myDataSource.getRepository(ChanParticipant).save(chanPart);
+            }
   }
 
   @SubscribeMessage('createChannel')
@@ -199,7 +200,7 @@ export class MessagesGateway
   async MuteBanUser( @MessageBody('name') name:string, @MessageBody('user') usr:User, @MessageBody('target') target:string , @MessageBody() updateChanParticipantDto: UpdateChanParticipantDto, @ConnectedSocket() client:Socket) {
 
     const {arg, bool, chan} = await this.messageService.muteBanUser(name, updateChanParticipantDto, target);
-    this.server.emit("UsernewStatus", {status:arg, bool:bool, chan :chan});
+    this.server.emit("UsernewStatus", {status:arg, bool:bool, chan :chan, user:usr});
   }
 
   @SubscribeMessage('needPassword')

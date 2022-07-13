@@ -29,7 +29,8 @@ axios.defaults.withCredentials = true;
       :key="match"
     >
       <div class="match-result">
-        <h2 class="text-green-600 leading-4">{{ match.winner}} </h2>
+        <h2 v-if="match.winner" class="text-green-600 leading-4"> Victory </h2>
+        <h2 v-else class="text-red-600 leading-4"> Defeat </h2>
       </div>
       <div class="text-lg tracking-wider">
         {{match.vs}}

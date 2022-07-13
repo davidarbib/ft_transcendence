@@ -24,6 +24,7 @@ let user = ref({
   winCount: "",
   lossCount: "",
 });
+const login1 = ref(router.currentRoute.value.params.pseudo) 
 
 function private_msg(target:any) {
     userStore.chatsocket.emit("createDM", {user: userStore.user, target:target}, (data) =>{
@@ -60,6 +61,7 @@ onMounted(() => {
       console.log(error);
       router.push({ path: "/profile_not_found" });
     });
+    console.log(user.value.login)
 });
 </script>
 
@@ -69,7 +71,7 @@ onMounted(() => {
       <NavbarItem />
     </div>
     <div class="historic">
-      <Historic :login="login"/>
+      <Historic :login="login1"/>
     </div>
     <div class="profile-card bg-black bg-opacity-10">
       <header>

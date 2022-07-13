@@ -98,7 +98,7 @@ export class MessagesService {
                  if ( mute == true  || ban == true)
                  chanPart.end_timestamp = date;
                  if (mute == false && ban ==false)
-                   chanPart.end_timestamp = new Date(null);
+                   chanPart.end_timestamp = null;
                    return await myDataSource.getRepository(ChanParticipant).save(chanPart);
           }
         }
