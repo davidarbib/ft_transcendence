@@ -18,6 +18,19 @@ const pwdStatusMsg = ref<string>("type in input");
 const pwdStatusInit = ref<boolean>("false");
 
 const itsMe = ref<Boolean>("false");
+userStore.chatsocket.on("leavetheChan", () => {
+    console.log("YES");
+      axios.defaults.withCredentials = true;
+  axios
+    .get(`http://localhost:8090/channels/chan/${userStore.user.login}`)
+    .then((response) => {
+      chan.value = response.data;
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  // need to put data in tab of admin
+});
 
 watch(inputPass, () =>
 {
@@ -133,6 +146,8 @@ function leaveChan() {
     { user: userStore.user, name: channelName.value },
     () => {}
   );
+  channelName.value = null;
+  emit("name", channelName.value);
 }
 
 /* CHANGER LE PASSWORD*/

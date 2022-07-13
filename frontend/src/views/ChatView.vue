@@ -64,7 +64,15 @@ userStore.chatsocket.on("message", (message, chan) => {
 userStore.chatsocket.on("newUser", (usr: never, chan) => {
   if (chan.name == getName.value) userIn.value.push(usr);
 });
-
+userStore.chatsocket.on("userleavetheChan", (chan) => {
+  if (chan.name == getName.value) 
+    getUserInChan();
+  console.log(userIn.value)
+});
+userStore.chatsocket.on("userleaveChan", () => {
+  console.log("YESfffff");
+  userIn.value = [];
+});
 /* event le user est devenu admin dans le chan */
 userStore.chatsocket.on("newadmin", (chan: never, user: never) => {
     if (chan.name == getName.value) allAdmins.value.push(user);
@@ -273,6 +281,7 @@ function banUser(login: string) {
 }
 
 watch(getName, () => {
+  console.log(getName.value);
   getAdmins();
   listMute();
   listBan();
@@ -384,7 +393,7 @@ watch(getName, () => {
       </div>
     </div>
     <div class="messages text-gray-300">
-      <p class="text-2xl">{{ getName }}</p>
+      <p class="text-2xl" v-if="getName">{{ getName }}</p>
       <div
         class="message bg-black bg-opacity-20 w-3/4 mx-2 rounded p-2"
         v-for="message in messages"

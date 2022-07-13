@@ -193,8 +193,9 @@ export class MessagesGateway
   }
 }
   @SubscribeMessage('leavechan')
-  async LeaveRoom( @MessageBody('user') user:User, @MessageBody('name') name:string)
+  async LeaveRoom( @MessageBody('user') user:User, @MessageBody('name') name:string, @ConnectedSocket() client:Socket)
   {
+    const chan = await myDataSource.getRepository(Channel).findOne({where: {name :name}})
     const chanPart = await myDataSource.getRepository(ChanParticipant).find({relations:['participant', 'chan']})
    chanPart.forEach( async element => {
     if (element.participant && element.chan)
@@ -202,12 +203,14 @@ export class MessagesGateway
       if (element.participant.login == user.login && element.chan.name == name)
       {
         const chanPartDelete = await myDataSource.getRepository(ChanParticipant).findOneBy({id : element.id});
-         chanPartDelete.remove();
+        chanPartDelete.remove();
+        this.server.in(client.id).emit("userleaveChan",);
+        this.server.in(client.id).emit("leavetheChan",);
+        this.server.emit("userleavetheChan", chan);
         return ;
       }
     }
   })
-  // FAIRE UN SOCKET 
   }
   
   @SubscribeMessage('userChanStatus')
@@ -233,7 +236,7 @@ export class MessagesGateway
   async MuteBanUser( @MessageBody('name') name:string, @MessageBody('user') usr:User, @MessageBody('target') target:string , @MessageBody() updateChanParticipantDto: UpdateChanParticipantDto, @ConnectedSocket() client:Socket) {
 
     const {arg, bool, chan} = await this.messageService.muteBanUser(name, updateChanParticipantDto, target);
-    this.server.emit("UsernewStatus", {status:arg, bool:bool, chan :chan, user:usr});
+    this.server.emit("UserNewStatus", {status:arg, bool:bool, chan :chan, user:usr});
   }
 
   @SubscribeMessage('needPassword')
