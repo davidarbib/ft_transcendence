@@ -317,12 +317,12 @@ watch(getName, () => {
     getUserInChan();
     messages.value = [];
     userStore.chatsocket.emit(
-        "findMessageFromChan",
-        {name: getName.value, login: userStore.user.login},
-        (data: never) => {
-          messages.value = data;
-          console.log(messages.value);
-        }
+      "findMessageFromChan",
+      { name: getName.value, login: userStore.user.login },
+      (data: never) => {
+        messages.value = data;
+        console.log(messages.value);
+      }
     );
   }
 });
