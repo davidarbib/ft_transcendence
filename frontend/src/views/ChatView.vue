@@ -257,8 +257,9 @@ function addAdmin(login: string) {
   // console.log("add admin");
 }
 function isalwaysMut() {
+  console.log("CA ASSE DANS IS ALWAYS MUTE")
   userStore.chatsocket.emit(
-    "isTimeToDeMut",
+    "isTimeToDemut",
     { user: userStore.user, name: getName.value },
     () => {
       userStore.chatsocket.emit(
@@ -280,7 +281,7 @@ function isalwaysban() {
         "getBanInChan",
         { name: getName.value },
         (data) => {
-          allMuted.value = data;
+          allBanned.value = data;
         }
       );
     }
