@@ -17,7 +17,7 @@ const inputPass = ref<string>("");
 const pwdStatusMsg = ref<string>("type in input");
 const pwdStatusInit = ref<boolean>(false);
 const itsMe = ref<boolean>(false);
-
+/*
 userStore.chatsocket.on("leavetheChan", () => {
     console.log("YES");
       axios.defaults.withCredentials = true;
@@ -30,7 +30,7 @@ userStore.chatsocket.on("leavetheChan", () => {
       console.log(error);
     });
   // need to put data in tab of admin
-});
+});*/
 
 watch(inputPass, () => {
   pwdStatusMsg.value = pwdStatus(false);
@@ -126,11 +126,6 @@ onMounted(() => {
 
 function selectChannel(name: string) {
   pwdStatusMsg.value = pwdStatus(false);
-<<<<<<< HEAD
-  getOwner();
-  itsMe.value = owner.value === userStore.user.login;
-=======
->>>>>>> master
   channelName.value = name;
   getOwner();
   itsMe.value = owner.value === userStore.user.login;
@@ -204,7 +199,7 @@ const emit = defineEmits(["name", "msg"]);
         <p
           v-if="!(channel.type === 'dm')"
           class="icon"
-          @click.stop="toggleChannelMenu(channel.id, channel.name)"
+          @click="toggleChannelMenu(channel.id, channel.name)"
         >
           <i class="fa-solid fa-gear"></i>
         </p>
@@ -213,7 +208,7 @@ const emit = defineEmits(["name", "msg"]);
         <div v-if="channelOptions && channelSelected === channel.id">
           <div class="list">
             <!--        add pass-->
-            <div @click.stop="openModal">
+            <div @click="openModal">
               <i class="fa-solid fa-key mx-1"></i>
             </div>
             <Teleport to="body">
