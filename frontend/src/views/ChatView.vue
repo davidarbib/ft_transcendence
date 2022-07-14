@@ -79,6 +79,7 @@ userStore.chatsocket.on("userleavetheChan", (chan: never, user: never) => {
 });
 userStore.chatsocket.on("userleaveChan", () => {
   userIn.value = [];
+  messages.value = [];
 });
 /* event le user est devenu admin dans le chan */
 userStore.chatsocket.on("newadmin", (chan: never, user: never) => {
@@ -119,7 +120,6 @@ function isUid(str: string): boolean {
 }
 
 userStore.gameSocket.on("gameReady", function (game) {
-  console.log("game is ready");
   userStore.gameInfos.gameId = game.gameId;
   userStore.gameInfos.playerId = game.playerId;
   userStore.gameInfos.isP1 = game.isP1;
@@ -134,7 +134,6 @@ const cancelLobby = () => {
 };
 
 userStore.gameSocket.on("inviteCreated", (invite) => {
-  console.log("transfer invite to chat");
   inviteUid.value = invite;
   userStore.chatsocket.emit("createMessage", {
     name: getName.value,
@@ -145,7 +144,6 @@ userStore.gameSocket.on("inviteCreated", (invite) => {
 });
 
 function playGame() {
-  console.log("create game");
   userStore.gameSocket.emit("createInvite", { userId: userStore.user.id });
 }
 
@@ -167,7 +165,6 @@ function isUserMuted(login: string): boolean {
 
 function isUserOwner(login: string): boolean {
   // pour savoir si le user est un owner
-  // console.log(owner.value);
   return owner.value === login;
 }
 
@@ -202,12 +199,10 @@ function sendMessage() {
 
 function muteClient(login: string) {
   // EP pour mutes les users
-  // console.log("TEST TO MUTE");
   userStore.chatsocket.emit(
     "MuteBanUser",
     { name: getName.value, user: userStore.user, target: login, mute: true },
     (data: never) => {
-      console.log(data);
       //data
     }
   );
@@ -246,7 +241,6 @@ function getOwner() {
       })
       .then((response) => {
         owner.value = response.data.login;
-        // console.log(owner.value);
       })
       .catch((error) => {
         console.log(error);
@@ -261,10 +255,9 @@ function addAdmin(login: string) {
     user: userStore.user,
     login: login,
   });
-  // console.log("add admin");
 }
+
 function isalwaysMut() {
-  console.log("CA ASSE DANS IS ALWAYS MUTE")
   userStore.chatsocket.emit(
     "isTimeToDemut",
     { user: userStore.user, name: getName.value },
@@ -309,14 +302,12 @@ function banUser(login: string) {
 
 watch(getName, () => {
   if (getName.value) {
-    // console.log(userIn.value);
     getAdmins();
     listMute();
     listBan();
     getOwner();
     isalwaysMut();
     isalwaysban();
-
     getUserInChan();
     messages.value = [];
     userStore.chatsocket.emit(
@@ -324,7 +315,6 @@ watch(getName, () => {
       { name: getName.value, login: userStore.user.login },
       (data: never) => {
         messages.value = data;
-        console.log(messages.value);
       }
     );
   }
@@ -338,14 +328,12 @@ userStore.chatsocket.on("UserNewStatus", (payload) => {
     if (payload.chan.name !== getName.value) {
       return;
     }
-    console.log("USER IS BANNED WELL");
     allBanned.value.push(payload.user);
   }
   if (payload.status === "mute") {
     if (payload.chan.name !== getName.value) {
       return;
     }
-    console.log("USER IS MUTED WELL");
     allMuted.value.push(payload.user);
   }
 });

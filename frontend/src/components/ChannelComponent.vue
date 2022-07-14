@@ -104,6 +104,7 @@ function getOwner() {
 function toggleChannelMenu(id: number) {
   channelSelected.value = id;
   channelOptions.value = !channelOptions.value;
+  itsMe.value = owner.value === userStore.user.login;
 }
 
 userStore.chatsocket.on("join", (data) => {
@@ -125,15 +126,22 @@ onMounted(() => {
 
 function selectChannel(name: string) {
   pwdStatusMsg.value = pwdStatus(false);
+<<<<<<< HEAD
   getOwner();
   itsMe.value = owner.value === userStore.user.login;
+=======
+>>>>>>> master
   channelName.value = name;
+  getOwner();
+  itsMe.value = owner.value === userStore.user.login;
   needPassword(channelName.value);
   console.log(channelName.value);
   emit("name", channelName.value);
 }
 
 function leaveChan() {
+  console.log('Enter');
+  console.log(channelName.value);
   userStore.chatsocket.emit(
     "leavechan",
     { user: userStore.user, name: channelName.value },
@@ -147,6 +155,7 @@ function leaveChan() {
     });
   });
   channelName.value = "";
+  console.log('Exit');
   console.log(channelName.value);
   emit("name", channelName.value);
 }
@@ -172,6 +181,7 @@ function removePassword() {
 }
 
 function openModal() {
+  itsMe.value = owner.value === userStore.user.login;
   passOpen.value = true;
   pwdStatus(false);
   inputPass.value = "";
@@ -184,7 +194,7 @@ const emit = defineEmits(["name", "msg"]);
 <template>
   <div class="contact-section mx-2">
     <div
-      @click.once="selectChannel(channel.name)"
+      @click="selectChannel(channel.name)"
       class="user-card rounded my-2 bg-black bg-opacity-10 font-medium hover:bg-opacity-30 transition duration-300"
       v-for="channel in chan"
       :key="channel.id"
@@ -194,7 +204,7 @@ const emit = defineEmits(["name", "msg"]);
         <p
           v-if="!(channel.type === 'dm')"
           class="icon"
-          @click="toggleChannelMenu(channel.id, channel.name)"
+          @click.stop="toggleChannelMenu(channel.id, channel.name)"
         >
           <i class="fa-solid fa-gear"></i>
         </p>
@@ -203,7 +213,7 @@ const emit = defineEmits(["name", "msg"]);
         <div v-if="channelOptions && channelSelected === channel.id">
           <div class="list">
             <!--        add pass-->
-            <div @click="openModal">
+            <div @click.stop="openModal">
               <i class="fa-solid fa-key mx-1"></i>
             </div>
             <Teleport to="body">
@@ -234,7 +244,7 @@ const emit = defineEmits(["name", "msg"]);
               </div>
             </Teleport>
             <!--        leave chan-->
-            <p @click="leaveChan()">
+            <p @click.stop="leaveChan()">
               <i class="fa-solid fa-right-from-bracket mx-1"></i>
             </p>
           </div>
