@@ -108,32 +108,26 @@ export class GamesService {
       })
   }
 
-  setReady(gameId: string, playerId: string)
-  {
-    this.games[gameId].setReady(playerId);
+  setReady(gameId: string, playerId: string) {
+    this.games.get(gameId).setReady(playerId);
   }
 
-
-  arePlayersReady(gameId) : boolean
-  {
-    if (this.games[gameId].arePlayersReady())
-      return true;
-    return false;
+  arePlayersReady(gameId: string): boolean {
+    return this.games.get(gameId).arePlayersReady();
   }
 
-  gameExist(gameId: string) : boolean
-  {
+  doGameExist(gameId: string): boolean {
     return this.games.has(gameId);
   }
 
   getGame(gameId: string) : Game
   {
-    return this.games[gameId];
+    return this.games.get(gameId);
   }
 
   getState(gameId: string) : GameState
   {
-    return this.games[gameId].getState();
+    return this.games.get(gameId).getState();
   }
 
   getPlayerOneName(gameId: string) : string
@@ -165,7 +159,7 @@ export class GamesService {
       undefined,
       undefined,
     );
-    this.games[gameId] = game;
+    this.games.set(gameId, game);
   }
 
   async getGamePlayedByUser(userId: string) : Promise<string>

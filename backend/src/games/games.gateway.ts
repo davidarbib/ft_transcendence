@@ -1,4 +1,3 @@
-import { OnEvent } from '@nestjs/event-emitter';
 import {
   WebSocketGateway,
   SubscribeMessage,
@@ -8,15 +7,11 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { GamesService } from './games.service';
-import { CreateGameDto } from './dto/create-game.dto';
-import { UpdateGameDto } from './dto/update-game.dto';
 import { MatchesService } from 'src/matches/matches.service';
-import { Match } from 'src/matches/entities/match.entity';
 import { myDataSource } from 'src/app-data-source';
 import { User, UserStatus } from 'src/users/entities/user.entity';
 import { Player } from 'src/players/entities/player.entity';
 import { PlayersService } from 'src/players/players.service';
-import { ScoreEvent, GameFinishEvent } from 'src/games/game/game.event';
 import { UsersService } from 'src/users/users.service';
 import { LoopDetails, PadCmd } from './game/game';
 import { Repository } from 'typeorm';
@@ -143,10 +138,11 @@ export class GamesGateway {
     @MessageBody('playerId') playerId: string,
     @ConnectedSocket() client: Socket,
   ) {
-    //TODO security
-    client.join(gameId);
-    this.gamesService.setReady(gameId, playerId);
-    if (this.gamesService.arePlayersReady(gameId)) this.gameLoop(gameId);
+    if (this.gamesService.doGameExist(gameId)) {
+      client.join(gameId);
+      this.gamesService.setReady(gameId, playerId);
+      if (this.gamesService.arePlayersReady(gameId)) this.gameLoop(gameId);
+    }
   }
 
   @SubscribeMessage('spectate')
@@ -187,8 +183,10 @@ export class GamesGateway {
     @MessageBody('userId') userId: string,
     @ConnectedSocket() client: Socket,
   ) {
-    this.gamesService.setEndGameStatus(userId);
-    client.leave(gameId);
+    if (userId && gameId) {
+      this.gamesService.setEndGameStatus(userId);
+      client.leave(gameId);
+    }
   }
 
   @SubscribeMessage('padUp')
@@ -196,8 +194,8 @@ export class GamesGateway {
     @MessageBody('gameId') gameId: string,
     @MessageBody('playerId') playerId: string,
   ) {
-    //console.log("move up");
-    this.gamesService.getGame(gameId).movePad(playerId, PadCmd.UP);
+    if (this.gamesService.doGameExist(gameId) && playerId)
+      this.gamesService.getGame(gameId).movePad(playerId, PadCmd.UP);
   }
 
   @SubscribeMessage('padDown')
@@ -205,8 +203,8 @@ export class GamesGateway {
     @MessageBody('gameId') gameId: string,
     @MessageBody('playerId') playerId: string,
   ) {
-    //console.log("move down");
-    this.gamesService.getGame(gameId).movePad(playerId, PadCmd.DOWN);
+    if (this.gamesService.doGameExist(gameId) && playerId)
+      this.gamesService.getGame(gameId).movePad(playerId, PadCmd.DOWN);
   }
 
   @SubscribeMessage('createInvite')
@@ -219,18 +217,14 @@ export class GamesGateway {
     else {
       const uuid = this.gamesService.addInvite(userId, client);
       client.emit('inviteCreated', uuid);
-      console.log('invitCreated sent to front');
     }
   }
 
   @SubscribeMessage('cancelInvite')
   async cancelInvite(@MessageBody('userId') hostId: string) {
-    console.log('host want to cancel');
-    //debug:
-    const inviteId = this.gamesService.userInvit.get(hostId);
-    //-----------------
-    this.gamesService.delInvite(hostId);
-    `invite ${inviteId} exist : ${this.gamesService.userInvit.get(hostId)}`;
+    if (hostId) {
+      this.gamesService.delInvite(hostId);
+    }
   }
 
   @SubscribeMessage('acceptInvite')
@@ -239,15 +233,9 @@ export class GamesGateway {
     @MessageBody('inviteId') inviteId: string,
     @ConnectedSocket() client: Socket,
   ) {
-    console.log(
-      `invitId ${inviteId} exist in acceptInvite : ${this.gamesService.doesInvitExist(
-        inviteId,
-      )}`,
-    );
     if (!this.gamesService.doesInvitExist(inviteId))
       client.emit('inviteNotFound');
     else {
-      console.log('invite found');
       const hostId = this.gamesService.getInvitHost(inviteId);
       const hostSocket: Socket = this.gamesService.getHostSocket(hostId);
       let user1, user2: User;
@@ -263,8 +251,6 @@ export class GamesGateway {
             playerTwoId,
             user2.username,
           );
-          console.log('game created by invite');
-          console.log(`match id : ${match.id}`);
           this.gamesService.setIngameStatus(user1.id);
           this.gamesService.setIngameStatus(user2.id);
           let payload: GameReadyPayload = {
@@ -286,13 +272,6 @@ export class GamesGateway {
             scoreP1: 0,
             scoreP2: 0,
           };
-          console.log(payload.gameId);
-          console.log(payload.playerId);
-          console.log(payload.isP1);
-          console.log(payload.playerOneName);
-          console.log(payload.playerTwoName);
-          console.log(payload.scoreP1);
-          console.log(payload.scoreP2);
           client.emit('gameReady', payload);
           this.gamesService.delInvite(hostId);
         })
@@ -340,9 +319,7 @@ export class GamesGateway {
     const userWinner: User = winner.userRef;
     const userLoser: User = loser.userRef;
     userWinner.winCount++;
-    //userWinner.status = UserStatus.ONLINE;
     userLoser.lossCount++;
-    //userLoser.status = UserStatus.ONLINE;
     await myDataSource.getRepository(User).save(userWinner);
     await myDataSource.getRepository(User).save(userLoser);
     this.gamesService.setEndGameStatus(userWinner.id);
@@ -352,9 +329,6 @@ export class GamesGateway {
   async handleLoopOutput(gameId: string, details: LoopDetails) {
     let loopPayload: GameStatePayload;
     const gameState = this.gamesService.getGame(gameId).getState();
-    //console.log("ball positions just before emit:");
-    //console.log(gameState.ball.xPos);
-    //console.log(gameState.ball.yPos);
     loopPayload = {
       gameId: gameId,
       playerOneY: gameState.player1.yPos,
