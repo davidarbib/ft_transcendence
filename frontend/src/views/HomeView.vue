@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import Title from "@/components/TitleMaxComponent.vue";
 import MusicLoop from "../components/MusicLoopComponent.vue";
+import { ref } from "vue";
+
+const discordUrl = ref<string>(`http://${import.meta.env.VITE_HOST}:8090/auth/discordLogin`);
+const intraUrl = ref<string>(`http://${import.meta.env.VITE_HOST}:8090/auth/login`);
 </script>
 
 <template>
@@ -8,12 +12,18 @@ import MusicLoop from "../components/MusicLoopComponent.vue";
     <div class="logo"><Title /></div>
     <div class="sound"><MusicLoop music="default" /></div>
     <div class="connect-with-discord">
-      <a href="http://localhost:8090/auth/discordLogin" class="primary-button">
+      <a
+        :href="discordUrl"
+        class="primary-button"
+      >
         Connect with Discord
       </a>
     </div>
     <div class="connect-with-42">
-      <a href="http://localhost:8090/auth/login" class="b42-submit">
+      <a
+        :href="intraUrl"
+        class="b42-submit"
+      >
         Connect with 42
       </a>
     </div>

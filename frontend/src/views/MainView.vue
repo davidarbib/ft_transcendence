@@ -70,6 +70,7 @@ userStore.gameSocket.on("gameReady", function (game) {
 
 onMounted(() => {
   userStore.gameMode = "default";
+  console.log(import.meta.env.VITE_HOST);
 });
 </script>
 

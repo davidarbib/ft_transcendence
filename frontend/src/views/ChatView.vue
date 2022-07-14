@@ -171,7 +171,7 @@ function isUserOwner(login: string): boolean {
 function getUserInChan() {
   // pour get tout les user chan
   axios
-    .get(`http://localhost:8090/channels/${getName.value}`)
+    .get(`http://${import.meta.env.VITE_HOST}:8090/channels/${getName.value}`)
     .then((response) => {
       userIn.value = response.data;
     })
@@ -220,9 +220,14 @@ function getAdmins() {
   // pour avoir tout les admin du serv
   if (getName.value) {
     axios
-      .get(`http://localhost:8090/chan-participants/admin/${getName.value}`, {
-        name: getName.value,
-      })
+      .get(
+        `http://${import.meta.env.VITE_HOST}:8090/chan-participants/admin/${
+          getName.value
+        }`,
+        {
+          name: getName.value,
+        }
+      )
       .then((response) => {
         allAdmins.value = response.data;
       })
@@ -236,9 +241,14 @@ function getOwner() {
   // get owner of chan and put it in owner.value.
   if (getName.value) {
     axios
-      .get(`http://localhost:8090/chan-participants/owner/${getName.value}`, {
-        name: getName.value,
-      })
+      .get(
+        `http://${import.meta.env.VITE_HOST}:8090/chan-participants/owner/${
+          getName.value
+        }`,
+        {
+          name: getName.value,
+        }
+      )
       .then((response) => {
         owner.value = response.data.login;
       })

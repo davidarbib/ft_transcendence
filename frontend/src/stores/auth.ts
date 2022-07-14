@@ -17,9 +17,9 @@ export const useUserStore = defineStore("user", () => {
     twoFactorSecret: "",
   });
 
-  const gameSocket = io("http://localhost:8090");
-  const chatsocket = io("http://localhost:8090");
-  const statusSocket = io("http://localhost:8090");
+  const gameSocket = io(`http://${import.meta.env.VITE_HOST}:8090`);
+  const chatsocket = io(`http://${import.meta.env.VITE_HOST}:8090`);
+  const statusSocket = io(`http://${import.meta.env.VITE_HOST}:8090`);
   const gameMode = "default";
 
   const gameInfos = ref({

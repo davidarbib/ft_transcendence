@@ -8,7 +8,7 @@ const historic = ref([]);
 onMounted(() => {
   axios.defaults.withCredentials = true;
   axios
-    .get(`http://localhost:8090/users/${props.login}/test/historic/`)
+    .get(`http://${import.meta.env.VITE_HOST}:8090/users/${props.login}/test/historic/`)
     .then((response) => {
       console.log(response);
       historic.value = response.data;

@@ -2,6 +2,6 @@ import { defineStore } from "pinia";
 
 export const apiStore = defineStore("api", {
   state: () => ({
-    url: "http://localhost:8090",
+    url: `http://${import.meta.env.VITE_HOST}`,
   }),
 });

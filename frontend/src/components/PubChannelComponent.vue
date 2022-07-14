@@ -17,12 +17,11 @@ userStore.chatsocket.on("creation", (data) => {
   if (data.type == "private") chanPrivate.value.push(data);
 });
 
-  function modalCancelStatus()
-  {
-    correctPass.value = false;
-    inputPass.value = "";
-    passOpen.value = false;
-  }
+function modalCancelStatus() {
+  correctPass.value = false;
+  inputPass.value = "";
+  passOpen.value = false;
+}
 
 /* AS TON BESOIN D'UN MDP POUR CE CHAN */
 function needPassword(name: string) {
@@ -36,17 +35,18 @@ function needPassword(name: string) {
 }
 
 function isGoodPassword(name: string, password: string) {
-  console.log('good pass');
+  console.log("good pass");
   userStore.chatsocket.emit(
     "isPassword",
-    { name: name, password: password }, (data: never) => {
-      if (data) // if pwd is good
-      {
+    { name: name, password: password },
+    (data: never) => {
+      if (data) {
+        // if pwd is good
         passOpen.value = false;
         joinChan(name);
         correctPass.value = false;
       } else {
-         console.log('bad pass');
+        console.log("bad pass");
         correctPass.value = true;
       }
     }
@@ -56,7 +56,11 @@ function isGoodPassword(name: string, password: string) {
 watch(childMsg, () => {
   axios.defaults.withCredentials = true;
   axios
-    .get(`http://localhost:8090/channels/chanpublic/${userStore.user.login}`)
+    .get(
+      `http://${import.meta.env.VITE_HOST}:8090/channels/chanpublic/${
+        userStore.user.login
+      }`
+    )
     .then((response) => {
       chanPublic.value = response.data;
     })
@@ -64,7 +68,11 @@ watch(childMsg, () => {
       console.log(error);
     });
   axios
-    .get(`http://localhost:8090/channels/chanpriv/${userStore.user.login}`)
+    .get(
+      `http://${import.meta.env.VITE_HOST}:8090/channels/chanpriv/${
+        userStore.user.login
+      }`
+    )
     .then((response) => {
       chanPrivate.value = response.data;
     })
@@ -75,7 +83,9 @@ watch(childMsg, () => {
 
 onMounted(() => {
   axios.defaults.withCredentials = true;
-  const adr = `http://localhost:8090/channels/chanpublic/${userStore.user.login}`;
+  const adr = `http://${import.meta.env.VITE_HOST}:8090/channels/chanpublic/${
+    userStore.user.login
+  }`;
   axios
     .get(adr)
     .then((response) => {
@@ -85,7 +95,7 @@ onMounted(() => {
       console.log(error);
     });
   axios
-    .get(`http://localhost:8090/channels/chanpriv/${userStore.user.login}`)
+    .get(`http://${import.meta.env.VITE_HOST}:8090/channels/chanpriv/${userStore.user.login}`)
     .then((response) => {
       chanPrivate.value = response.data;
     })
@@ -133,7 +143,7 @@ function joinChan(name: string) {
                 class="message-input h-3/4 w-3/4 px-2 focus:outline-none border rounded"
               />
               <div v-if="correctPass">
-                <p>Invalide password !</p>
+                <p>Invalid password !</p>
               </div>
               <button
                 class="primary-button valid-button"
@@ -163,8 +173,8 @@ function joinChan(name: string) {
       >
         <p>{{ channel.name }}</p>
         <button
-            @click="needPassword(channel.name)"
-            class="secondary-button interact"
+          @click="needPassword(channel.name)"
+          class="secondary-button interact"
         >
           Join
         </button>
@@ -172,30 +182,29 @@ function joinChan(name: string) {
           <div v-if="passOpen" class="modal">
             <div class="modal-inner">
               <input
-                  v-model="inputPass"
-                  v-on:keyup.enter="isGoodPassword(channel.name, inputPass)"
-                  type="text"
-                  class="message-input h-3/4 w-3/4 px-2 focus:outline-none border rounded"
+                v-model="inputPass"
+                v-on:keyup.enter="isGoodPassword(channel.name, inputPass)"
+                type="text"
+                class="message-input h-3/4 w-3/4 px-2 focus:outline-none border rounded"
               />
               <div v-if="correctPass">
                 <p>Invalide password !</p>
               </div>
               <button
-                  class="primary-button valid-button"
-                  @click="isGoodPassword(channel.name, inputPass)"
+                class="primary-button valid-button"
+                @click="isGoodPassword(channel.name, inputPass)"
               >
                 Confirm
               </button>
               <button
-                  class="primary-button cancel-button"
-                  @click="modalCancelStatus()"
+                class="primary-button cancel-button"
+                @click="modalCancelStatus()"
               >
                 Cancel
               </button>
             </div>
           </div>
         </Teleport>
-
       </div>
     </div>
   </div>
@@ -236,14 +245,14 @@ function joinChan(name: string) {
     .valid-button {
       background-color: green;
       grid-area: 2 / 1 / 3 / 3;
-      &:hover{
+      &:hover {
         background-color: darkgreen;
       }
     }
     .cancel-button {
       background-color: crimson;
       grid-area: 2 / 3 / 3 / 4;
-      &:hover{
+      &:hover {
         background-color: brown;
       }
     }

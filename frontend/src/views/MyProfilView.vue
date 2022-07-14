@@ -133,7 +133,7 @@ const turnoff2fa = () => {
 onMounted(() => {
   axios.defaults.withCredentials = true;
   axios
-    .get("http://localhost:8090/auth/current")
+    .get(`http://${import.meta.env.VITE_HOST}:8090/auth/current`)
     .then((response) => {
       userStore.user = response.data;
     })

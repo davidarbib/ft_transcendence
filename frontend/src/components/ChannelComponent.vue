@@ -19,10 +19,10 @@ const pwdStatusInit = ref<boolean>(false);
 const itsMe = ref<boolean>(false);
 
 userStore.chatsocket.on("leavetheChan", () => {
-    console.log("YES");
-      axios.defaults.withCredentials = true;
+  console.log("YES");
+  axios.defaults.withCredentials = true;
   axios
-    .get(`http://localhost:8090/channels/chan/${userStore.user.login}`)
+    .get(`http://${import.meta.env.VITE_HOST}:8090/channels/chan/${userStore.user.login}`)
     .then((response) => {
       chan.value = response.data;
     })
@@ -86,7 +86,9 @@ function getOwner() {
     axios.defaults.withCredentials = true;
     axios
       .get(
-        `http://localhost:8090/chan-participants/owner/${channelName.value}`,
+        `http://${import.meta.env.VITE_HOST}:8090/chan-participants/owner/${
+          channelName.value
+        }`,
         {
           name: channelName.value,
         }
@@ -113,7 +115,7 @@ userStore.chatsocket.on("join", (data) => {
 onMounted(() => {
   axios.defaults.withCredentials = true;
   axios
-    .get(`http://localhost:8090/channels/chan/${userStore.user.login}`)
+    .get(`http://${import.meta.env.VITE_HOST}:8090/channels/chan/${userStore.user.login}`)
     .then((response) => {
       chan.value = response.data;
     })
@@ -133,7 +135,7 @@ function selectChannel(name: string) {
 }
 
 function leaveChan() {
-  console.log('Enter');
+  console.log("Enter");
   console.log(channelName.value);
   userStore.chatsocket.emit(
     "leavechan",
@@ -148,7 +150,7 @@ function leaveChan() {
     });
   });
   channelName.value = "";
-  console.log('Exit');
+  console.log("Exit");
   console.log(channelName.value);
   emit("name", channelName.value);
 }
