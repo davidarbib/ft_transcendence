@@ -12,6 +12,7 @@ import { Socket } from 'socket.io';
 import { GameState } from './game/gameState';
 import { randomUUID } from 'crypto';
 import { UsersGateway } from 'src/users/users.gateway';
+import {Repository } from 'typeorm'
 
 export interface UserSocket
 {
@@ -25,6 +26,7 @@ export class GamesService {
   (
     private readonly matchesService : MatchesService,
     private readonly playersService : PlayersService,
+    private readonly matchRepo : Repository<Match>,
     private readonly usersGateway: UsersGateway,
   )
   { }
@@ -160,22 +162,28 @@ export class GamesService {
       undefined,
     );
     this.games.set(gameId, game);
+    this.games.set(gameId, game);
   }
 
   async getGamePlayedByUser(userId: string) : Promise<string>
   {
-    const gameRequest = myDataSource
-    .createQueryBuilder()
-    .select("match")
-    .from(Match, "match")
-    .innerJoin(Player, "player", "player.matchRef = match.id")
-    .where("match.active = :active", { 'active': true })
-    .andWhere("player.userRef = :userId", { 'userId': userId });
+    const matches = await this.matchRepo.find({
+      select: { id: true },
+      where: { active : true },
+      relations: { players : true },
+    })
+
+    let result : string = "";
+    matches.forEach((match) => {
+      if (match.players[0].userRef.id === userId
+          || match.players[1].userRef.id === userId)
+        result = match.id;
+    })
     
-    const match : Match = await gameRequest.getOne();
-    if (!match)
-      throw("game not found");
-    return match.id;
+    if (result === "")
+      throw "No game found";
+    
+    return result;
   }
 
   addInvite(userId: string, client: Socket) : string

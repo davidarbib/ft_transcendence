@@ -155,7 +155,6 @@ export class GamesGateway {
     this.gamesService
       .getGamePlayedByUser(userId)
       .then((gameId) => {
-        console.log(`game to spectate : ${gameId}`);
         const playerOneName = this.gamesService.getPlayerOneName(gameId);
         const playerTwoName = this.gamesService.getPlayerTwoName(gameId);
         const payload: GameReadyPayload = {

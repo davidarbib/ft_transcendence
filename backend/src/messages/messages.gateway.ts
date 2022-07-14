@@ -137,15 +137,15 @@ export class MessagesGateway
   @SubscribeMessage('isTimeToDemut')
   async isTimeTo(@MessageBody('user') usr:User, @MessageBody('name') name:string) 
   {
-    let date = new Date();
+    let date = new Date(Date.now());
     let chanPart;
-      const listchanPart = await myDataSource.getRepository(ChanParticipant).find({relations:['chan', 'participant']});
-        listchanPart.forEach(element => {
-          if ( element.chan && element.participant){
-            if (element.chan.name === name && element.participant.login === usr.login)
-              {
-      
-                if ((element.end_timestamp < date ) == true && element.ban !== true)
+    const listchanPart = await myDataSource.getRepository(ChanParticipant).find({relations:['chan', 'participant']});
+    listchanPart.forEach(element => {
+      if ( element.chan && element.participant){
+        if (element.chan.name === name && element.participant.login === usr.login)
+        {
+          
+                if ((element.end_timestamp < date ) && (element.mute === true))
                 {
 
                   element.end_timestamp = null;
@@ -156,21 +156,13 @@ export class MessagesGateway
             }
           });
           if (chanPart){
-            if (chanPart.ban && chanPart.mute){
-           if ( chanPart.ban == false && chanPart.mute == false)
-           {
-
             await myDataSource.getRepository(ChanParticipant).save(chanPart);
             return true;
-           }
           }
-        }
-        
-  } 
+        }        
   @SubscribeMessage('isTimeToDeBan')
   async isTimeTodeban(@MessageBody('user') usr:User, @MessageBody('name') name:string) 
   {
-
     let date = new Date(Date.now());
     let chanPart;
       const listchanPart = await myDataSource.getRepository(ChanParticipant).find({relations:['chan', 'participant']});
@@ -178,7 +170,7 @@ export class MessagesGateway
           if (element.chan && element.participant){
             if (element.chan.name === name && element.participant.login === usr.login)
             {
-                if ((element.end_timestamp < date ) === true && element.mute !== true)
+                if (element.end_timestamp < date )
                 {
                   element.end_timestamp = null;
                   element.ban = false;
@@ -188,12 +180,9 @@ export class MessagesGateway
             }
             });
             if (chanPart){
-            if (chanPart.ban && chanPart.mute){
-             if (chanPart.ban == false && chanPart.mute == false)
                 await myDataSource.getRepository(ChanParticipant).save(chanPart);
-            }
           }
-  }
+    }
   @SubscribeMessage('createChannel')
   async createChan(@MessageBody('user') usr:User , @MessageBody() createChannelDto:CreateChannelDto ,@ConnectedSocket() client:Socket) 
   {

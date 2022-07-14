@@ -114,7 +114,7 @@ export class MessagesService {
             chanPart = element;
                 let date =   new Date( Date.now());
                 console.log(date);
-                date.setMinutes(date.getMinutes() +2);
+                date.setMinutes(date.getMinutes() +1);
                 console.log(date);
                 if (mute === true)
                 {
