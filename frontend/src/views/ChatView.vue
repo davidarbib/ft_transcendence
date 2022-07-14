@@ -79,6 +79,7 @@ userStore.chatsocket.on("userleavetheChan", (chan: never, user: never) => {
 });
 userStore.chatsocket.on("userleaveChan", () => {
   userIn.value = [];
+  messages.value = [];
 });
 /* event le user est devenu admin dans le chan */
 userStore.chatsocket.on("newadmin", (chan: never, user: never) => {
@@ -309,14 +310,14 @@ function banUser(login: string) {
 
 watch(getName, () => {
   if (getName.value) {
-    // console.log(userIn.value);
+    console.log('getName.value');
+    console.log(getName.value);
     getAdmins();
     listMute();
     listBan();
     getOwner();
     isalwaysMut();
     isalwaysban();
-
     getUserInChan();
     messages.value = [];
     userStore.chatsocket.emit(
