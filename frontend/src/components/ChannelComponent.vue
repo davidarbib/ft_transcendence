@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from "vue";
+import {ref, onMounted, watch, onBeforeMount} from "vue";
 import axios from "axios";
 import { useUserStore } from "@/stores/auth";
 
@@ -111,7 +111,7 @@ userStore.chatsocket.on("join", (data) => {
   chan.value.push(data);
 });
 
-onMounted(() => {
+onBeforeMount(() => {
   axios.defaults.withCredentials = true;
   axios
     .get(`http://localhost:8090/channels/chan/${userStore.user.login}`)
@@ -121,7 +121,6 @@ onMounted(() => {
     .catch((error) => {
       console.log(error);
     });
-  return chan.value;
 });
 
 function selectChannel(name: string) {

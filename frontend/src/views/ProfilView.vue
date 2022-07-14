@@ -24,14 +24,16 @@ let user = ref({
 });
 const login1 = ref(router.currentRoute.value.params.pseudo);
 
-function private_msg(target: any) {
+async function private_msg(target: any) {
   userStore.chatsocket.emit(
     "createDM",
     { user: userStore.user, target: target },
     (data) => {}
   );
-  router.push("/chat");
+  await router.push("/chat");
 }
+
+
 function block_user(target: never) {
   userStore.chatsocket.emit(
     "blockUser",

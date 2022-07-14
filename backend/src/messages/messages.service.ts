@@ -210,6 +210,7 @@ export class MessagesService {
           return ;
       }*/
     const chan = await this.createChanDm(user, target);
+
     return { chan: chan, targetsocket: socketTarget };
   }
   
