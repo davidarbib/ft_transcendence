@@ -25,28 +25,31 @@ let pseudo = ref<string>(userStore.user.username);
 const file = ref<File | undefined>();
 axios.defaults.withCredentials = true;
 
-const handleFileUpload = async() => {
-  console.log("selected file",file.value.files[0]);
+const handleFileUpload = async () => {
+  console.log("selected file", file.value.files[0]);
   file.value = file.value.files[0];
-}
+};
 
 const uploadProfilePicture = () => {
-  console.log("selected file",file.value);
+  console.log("selected file", file.value);
   const data = new FormData();
-  data.append('file', file.value as Blob);
+  data.append("file", file.value as Blob);
   const config = {
     headers: {
-      "content-type": "multipart/form-data"
-    }
+      "content-type": "multipart/form-data",
+    },
   };
-  axios.post("http://localhost:8090/users/upload", data, config).then((response) => {
-    console.log(response.data);
-    userStore.user.avatarRef = response.data.avatarRef;
-    console.log(`AVATAR : ${userStore.user.avatarRef}`);
-  }).catch((error) => {
-    console.log(error);
-  })
-}
+  axios
+    .post("http://localhost:8090/users/upload", data, config)
+    .then((response) => {
+      console.log(response.data);
+      userStore.user.avatarRef = response.data.avatarRef;
+      console.log(`AVATAR : ${userStore.user.avatarRef}`);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+};
 
 const updatePseudo = () => {
   axios
@@ -56,9 +59,7 @@ const updatePseudo = () => {
     .then(() => {
       userStore.user.username = pseudo.value;
     })
-    .catch(() => {
-
-    });
+    .catch(() => {});
 };
 
 const activate2fa = () => {
@@ -154,7 +155,7 @@ onMounted(() => {
       ><p>{{ notifyMessage }}</p></notification-message
     >
     <div class="historic">
-      <Historic :login="pseudo"/>
+      <Historic :login="pseudo" />
     </div>
     <div class="profile-card bg-black bg-opacity-10">
       <header>
@@ -162,8 +163,16 @@ onMounted(() => {
           <p @click="uploadProfilePicture">Update profile picture</p>
         </div>
         <div class="profile-picture h-36 w-36">
-          <img v-if="!userStore.user.avatarRef" src="@/assets/sphere_mini.png" alt="user profile picture" />
-          <img v-else :src="`http://localhost:8090/${userStore.user.avatarRef}`" alt="user profile picture" />
+          <img
+            v-if="!userStore.user.avatarRef"
+            src="@/assets/sphere_mini.png"
+            alt="user profile picture"
+          />
+          <img
+            v-else
+            :src="`http://localhost:8090/${userStore.user.avatarRef}`"
+            alt="user profile picture"
+          />
         </div>
         <div class="secondary-button" @click="updatePseudo">
           <p>Edit username</p>
@@ -201,7 +210,12 @@ onMounted(() => {
           />
         </div>
         <div class="w-3/5 mx-auto my-4">
-          <input type="file" ref="file" v-on:change="handleFileUpload" accept="image/*" />
+          <input
+            type="file"
+            ref="file"
+            v-on:change="handleFileUpload"
+            accept="image/*"
+          />
         </div>
         <div class="toggle-2fa">
           <button
