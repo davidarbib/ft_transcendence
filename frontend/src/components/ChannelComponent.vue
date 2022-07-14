@@ -104,6 +104,7 @@ function getOwner() {
 function toggleChannelMenu(id: number) {
   channelSelected.value = id;
   channelOptions.value = !channelOptions.value;
+  itsMe.value = owner.value === userStore.user.login;
 }
 
 userStore.chatsocket.on("join", (data) => {
@@ -125,8 +126,9 @@ onMounted(() => {
 
 function selectChannel(name: string) {
   pwdStatusMsg.value = pwdStatus(false);
-  getOwner();
   channelName.value = name;
+  getOwner();
+  itsMe.value = owner.value === userStore.user.login;
   needPassword(channelName.value);
   console.log(channelName.value);
   emit("name", channelName.value);
@@ -174,10 +176,10 @@ function removePassword() {
 }
 
 function openModal() {
+  itsMe.value = owner.value === userStore.user.login;
   passOpen.value = true;
   pwdStatus(false);
   inputPass.value = "";
-  itsMe.value = owner.value === userStore.user.login;
 }
 
 const emit = defineEmits(["name", "msg"]);
