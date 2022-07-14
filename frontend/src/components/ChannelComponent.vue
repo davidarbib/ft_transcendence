@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, watch, onBeforeMount } from "vue";
+import { ref, onMounted, watch } from "vue";
 import axios from "axios";
 import { useUserStore } from "@/stores/auth";
 
@@ -200,7 +200,7 @@ function removePassword() {
 
 function openModal() {
   itsMe.value = owner.value === userStore.user.login;
-  passOpen.value = true;
+  passOpen.value = !passOpen.value;
   pwdStatus(false);
   inputPass.value = "";
   itsMe.value = owner.value === userStore.user.login;
@@ -210,54 +210,55 @@ const emit = defineEmits(["name", "msg"]);
 </script>
 
 <template>
+  <Teleport to="body">
+    <div v-if="passOpen" class="modal">
+      <div class="modal-inner">
+        <input
+          v-if="itsMe"
+          v-model="inputPass"
+          type="text"
+          class="message-input h-3/4 w-3/4 px-2 focus:outline-none border rounded"
+        />
+        <p v-else>Your not owner :(</p>
+        <!-- if input isnt init hide buttons -->
+        <button
+          v-if="pwdStatusInit && itsMe"
+          @click="pwdStatus(true)"
+          class="primary-button valid-pass-button"
+        >
+          {{ pwdStatusMsg }}
+        </button>
+        <button
+          class="primary-button cancel-button"
+          @click="modalCancelStatus()"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  </Teleport>
   <div class="contact-section mx-2">
-    <div v-if="!(channelName === 'dm')" @click="openModal">
+    <p v-if="!(channelName === 'dm')" @click="openModal">
       <i class="fa-solid fa-key mx-1"></i>
-    </div>
+    </p>
 
-    <p @click="leaveChan(channelName)"></p>
-    <i class="fa-solid fa-right-from-bracket mx-1"></i>
-  </div>
-  <div
-    @click="selectChannel(channel.name)"
-    class="user-card rounded my-2 bg-black bg-opacity-10 font-medium hover:bg-opacity-30 transition duration-300"
-    v-for="channel in chan"
-    :key="channel.id"
-  >
-    <div class="user-pseudo py-2">
-      <p>{{ channel.name }}</p>
-    </div>
-    <div v-if="channelOptions && channelSelected === channel.id">
-      <div class="list">
-        <!--        add pass-->
-        <Teleport to="body">
-          <div v-if="passOpen" class="modal">
-            <div class="modal-inner">
-              <input
-                v-if="itsMe"
-                v-model="inputPass"
-                type="text"
-                class="message-input h-3/4 w-3/4 px-2 focus:outline-none border rounded"
-              />
-              <p v-else>Your not owner :(</p>
-              <!-- if input isnt init hide buttons -->
-              <button
-                v-if="pwdStatusInit && itsMe"
-                @click="pwdStatus(true)"
-                class="primary-button valid-pass-button"
-              >
-                {{ pwdStatusMsg }}
-              </button>
-              <button
-                class="primary-button cancel-button"
-                @click="modalCancelStatus()"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </Teleport>
-        <!--        leave chan-->
+    <p @click="leaveChan(channelName)">
+      <i class="fa-solid fa-right-from-bracket mx-1"></i>
+    </p>
+    <div
+      @click="selectChannel(channel.name)"
+      class="user-card rounded my-2 bg-black bg-opacity-10 font-medium hover:bg-opacity-30 transition duration-300"
+      v-for="channel in chan"
+      :key="channel.id"
+    >
+      <div class="user-pseudo py-2">
+        <p>{{ channel.name }}</p>
+      </div>
+      <div v-if="channelOptions && channelSelected === channel.id">
+        <div class="list">
+          <!--        add pass-->
+          <!--        leave chan-->
+        </div>
       </div>
     </div>
   </div>
