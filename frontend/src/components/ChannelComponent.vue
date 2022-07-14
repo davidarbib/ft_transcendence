@@ -126,6 +126,7 @@ onMounted(() => {
 function selectChannel(name: string) {
   pwdStatusMsg.value = pwdStatus(false);
   getOwner();
+  itsMe.value = owner.value === userStore.user.login;
   channelName.value = name;
   needPassword(channelName.value);
   console.log(channelName.value);
@@ -174,7 +175,7 @@ function openModal() {
   passOpen.value = true;
   pwdStatus(false);
   inputPass.value = "";
-  itsMe.value = owner.value === userStore.user.login;
+  itsMe.value = (owner.value === userStore.user.login);
 }
 
 const emit = defineEmits(["name", "msg"]);

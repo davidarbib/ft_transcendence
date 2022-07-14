@@ -1,6 +1,6 @@
 import { WebSocketGateway, SubscribeMessage, ConnectedSocket, MessageBody, WebSocketServer} from '@nestjs/websockets';
 import { JwtGuard } from 'src/auth/guards/jwt.guard';
-import { CreateMessageDto } from './dto/create-message.dto';
+import { CreateMessageDto } from './dto/create-chan.dto';
 import {UseGuards,Request} from '@nestjs/common';
 import { User } from 'src/users/entities/user.entity';
 import { Server, Socket } from 'socket.io';
@@ -14,6 +14,7 @@ import { ChanPartStatus } from 'src/chan-participants/entities/chan-participant.
 import { myDataSource } from 'src/app-data-source';
 import { Channel, ChanType } from 'src/channels/entities/channel.entity';
 import { UpdateChanParticipantDto } from 'src/chan-participants/dto/update-chan-participant.dto';
+import { PasswordDto } from './dto/passwod.dto';
 import {bcrypt} from 'bcryptjs'
 import { IsLoginlNotExisting } from 'src/users/validator/is-login-already-exist.validator';
 var bcrypt = require('bcryptjs');
@@ -52,20 +53,24 @@ export class MessagesGateway
   }
   // NEED TO TRANSFORM IN DTO
   @SubscribeMessage('addPassword')
-  async addPass(@MessageBody('name') name:string,@MessageBody('password') password:string ) {
+  async addPass(@MessageBody('name') name:string,@MessageBody() passworddto:PasswordDto ) {
     const chan =await myDataSource.getRepository(Channel).findOne({where:{name:name}});
-    if (password) {
+    const {password} = passworddto;
+    if (password && chan) {
       const hash = bcrypt.hashSync(password, 8);
       chan.password = hash;
+      await myDataSource.getRepository(Channel).save(chan);
     }
-    await myDataSource.getRepository(Channel).save(chan);
   }
   @SubscribeMessage('deletePassword')
   async deletePass(@MessageBody('name') name:string ) {
     const chan =await myDataSource.getRepository(Channel).findOne({where:{name:name}});
-    if ( chan.password)
+    if (chan){
+    if ( chan.password){
         chan.password = null;
     await myDataSource.getRepository(Channel).save(chan);
+    }
+    }
   }
 
   @SubscribeMessage('findMessageFromChan')
@@ -91,7 +96,6 @@ export class MessagesGateway
   async findChane( @MessageBody('user') user:User )
   {
     const chan = await this.messageService.findChan(user);
-    console.log(chan);
     return  chan;
   }
   @SubscribeMessage('blockUser')
@@ -133,30 +137,34 @@ export class MessagesGateway
   @SubscribeMessage('isTimeToDemut')
   async isTimeTo(@MessageBody('user') usr:User, @MessageBody('name') name:string) 
   {
-    console.log("?? STYLE MUTE")
     let date = new Date();
     let chanPart;
       const listchanPart = await myDataSource.getRepository(ChanParticipant).find({relations:['chan', 'participant']});
         listchanPart.forEach(element => {
+          if ( element.chan && element.participant){
             if (element.chan.name === name && element.participant.login === usr.login)
               {
       
                 if ((element.end_timestamp < date ) == true && element.ban !== true)
                 {
-                  console.log("?? STYLE MUTE")
 
                   element.end_timestamp = null;
                   element.mute = false;
                   chanPart = element;
                 }
               }
-            });
+            }
+          });
+          if (chanPart){
+            if (chanPart.ban && chanPart.mute){
            if ( chanPart.ban == false && chanPart.mute == false)
            {
 
             await myDataSource.getRepository(ChanParticipant).save(chanPart);
             return true;
            }
+          }
+        }
         
   } 
   @SubscribeMessage('isTimeToDeBan')
@@ -167,6 +175,7 @@ export class MessagesGateway
     let chanPart;
       const listchanPart = await myDataSource.getRepository(ChanParticipant).find({relations:['chan', 'participant']});
         listchanPart.forEach(element => {
+          if (element.chan && element.participant){
             if (element.chan.name === name && element.participant.login === usr.login)
             {
                 if ((element.end_timestamp < date ) === true && element.mute !== true)
@@ -176,20 +185,28 @@ export class MessagesGateway
                   chanPart = element;
                 }
               }
+            }
             });
             if (chanPart){
+            if (chanPart.ban && chanPart.mute){
              if (chanPart.ban == false && chanPart.mute == false)
                 await myDataSource.getRepository(ChanParticipant).save(chanPart);
             }
+          }
   }
-// TRANSFORM DTO
   @SubscribeMessage('createChannel')
-  async createChan(@MessageBody('user') usr:User , @MessageBody('name')name : string, @MessageBody('type')type : ChanType, @MessageBody('password')password : string,  @ConnectedSocket() client:Socket) 
+  async createChan(@MessageBody('user') usr:User , @MessageBody() createChannelDto:CreateChannelDto ,@ConnectedSocket() client:Socket) 
   {
-      const chan = await this.messageService.CreateChan(usr, name, type, password,client)
+    const {name, type, password} = createChannelDto;
+    const chantest = await myDataSource.getRepository(Channel).findOne({where:{name:name}})
+    if ( chantest)
+      return;
+     const chan = await this.messageService.CreateChan(usr, name, type, password,client);
+     if (chan){
       client.join(chan.id);
       this.server.in(client.id).emit('join', chan);
       this.server.emit('creation', chan);
+     }
   }
 
 
@@ -213,7 +230,6 @@ async getUserinChan( @MessageBody('name') name:string) {
     if (element.chan.name == name)
       arr.push(element.participant)
   });
-  console.log(arr);
   return arr;
 
 }
@@ -234,12 +250,14 @@ async getUserinChan( @MessageBody('name') name:string) {
       }
     }
   })
+  if ( chanPartleave){
   const chanPartDelete = await myDataSource.getRepository(ChanParticipant).findOneBy({id : chanPartleave.id});
   chanPartDelete.remove();
   this.server.in(client.id).emit("leavetheChan", chan); // enlever ourchan
   this.server.in(client.id).emit("userleaveChan", ); // pour la personne qui part
   this.server.emit("userleavetheChan",chan, chanPartleave.participant );  // pour que les autres aient la notif
-  }
+  }  
+}
   
   @SubscribeMessage('userChanStatus')
   async userchanStatus( @MessageBody('name') name:string, @MessageBody('login') login:string )
@@ -266,9 +284,6 @@ async getUserinChan( @MessageBody('name') name:string) {
     const userTarget = await myDataSource.getRepository(User).findOne({where:{login:target}});
     const {arg, bool, chan} = await this.messageService.muteBanUser(name, updateChanParticipantDto, target);
    
-    console.log(
-      `Args of UserNewStatus -- arg :${arg} | bool:${bool} | chan:${chan} | user:${usr}`,
-    );
     this.server.emit('UserNewStatus', {
       status: arg,
       bool: bool,
@@ -281,30 +296,36 @@ async getUserinChan( @MessageBody('name') name:string) {
   async needPassword(@MessageBody('name') name:string)
   {
     const chan = await myDataSource.getRepository(Channel).findOne({where:{name:name}});
+    if ( chan) {
     if ( chan.password)
       return true;
+    }
     return false;
   }
   @SubscribeMessage('isPassword')
   async isPassword(@MessageBody('name') name:string, @MessageBody('password') password:string)
   {
-    console.log(password);
     const chan = await myDataSource.getRepository(Channel).findOne({where:{name:name}});
+    if (chan){
     if(chan.password)
     {
       if (bcrypt.compareSync(password, chan.password) == true)
         return true;
       }
+    }
     return false;
   }
-  // DTO 
   @SubscribeMessage('changePassword')
-  async changePassword(@MessageBody('name') name:string, @MessageBody('password') password:string)
+  async changePassword(@MessageBody('name') name:string, @MessageBody() passworddto:PasswordDto )
   {
     const chan = await myDataSource.getRepository(Channel).findOne({where:{name:name}});
+  const {password} = passworddto;
+    if (password && chan) 
+    {
     var hash = bcrypt.hashSync(password, 8);
     chan.password = hash;
     await myDataSource.getRepository(Channel).save(chan);
+    }
   }
   @SubscribeMessage('userAdmin')
   async ListOfAdmin( @MessageBody('name') name:string)
@@ -361,7 +382,7 @@ async getUserinChan( @MessageBody('name') name:string) {
     })
     return arr;
   }
-// DTO
+
   @SubscribeMessage('createDM')
   async createDM( @MessageBody('user') user:User, @MessageBody('target') target:User, @ConnectedSocket() client:Socket)
   {

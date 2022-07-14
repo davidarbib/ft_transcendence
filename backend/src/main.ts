@@ -38,7 +38,7 @@ async function bootstrap()
   }); // pour connecter le back et le front !!!
 
   app.use(express.static('public'));
-  await app.listen(PORT, () => console.log(`Running on Port : ${PORT}`));
+  await app.listen(PORT, `0.0.0.0`,() => console.log(`Running on Port : ${PORT}`));
 }
 
 bootstrap();
