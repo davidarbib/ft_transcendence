@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {ref, onMounted, watch, onBeforeMount} from "vue";
+import { ref, onMounted, watch, onBeforeMount } from "vue";
 import axios from "axios";
 import { useUserStore } from "@/stores/auth";
 
@@ -18,7 +18,7 @@ const pwdStatusMsg = ref<string>("type in input");
 const pwdStatusInit = ref<boolean>(false);
 const itsMe = ref<boolean>(false);
 
-  userStore.chatsocket.on("leavetheChan", () => {
+userStore.chatsocket.on("leavetheChan", () => {
   // need to put data in tab of admin
 });
 
@@ -27,22 +27,20 @@ function leaveChan() {
   userStore.chatsocket.emit(
     "leavechan",
     { user: userStore.user, name: channelName.value },
-    () => {
-
-    }
+    () => {}
   );
   userStore.chatsocket.on("leavetheChan", (data) => {
     chan.value = [];
-    data.forEach(element => {
-      if (element.name !== channelName.value)
-      { console.log(element);
+    data.forEach((element) => {
+      if (element.name !== channelName.value) {
+        console.log(element);
         chan.value.push(element);
       }
     });
     // userStore.chatsocket.emit("chanLOGIN", { user: userStore.user }, (data) => {
     // });
   });
- // channelName.value = "";
+  // channelName.value = "";
   console.log(channelName.value);
   emit("name", "");
 }
@@ -126,23 +124,21 @@ userStore.chatsocket.on("join", (data) => {
   chan.value.push(data);
 });
 
-async function callChannList()
-{
-  if (chan)
-  {
+async function callChannList() {
+  if (chan.value) {
     // chan.value = [];
     axios.defaults.withCredentials = true;
-  axios
-    .get(`http://localhost:8090/channels/chan/${userStore.user.login}`)
-    .then((response) => {
-      chan.value = response.data;
-      console.log(chan.value);
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-}
- return await chan.value;
+    axios
+      .get(`http://localhost:8090/channels/chan/${userStore.user.login}`)
+      .then((response) => {
+        chan.value = response.data;
+        console.log(chan.value);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+  return await chan.value;
 }
 
 onMounted(() => {
@@ -173,15 +169,15 @@ function selectChannel(name: string) {
 
 //   channelName.value = "";
 //   console.log('Exit');
-  
+
 //   console.log(channelName.value);
 //   emit("name", channelName.value);
 // }
-  //  function test(){
-  //    userStore.chatsocket.emit("testchan", { user: userStore.user }, (data) => {
-  //     chan.value = data;
-  //   });
-  // }
+//  function test(){
+//    userStore.chatsocket.emit("testchan", { user: userStore.user }, (data) => {
+//     chan.value = data;
+//   });
+// }
 /* CHANGER LE PASSWORD*/
 function changePassword(password: string) {
   if (channelName.value)
@@ -207,7 +203,7 @@ function openModal() {
   passOpen.value = true;
   pwdStatus(false);
   inputPass.value = "";
-  itsMe.value = (owner.value === userStore.user.login);
+  itsMe.value = owner.value === userStore.user.login;
 }
 
 const emit = defineEmits(["name", "msg"]);
@@ -215,55 +211,54 @@ const emit = defineEmits(["name", "msg"]);
 
 <template>
   <div class="contact-section mx-2">
-    <div  v-if="!(channelName === 'dm')">
-        <i class="fa-solid fa-key mx-1"></i>
-    </div> @click="openModal border-black">
-    
-      <p @click="leaveChan(channelName)"> </p>
-        <i class="fa-solid fa-right-from-bracket mx-1"></i>
+    <div v-if="!(channelName === 'dm')" @click="openModal">
+      <i class="fa-solid fa-key mx-1"></i>
     </div>
-    <div
-      @click="selectChannel(channel.name)"
-      class="user-card rounded my-2 bg-black bg-opacity-10 font-medium hover:bg-opacity-30 transition duration-300"
-      v-for="channel in chan"
-      :key="channel.id"
-    >
-      <div class="user-pseudo py-2">
-        <p>{{ channel.name }}</p>
-      </div>
-        <div v-if="channelOptions && channelSelected === channel.id">
-          <div class="list">
-            <!--        add pass-->
-            <Teleport to="body">
-              <div v-if="passOpen" class="modal">
-                <div class="modal-inner">
-                  <input
-                    v-if="itsMe"
-                    v-model="inputPass"
-                    type="text"
-                    class="message-input h-3/4 w-3/4 px-2 focus:outline-none border rounded"
-                  />
-                  <p v-else>Your not owner :(</p>
-                  <!-- if input isnt init hide buttons -->
-                  <button
-                    v-if="pwdStatusInit && itsMe"
-                    @click="pwdStatus(true)"
-                    class="primary-button valid-pass-button"
-                  >
-                    {{ pwdStatusMsg }}
-                  </button>
-                  <button
-                    class="primary-button cancel-button"
-                    @click="modalCancelStatus()"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </div>
-            </Teleport>
-            <!--        leave chan-->
+
+    <p @click="leaveChan(channelName)"></p>
+    <i class="fa-solid fa-right-from-bracket mx-1"></i>
+  </div>
+  <div
+    @click="selectChannel(channel.name)"
+    class="user-card rounded my-2 bg-black bg-opacity-10 font-medium hover:bg-opacity-30 transition duration-300"
+    v-for="channel in chan"
+    :key="channel.id"
+  >
+    <div class="user-pseudo py-2">
+      <p>{{ channel.name }}</p>
+    </div>
+    <div v-if="channelOptions && channelSelected === channel.id">
+      <div class="list">
+        <!--        add pass-->
+        <Teleport to="body">
+          <div v-if="passOpen" class="modal">
+            <div class="modal-inner">
+              <input
+                v-if="itsMe"
+                v-model="inputPass"
+                type="text"
+                class="message-input h-3/4 w-3/4 px-2 focus:outline-none border rounded"
+              />
+              <p v-else>Your not owner :(</p>
+              <!-- if input isnt init hide buttons -->
+              <button
+                v-if="pwdStatusInit && itsMe"
+                @click="pwdStatus(true)"
+                class="primary-button valid-pass-button"
+              >
+                {{ pwdStatusMsg }}
+              </button>
+              <button
+                class="primary-button cancel-button"
+                @click="modalCancelStatus()"
+              >
+                Cancel
+              </button>
+            </div>
           </div>
-        </div>
+        </Teleport>
+        <!--        leave chan-->
+      </div>
     </div>
   </div>
 </template>
