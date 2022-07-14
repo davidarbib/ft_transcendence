@@ -126,8 +126,11 @@ onMounted(() => {
 
 function selectChannel(name: string) {
   pwdStatusMsg.value = pwdStatus(false);
+<<<<<<< HEAD
   getOwner();
   itsMe.value = owner.value === userStore.user.login;
+=======
+>>>>>>> master
   channelName.value = name;
   getOwner();
   itsMe.value = owner.value === userStore.user.login;
@@ -146,7 +149,7 @@ function leaveChan() {
   );
   userStore.chatsocket.on("leavetheChan", () => {
     chan.value = [];
-    console.log(chan.value);
+    console.log("YOLO");
     userStore.chatsocket.emit("testchan", { user: userStore.user }, (data) => {
       chan.value = data;
     });
