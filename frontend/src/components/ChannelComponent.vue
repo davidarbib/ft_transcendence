@@ -16,8 +16,21 @@ const inputPass = ref<string>("");
 
 const pwdStatusMsg = ref<string>("type in input");
 const pwdStatusInit = ref<boolean>(false);
-
 const itsMe = ref<boolean>(false);
+
+userStore.chatsocket.on("leavetheChan", () => {
+    console.log("YES");
+      axios.defaults.withCredentials = true;
+  axios
+    .get(`http://localhost:8090/channels/chan/${userStore.user.login}`)
+    .then((response) => {
+      chan.value = response.data;
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  // need to put data in tab of admin
+});
 
 watch(inputPass, () => {
   pwdStatusMsg.value = pwdStatus(false);
@@ -120,7 +133,6 @@ function selectChannel(name: string) {
 }
 
 function leaveChan() {
-  console.log(channelName.value);
   userStore.chatsocket.emit(
     "leavechan",
     { user: userStore.user, name: channelName.value },

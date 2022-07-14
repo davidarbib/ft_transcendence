@@ -13,11 +13,13 @@ interface Message {
   id: string;
   content: string;
   time: string;
+  author: never;
   login: string;
 }
 
 interface User {
   login: string;
+  username: string;
   id: string;
 }
 
@@ -42,7 +44,7 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
-  userStore.gameSocket.off('inviteCreated');
+  userStore.gameSocket.off("inviteCreated");
 });
 
 /* pour recevoir les message envoye */
@@ -262,8 +264,9 @@ function addAdmin(login: string) {
   // console.log("add admin");
 }
 function isalwaysMut() {
+  console.log("CA ASSE DANS IS ALWAYS MUTE")
   userStore.chatsocket.emit(
-    "isTimeToDeMut",
+    "isTimeToDemut",
     { user: userStore.user, name: getName.value },
     (data) => {
       userStore.chatsocket.emit(
@@ -285,7 +288,7 @@ function isalwaysban() {
         "getBanInChan",
         { name: getName.value },
         (data) => {
-          allMuted.value = data;
+          allBanned.value = data;
         }
       );
     }
@@ -324,6 +327,26 @@ watch(getName, () => {
         console.log(messages.value);
       }
     );
+  }
+});
+
+userStore.chatsocket.on("UserNewStatus", (payload) => {
+  console.log(
+    `status -- Status:${payload.status} | chan:${payload.chan.name} | user:${payload.user.login}`
+  );
+  if (payload.status === "ban") {
+    if (payload.chan.name !== getName.value) {
+      return;
+    }
+    console.log("USER IS BANNED WELL");
+    allBanned.value.push(payload.user);
+  }
+  if (payload.status === "mute") {
+    if (payload.chan.name !== getName.value) {
+      return;
+    }
+    console.log("USER IS MUTED WELL");
+    allMuted.value.push(payload.user);
   }
 });
 </script>
@@ -443,8 +466,7 @@ watch(getName, () => {
         <div
           v-if="!isUserBanned(userStore.user.login) && !isUid(message.content)"
         >
-          {{ message.login }} :
-          {{ message.time }}
+          {{ message.author.username }} :
           <p>{{ message.content }}</p>
         </div>
       </div>

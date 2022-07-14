@@ -133,14 +133,18 @@ export class MessagesGateway
   @SubscribeMessage('isTimeToDemut')
   async isTimeTo(@MessageBody('user') usr:User, @MessageBody('name') name:string) 
   {
+    console.log("?? STYLE MUTE")
     let date = new Date();
     let chanPart;
       const listchanPart = await myDataSource.getRepository(ChanParticipant).find({relations:['chan', 'participant']});
         listchanPart.forEach(element => {
-            if (element.chan.name == name && element.participant.login == usr.login)
+            if (element.chan.name === name && element.participant.login === usr.login)
               {
-                if (element.end_timestamp < date && element.ban != true)
+      
+                if ((element.end_timestamp < date ) == true && element.ban !== true)
                 {
+                  console.log("?? STYLE MUTE")
+
                   element.end_timestamp = null;
                   element.mute = false;
                   chanPart = element;
@@ -158,13 +162,14 @@ export class MessagesGateway
   @SubscribeMessage('isTimeToDeBan')
   async isTimeTodeban(@MessageBody('user') usr:User, @MessageBody('name') name:string) 
   {
-    let date = new Date();
+
+    let date = new Date(Date.now());
     let chanPart;
       const listchanPart = await myDataSource.getRepository(ChanParticipant).find({relations:['chan', 'participant']});
         listchanPart.forEach(element => {
-            if (element.chan.name == name && element.participant.login == usr.login)
-              {
-                if (element.end_timestamp < date && element.mute == false)
+            if (element.chan.name === name && element.participant.login === usr.login)
+            {
+                if ((element.end_timestamp < date ) === true && element.mute !== true)
                 {
                   element.end_timestamp = null;
                   element.ban = false;
@@ -258,8 +263,18 @@ async getUserinChan( @MessageBody('name') name:string) {
   @SubscribeMessage('MuteBanUser')
   async MuteBanUser( @MessageBody('name') name:string, @MessageBody('user') usr:User, @MessageBody('target') target:string , @MessageBody() updateChanParticipantDto: UpdateChanParticipantDto, @ConnectedSocket() client:Socket) {
 
+    const userTarget = await myDataSource.getRepository(User).findOne({where:{login:target}});
     const {arg, bool, chan} = await this.messageService.muteBanUser(name, updateChanParticipantDto, target);
-    this.server.emit("UserNewStatus", {status:arg, bool:bool, chan :chan, user:usr});
+   
+    console.log(
+      `Args of UserNewStatus -- arg :${arg} | bool:${bool} | chan:${chan} | user:${usr}`,
+    );
+    this.server.emit('UserNewStatus', {
+      status: arg,
+      bool: bool,
+      chan: chan,
+      user: userTarget,
+    });
   }
 
   @SubscribeMessage('needPassword')

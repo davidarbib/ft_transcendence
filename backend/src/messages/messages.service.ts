@@ -110,9 +110,18 @@ export class MessagesService {
                 console.log(date);
                 date.setMinutes(date.getMinutes() +2);
                 console.log(date);
-
-                 chanPart.mute = mute;
-                 chanPart.ban = ban;
+                if (mute === true)
+                {
+                  if (chanPart.ban === true)
+                    chanPart.ban = false
+                  chanPart.mute = mute;
+                }
+                else if (ban === true)
+                {
+                  if (chanPart.mute === true)
+                    chanPart.mute = false
+                  chanPart.ban = ban;
+                }
                  if ( mute == true  || ban == true)
                  chanPart.end_timestamp = date;
                  if (mute == false && ban ==false)
