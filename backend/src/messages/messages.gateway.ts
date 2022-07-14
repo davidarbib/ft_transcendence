@@ -230,8 +230,21 @@ async getUserinChan( @MessageBody('name') name:string) {
     if (element.chan.name == name)
       arr.push(element.participant)
   });
+  console.log(arr);
   return arr;
 
+}
+@SubscribeMessage('chanLOGIN')
+async getusrChan( @MessageBody('login') login:string) {
+  const test = await myDataSource.getRepository(ChanParticipant).find({ relations: ['participant', 'chan'] });
+  let arr: any = [];
+  test.forEach(element => {
+    if (element.participant.login == login)
+      arr.push(element.chan);
+  });
+  console.log("YES");
+  console.log(arr);
+  return arr;
 }
 
   @SubscribeMessage('leavechan')
@@ -245,7 +258,7 @@ async getUserinChan( @MessageBody('name') name:string) {
     {
       if (element.participant.login == user.login && element.chan.name == name)
       {
-        chanPartleave= element;
+        chanPartleave = element;
         return;
       }
     }
@@ -253,8 +266,12 @@ async getUserinChan( @MessageBody('name') name:string) {
   if ( chanPartleave){
   const chanPartDelete = await myDataSource.getRepository(ChanParticipant).findOneBy({id : chanPartleave.id});
   chanPartDelete.remove();
-  this.server.in(client.id).emit("leavetheChan", chan); // enlever ourchan
-  this.server.in(client.id).emit("userleaveChan", ); // pour la personne qui part
+  const test =await  this.getusrChan(user.login);
+ // console.log(test);
+  this.server.in(client.id).emit("leavetheChan", test); // enlever ourchan
+  //this.server.in(client.id).emit("userleaveChan", ); // pour la personne qui part
+  this.server.emit("userleavetheChan",chan, chanPartleave.participant ); 
+ // this.server.in(client.id).emit("userleaveChan", ); // pour la personne qui part
   this.server.emit("userleavetheChan",chan, chanPartleave.participant );  // pour que les autres aient la notif
   }  
 }

@@ -17,20 +17,35 @@ const inputPass = ref<string>("");
 const pwdStatusMsg = ref<string>("type in input");
 const pwdStatusInit = ref<boolean>(false);
 const itsMe = ref<boolean>(false);
-/*
-userStore.chatsocket.on("leavetheChan", () => {
-    console.log("YES");
-      axios.defaults.withCredentials = true;
-  axios
-    .get(`http://localhost:8090/channels/chan/${userStore.user.login}`)
-    .then((response) => {
-      chan.value = response.data;
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+
+  userStore.chatsocket.on("leavetheChan", () => {
   // need to put data in tab of admin
-});*/
+});
+
+function leaveChan() {
+  console.log(channelName.value);
+  userStore.chatsocket.emit(
+    "leavechan",
+    { user: userStore.user, name: channelName.value },
+    () => {
+
+    }
+  );
+  userStore.chatsocket.on("leavetheChan", (data) => {
+    chan.value = [];
+    data.forEach(element => {
+      if (element.name !== channelName.value)
+      { console.log(element);
+        chan.value.push(element);
+      }
+    });
+    // userStore.chatsocket.emit("chanLOGIN", { user: userStore.user }, (data) => {
+    // });
+  });
+ // channelName.value = "";
+  console.log(channelName.value);
+  emit("name", "");
+}
 
 watch(inputPass, () => {
   pwdStatusMsg.value = pwdStatus(false);
@@ -93,7 +108,7 @@ function getOwner() {
       )
       .then((response) => {
         owner.value = response.data.login;
-        console.log(owner.value);
+        // console.log(owner.value);
       })
       .catch((error) => {
         console.log(error);
@@ -111,16 +126,27 @@ userStore.chatsocket.on("join", (data) => {
   chan.value.push(data);
 });
 
-onBeforeMount(() => {
-  axios.defaults.withCredentials = true;
+async function callChannList()
+{
+  if (chan)
+  {
+    // chan.value = [];
+    axios.defaults.withCredentials = true;
   axios
     .get(`http://localhost:8090/channels/chan/${userStore.user.login}`)
     .then((response) => {
       chan.value = response.data;
+      console.log(chan.value);
     })
     .catch((error) => {
       console.log(error);
     });
+}
+ return await chan.value;
+}
+
+onMounted(() => {
+  callChannList();
 });
 
 function selectChannel(name: string) {
@@ -133,27 +159,29 @@ function selectChannel(name: string) {
   emit("name", channelName.value);
 }
 
-function leaveChan() {
-  console.log('Enter');
-  console.log(channelName.value);
-  userStore.chatsocket.emit(
-    "leavechan",
-    { user: userStore.user, name: channelName.value },
-    () => {}
-  );
-  userStore.chatsocket.on("leavetheChan", () => {
-    chan.value = [];
-    console.log("YOLO");
-    userStore.chatsocket.emit("testchan", { user: userStore.user }, (data) => {
-      chan.value = data;
-    });
-  });
-  channelName.value = "";
-  console.log('Exit');
-  console.log(channelName.value);
-  emit("name", channelName.value);
-}
+//  function leaveChan(channel: string) {
+//   console.log('Enter');
+//   console.log(channelName.value);
+//   chan.value = [];
+//   userStore.chatsocket.emit(
+//     "leavechan",
+//     { user: userStore.user, name: channel },
+//     () => {
+//       console.log('emit done');
+//     });
+//   chan.value = callChannList();
 
+//   channelName.value = "";
+//   console.log('Exit');
+  
+//   console.log(channelName.value);
+//   emit("name", channelName.value);
+// }
+  //  function test(){
+  //    userStore.chatsocket.emit("testchan", { user: userStore.user }, (data) => {
+  //     chan.value = data;
+  //   });
+  // }
 /* CHANGER LE PASSWORD*/
 function changePassword(password: string) {
   if (channelName.value)
@@ -187,6 +215,13 @@ const emit = defineEmits(["name", "msg"]);
 
 <template>
   <div class="contact-section mx-2">
+    <div  v-if="!(channelName === 'dm')">
+        <i class="fa-solid fa-key mx-1"></i>
+    </div> @click="openModal border-black">
+    
+      <p @click="leaveChan(channelName)"> </p>
+        <i class="fa-solid fa-right-from-bracket mx-1"></i>
+    </div>
     <div
       @click="selectChannel(channel.name)"
       class="user-card rounded my-2 bg-black bg-opacity-10 font-medium hover:bg-opacity-30 transition duration-300"
@@ -195,21 +230,10 @@ const emit = defineEmits(["name", "msg"]);
     >
       <div class="user-pseudo py-2">
         <p>{{ channel.name }}</p>
-        <p
-          v-if="!(channel.type === 'dm')"
-          class="icon"
-          @click="toggleChannelMenu(channel.id, channel.name)"
-        >
-          <i class="fa-solid fa-gear"></i>
-        </p>
       </div>
-      <Transition name="slide-fade">
         <div v-if="channelOptions && channelSelected === channel.id">
           <div class="list">
             <!--        add pass-->
-            <div @click="openModal">
-              <i class="fa-solid fa-key mx-1"></i>
-            </div>
             <Teleport to="body">
               <div v-if="passOpen" class="modal">
                 <div class="modal-inner">
@@ -238,12 +262,8 @@ const emit = defineEmits(["name", "msg"]);
               </div>
             </Teleport>
             <!--        leave chan-->
-            <p @click.stop="leaveChan()">
-              <i class="fa-solid fa-right-from-bracket mx-1"></i>
-            </p>
           </div>
         </div>
-      </Transition>
     </div>
   </div>
 </template>
