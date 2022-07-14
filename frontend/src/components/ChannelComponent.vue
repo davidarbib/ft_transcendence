@@ -10,6 +10,7 @@ const channelSelected = ref(-1);
 const channelName = ref<string>("");
 const owner = ref<string>("");
 const hasPass = ref<boolean>(true);
+const channelType = ref<string>("");
 
 const passOpen = ref<boolean>(false); // popup
 const inputPass = ref<string>("");
@@ -145,9 +146,10 @@ onMounted(() => {
   callChannList();
 });
 
-function selectChannel(name: string) {
+function selectChannel(name: string, type: string) {
   pwdStatusMsg.value = pwdStatus(false);
   channelName.value = name;
+  channelType.value = type;
   getOwner();
   itsMe.value = owner.value === userStore.user.login;
   needPassword(channelName.value);
@@ -238,15 +240,15 @@ const emit = defineEmits(["name", "msg"]);
     </div>
   </Teleport>
   <div class="contact-section mx-2">
-    <p v-if="!(channelName === 'dm')" @click="openModal">
+    <p v-if="!(channelType === 'dm')" @click="openModal">
       <i class="fa-solid fa-key mx-1"></i>
     </p>
 
-    <p @click="leaveChan(channelName)">
+    <p v-if="!(channelType === 'dm')" @click="leaveChan(channelName)">
       <i class="fa-solid fa-right-from-bracket mx-1"></i>
     </p>
     <div
-      @click="selectChannel(channel.name)"
+      @click="selectChannel(channel.name, channel.type)"
       class="user-card rounded my-2 bg-black bg-opacity-10 font-medium hover:bg-opacity-30 transition duration-300"
       v-for="channel in chan"
       :key="channel.id"
