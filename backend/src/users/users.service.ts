@@ -53,8 +53,10 @@ export class UsersService {
     matches.forEach((match) => {
       arr.push(match.players);
     });
-    console.log(matches);
     arr.forEach((players) => {
+      if (players[0] && players[1]){
+      if (players[0].userRef && players[1].userRef)
+      {
       if (players[0].userRef.username == username) {
         this.payload.push({
           winner: players[0].winner,
@@ -72,6 +74,7 @@ export class UsersService {
           });
         }
       }
+    }}
     });
 
     return this.payload;

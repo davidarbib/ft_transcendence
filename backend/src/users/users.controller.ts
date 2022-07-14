@@ -94,7 +94,6 @@ export class UsersController {
 
   @Get(':login/test/historic')
   async findHistoric(@Param('login') login: string) {
-    console.log("on veut lhistorique !!!!!!!!!!!");
     return await this.usersService.findHistoric(login);
   }
 
@@ -108,7 +107,7 @@ export class UsersController {
    *
    */
   @Patch(':login')
-  update(@Request() req, @Body() updateUserDto: UpdateUserDto) {
+  update(@Request() req, @Body() updateUserDto: UpdateUserDto) { 
     plainToClass(UpdateUserDto, updateUserDto);
     const usr: User = req.user;
     return this.usersService.update(usr, updateUserDto);

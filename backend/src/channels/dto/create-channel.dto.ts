@@ -15,9 +15,4 @@ export class CreateChannelDto extends Channel
     @IsString()
     @IsOptional()
     password: string;
-
-    participant : ChanParticipant[]
-
-    messages: Messages[];
-    
 }

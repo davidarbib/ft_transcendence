@@ -126,6 +126,11 @@ onMounted(() => {
 
 function selectChannel(name: string) {
   pwdStatusMsg.value = pwdStatus(false);
+<<<<<<< HEAD
+  getOwner();
+  itsMe.value = owner.value === userStore.user.login;
+=======
+>>>>>>> master
   channelName.value = name;
   getOwner();
   itsMe.value = owner.value === userStore.user.login;
@@ -180,6 +185,7 @@ function openModal() {
   passOpen.value = true;
   pwdStatus(false);
   inputPass.value = "";
+  itsMe.value = (owner.value === userStore.user.login);
 }
 
 const emit = defineEmits(["name", "msg"]);

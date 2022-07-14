@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { myDataSource } from 'src/app-data-source';
 import { Messages } from 'src/messages/entities/message.entity';
-import { CreateMessageDto } from './dto/create-message.dto';
+import { CreateMessageDto } from './dto/create-chan.dto';
 import { Repository } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { Channel, ChanType } from 'src/channels/entities/channel.entity';
@@ -40,6 +40,7 @@ export class MessagesService {
     const usr = await myDataSource
       .getRepository(User)
       .findOne({ where: { login: login } });
+      if ( chan && usr){
     //  if (!usr)
     //return ; // need to implement HTTPrequest
     createMessageDto.author = usr;
@@ -48,6 +49,7 @@ export class MessagesService {
     createMessageDto.login = login; 
     const msg = await this.msgRepo.save(createMessageDto);
     return {msg : msg, chan:chan};
+      }
   }
   async CreateChan(
     usr: User,
@@ -58,6 +60,7 @@ export class MessagesService {
   ) {
     const chanPart: ChanParticipant = new ChanParticipant();
     const chan: Channel = new Channel();
+    if (name && type){
     chan.name = name;
     chan.type = type;
     if (password) {
@@ -65,12 +68,15 @@ export class MessagesService {
       chan.password = hash;
     }
     const tmp_chan = await myDataSource.getRepository(Channel).save(chan);
-    chanPart.participant = usr;
+    if (usr)
+      chanPart.participant = usr;
     chanPart.chan = tmp_chan;
     chanPart.privilege = ChanPartStatus.OWNER;
-    await myDataSource.getRepository(ChanParticipant).save(chanPart);
-
+    if ( chanPart && usr && tmp_chan){
+      await myDataSource.getRepository(ChanParticipant).save(chanPart);
     return chan;
+    }
+    }
   }
   async findChan(usr: User) {
     const test = await myDataSource
@@ -169,6 +175,7 @@ export class MessagesService {
   }
   async createChanDm(user:User, target:User)
   {
+    if ( user && target){
     const chan: Channel =  new Channel();
     chan.name = user.login+"_"+ target.login;
     chan.type = ChanType.DM;
@@ -184,6 +191,7 @@ export class MessagesService {
     await myDataSource.getRepository(ChanParticipant).save(chanPart);
     await myDataSource.getRepository(ChanParticipant).save(chanPart1);
     return chan;
+    }
   }
   async createDM(user:User, target:User)
   { 

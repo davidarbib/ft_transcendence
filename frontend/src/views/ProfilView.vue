@@ -74,7 +74,7 @@ onMounted(() => {
       console.log(error);
       router.push({ path: "/profile_not_found" });
     });
-  userStore.chatsocket.emit("setConnexion", { user: userStore.user });
+ 
   console.log(user.value.login);
 });
 </script>
