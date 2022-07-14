@@ -12,9 +12,9 @@ interface StatusSwitchPayload
 
 @WebSocketGateway({
   cors: {
-    origin: "http://localhost:8000",
-    methods: ["GET", "POST"],
-  }
+    origin: 'http://' + process.env.HOST + ':8000',
+    methods: ['GET', 'POST'],
+  },
 })
 export class UsersGateway {
 
