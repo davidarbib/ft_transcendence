@@ -19,8 +19,9 @@ import { IsLoginlNotExisting } from 'src/users/validator/is-login-already-exist.
 var bcrypt = require('bcryptjs');
 
 @WebSocketGateway({
-  cors:{
-    origin: '*',
+  cors: {
+    origin: 'http://' + process.env.HOST + ':8000',
+    methods: ['GET', 'POST'],
   },
 })
 export class MessagesGateway

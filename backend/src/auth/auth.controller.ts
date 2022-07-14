@@ -1,6 +1,5 @@
 import { Body, Controller, Get, Post, Res, Req, UseGuards, HttpCode} from '@nestjs/common';
-import { Response } from 'express'
-import { Request } from 'express'
+import { Response, Request } from 'express';
 import { User, UserStatus } from 'src/users/entities/user.entity';
 import { Api42Guard } from './guards/api42.guard';
 import { LocalGuard } from './guards/local.guard';
@@ -13,6 +12,7 @@ import { UsersGateway } from 'src/users/users.gateway';
 
 @Controller('auth')
 export class AuthController {
+    private redirectAddress = 'http://' + process.env.HOST + ':8000';
     constructor
     (
         private readonly authService: AuthService,
@@ -33,11 +33,8 @@ export class AuthController {
         const user : User = await this.usersService.findOne(req.user.id);
         const { accessToken } = await this.authService.login(req.user, user.twoFactorEnabled);
         this.authService.generateCookie(response, accessToken);
-        //return req.user;
-        //return accessToken; //uncomment to obtain bearer token for curl/postman tests
-        
         this.usersGateway.handleStatusSwitch(user.id, UserStatus.ONLINE);
-        return response.redirect('http://localhost:8000');
+        return response.redirect(this.redirectAddress);
         //return "Logged with 42";
     }
 
@@ -60,7 +57,7 @@ export class AuthController {
         const { accessToken } = await this.authService.login(user, false);
         this.authService.generateCookie(response, accessToken);
         this.usersGateway.handleStatusSwitch(user.id, UserStatus.ONLINE);
-        return response.redirect('http://localhost:8000');
+        return response.redirect(this.redirectAddress);
     }
 
     @Get('jack')
@@ -74,7 +71,7 @@ export class AuthController {
         const { accessToken } = await this.authService.login(user, false);
         this.authService.generateCookie(response, accessToken);
         this.usersGateway.handleStatusSwitch(user.id, UserStatus.ONLINE);
-        return response.redirect('http://localhost:8000');
+        return response.redirect(this.redirectAddress);
     }
 
     @Get('discordLogin')
@@ -92,7 +89,7 @@ export class AuthController {
         const { accessToken } = await this.authService.login(req.user, user.twoFactorEnabled);
         this.authService.generateCookie(response, accessToken);
         this.usersGateway.handleStatusSwitch(user.id, UserStatus.ONLINE);
-        return response.redirect('http://localhost:8000');
+        return response.redirect(this.redirectAddress);
         //return "Logged with Discord";
     }
 
@@ -105,7 +102,6 @@ export class AuthController {
 
     @HttpCode(200)
     @Post('logout')
-    //@UseGuards(JwtTwoFaGuard)
     @UseGuards(JwtGuard)
     logout
     (
@@ -114,7 +110,6 @@ export class AuthController {
     ): string
     {
         //update user status
-        console.log("id in logout : ");
         console.log(request.user.id);
         this.usersGateway.handleStatusSwitch(request.user.id, UserStatus.OFFLINE);
         return "Logout successful";
