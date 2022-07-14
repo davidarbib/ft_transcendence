@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import NavbarItem from "@/components/NavbarItemComponent.vue";
-import Contact from "../components/ContactComponent.vue";
 import Historic from "@/components/HistoricComponent.vue";
 import axios from "axios";
 import { useUserStore } from "@/stores/auth";
@@ -13,7 +12,6 @@ const api = apiStore();
 const userStore = useUserStore();
 const router = useRouter();
 const login = ref<string | string[]>("");
-const isCurrentUserProfile = ref<boolean>(false);
 let user = ref({
   id: "-1",
   login: "",
@@ -24,32 +22,40 @@ let user = ref({
   winCount: "",
   lossCount: "",
 });
-const login1 = ref(router.currentRoute.value.params.pseudo) 
+const login1 = ref(router.currentRoute.value.params.pseudo);
 
-function private_msg(target:any) {
-    userStore.chatsocket.emit("createDM", {user: userStore.user, target:target}, (data) =>{
-    })
-    router.push("/chat");
-  }
-  function block_user(target:never)
-  {
-     userStore.chatsocket.emit("blockUser", {user: userStore.user, target:target}, () =>{
-    })
-  }
-    function unblockuser(target:never)
-  {
-     userStore.chatsocket.emit("unblockUser", {user: userStore.user, target:target}, () =>{
-    })
-  }
+function private_msg(target: any) {
+  userStore.chatsocket.emit(
+    "createDM",
+    { user: userStore.user, target: target },
+    (data) => {}
+  );
+  router.push("/chat");
+}
+function block_user(target: never) {
+  userStore.chatsocket.emit(
+    "blockUser",
+    { user: userStore.user, target: target },
+    () => {}
+  );
+}
+function unblockuser(target: never) {
+  userStore.chatsocket.emit(
+    "unblockUser",
+    { user: userStore.user, target: target },
+    () => {}
+  );
+}
 
-   function addFriend(target:string)
-  {
-     userStore.chatsocket.emit("addfriend", {user: userStore.user.login, target:target}, () =>{
-    })
-  }
+function addFriend(target: string) {
+  userStore.chatsocket.emit(
+    "addfriend",
+    { user: userStore.user.login, target: target },
+    () => {}
+  );
+}
 
 onMounted(() => {
-  
   axios.defaults.withCredentials = true;
 
   login.value = router.currentRoute.value.params.pseudo;
@@ -68,8 +74,8 @@ onMounted(() => {
       console.log(error);
       router.push({ path: "/profile_not_found" });
     });
-      userStore.chatsocket.emit("setConnexion", { user: userStore.user });
-    console.log(user.value.login)
+  userStore.chatsocket.emit("setConnexion", { user: userStore.user });
+  console.log(user.value.login);
 });
 </script>
 
@@ -79,7 +85,7 @@ onMounted(() => {
       <NavbarItem />
     </div>
     <div class="historic">
-      <Historic :login="login1"/>
+      <Historic :login="login1" />
     </div>
     <div class="profile-card bg-black bg-opacity-10">
       <header>
@@ -90,7 +96,10 @@ onMounted(() => {
           <img src="@/assets/sphere_mini.png" alt="user profile picture" />
         </div>
         <div v-else class="profile-picture h-36 w-36">
-          <img :src="`http://localhost:8090/${user.avatarRef}`" alt="user profile picture" />
+          <img
+            :src="`http://localhost:8090/${user.avatarRef}`"
+            alt="user profile picture"
+          />
         </div>
         <div class="secondary-button" @click="addFriend(user.login)">
           <button>+ add friend</button>
@@ -119,10 +128,12 @@ onMounted(() => {
           <h1>
             {{ user.username }}
           </h1>
-          <div class="secondary-button" @click="private_msg(user)">
+          <div class="secondary-button my-2" @click="private_msg(user)">
             <p>Send message</p>
           </div>
-          <button class="secondary-button" @click="unblockuser(user)">Unblock User</button>
+          <button class="secondary-button" @click="unblockuser(user)">
+            Unblock User
+          </button>
         </div>
       </div>
     </div>

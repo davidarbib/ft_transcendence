@@ -6,7 +6,6 @@ import { onMounted, onUnmounted, ref, watch } from "vue";
 import { useUserStore } from "@/stores/auth";
 import { useRouter } from "vue-router";
 import axios from "axios";
-import { apiStore } from "@/stores/api";
 
 axios.defaults.withCredentials = true;
 
@@ -25,8 +24,7 @@ interface User {
 const router = useRouter();
 const userStore = useUserStore();
 const getName = ref<string>("");
-let messages = ref([]);
-const api = apiStore();
+let messages = ref<Message[]>([]);
 const messageText = ref<string>("");
 const myInput = ref<string>("");
 let inviteUid = ref<string>("");
@@ -44,7 +42,7 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
-  userStore.gameSocket.removeAllListeners();
+  userStore.gameSocket.off('inviteCreated');
 });
 
 /* pour recevoir les message envoye */
@@ -123,6 +121,8 @@ userStore.gameSocket.on("gameReady", function (game) {
   userStore.gameInfos.gameId = game.gameId;
   userStore.gameInfos.playerId = game.playerId;
   userStore.gameInfos.isP1 = game.isP1;
+  userStore.gameInfos.playerOneName = game.playerOneName;
+  userStore.gameInfos.playerTwoName = game.playerTwoName;
   router.push("pong");
 });
 
@@ -387,8 +387,9 @@ watch(getName, () => {
           <!--        mute (admin + owner)-->
           <p
             v-if="
-              isUserAdmin(userStore.user.login) ||
-              isUserOwner(userStore.user.login)
+              (isUserAdmin(userStore.user.login) ||
+                isUserOwner(userStore.user.login)) &&
+              !isUserOwner(login.login)
             "
             class="admin-icons"
             @click="muteClient(login.login)"
@@ -398,8 +399,9 @@ watch(getName, () => {
           <!--        ban (admin + owner)-->
           <p
             v-if="
-              isUserAdmin(userStore.user.login) ||
-              isUserOwner(userStore.user.login)
+              (isUserAdmin(userStore.user.login) ||
+                isUserOwner(userStore.user.login)) &&
+              !isUserOwner(login.login)
             "
             class="admin-icons"
             @click="banUser(login.login)"
@@ -408,7 +410,9 @@ watch(getName, () => {
           </p>
           <!--        add admin (owner)-->
           <p
-            v-if="isUserOwner(userStore.user.login)"
+            v-if="
+              isUserOwner(userStore.user.login) && !isUserAdmin(login.login)
+            "
             class="admin-icons"
             @click="addAdmin(login.login)"
           >
@@ -417,8 +421,11 @@ watch(getName, () => {
         </div>
       </div>
     </div>
-    <div class="messages text-gray-300">
-      <p class="text-2xl" v-if="getName">{{ getName }}</p>
+    <div
+      v-if="isUserBanned(userStore.user.login) === false"
+      class="messages text-gray-300"
+    >
+      <p class="text-2xl">{{ getName }}</p>
       <div
         class="message bg-black bg-opacity-20 w-3/4 mx-2 rounded p-2"
         v-for="message in messages"
@@ -431,38 +438,32 @@ watch(getName, () => {
             params: { inviteId: message.content },
           }"
           class="secondary-button"
-          >Play a pong game ? 🌚</router-link
+          >Play a pong game ? 🌚
+        </router-link>
+        <div
+          v-if="!isUserBanned(userStore.user.login) && !isUid(message.content)"
         >
-        <span v-if="!isUserBanned(userStore.user.login)">
           {{ message.login }} :
           {{ message.time }}
           <p>{{ message.content }}</p>
-        </span>
+        </div>
       </div>
     </div>
-    <div class="message-input">
+    <div
+      v-if="
+        isUserMuted(userStore.user.login) === false &&
+        isUserBanned(userStore.user.login) === false
+      "
+      class="message-input"
+    >
       <input
         type="text"
-        v-if="
-          !isUserMuted(userStore.user.login) ||
-          !isUserBanned(userStore.user.login)
-        "
         v-on:keyup.enter="sendMessage"
         v-model="myInput"
         class="h-3/4 w-3/4 px-2 focus:outline-none border rounded border-gray-300"
       />
-      <button
-        v-if="
-          !isUserMuted(userStore.user.login) ||
-          !isUserBanned(userStore.user.login)
-        "
-        @click="sendMessage"
-        class="valid primary-button"
-      >
-        <i
-          v-if="!isUserMuted(userStore.user.login)"
-          class="fa-solid fa-paper-plane"
-        ></i>
+      <button @click="sendMessage" class="valid primary-button">
+        <i class="fa-solid fa-paper-plane"></i>
       </button>
     </div>
   </div>

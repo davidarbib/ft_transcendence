@@ -21,7 +21,7 @@ export const myDataSource = new DataSource({
         Channel,
         ChanParticipant ],
     synchronize: true,
-    logging: false
+    logging: false,
 })
 
 //    entities: [ "dist /**/*.entity{.ts,.js}" ],

@@ -80,6 +80,7 @@ function getOwner() {
       )
       .then((response) => {
         owner.value = response.data.login;
+        console.log(owner.value);
       })
       .catch((error) => {
         console.log(error);
@@ -140,26 +141,21 @@ function leaveChan() {
 /* CHANGER LE PASSWORD*/
 function changePassword(password: string) {
   if (channelName.value)
-    userStore.chatsocket.emit(
-      "changePassword",
-      { name: channelName.value, password: password },
-      () => {}
-    );
+    userStore.chatsocket.emit("changePassword", {
+      name: channelName.value,
+      password: password,
+    });
 }
 
 function addPassword(pass: string) {
-  userStore.chatsocket.emit(
-    "addPassword",
-    { name: channelName.value, password: pass },
-    () => {}
-  );
+  userStore.chatsocket.emit("addPassword", {
+    name: channelName.value,
+    password: pass,
+  });
 }
 
 function removePassword() {
-  userStore.chatsocket.emit(
-    "deletePassword",
-    { name: channelName.value }
-  );
+  userStore.chatsocket.emit("deletePassword", { name: channelName.value });
 }
 
 function openModal() {
@@ -182,8 +178,12 @@ const emit = defineEmits(["name", "msg"]);
     >
       <div class="user-pseudo py-2">
         <p>{{ channel.name }}</p>
-        <p class="icon" @click="toggleChannelMenu(channel.id, channel.name)">
-          <i v-if="channel.name" class="fa-solid fa-gear"></i>
+        <p
+          v-if="!(channel.type === 'dm')"
+          class="icon"
+          @click="toggleChannelMenu(channel.id, channel.name)"
+        >
+          <i class="fa-solid fa-gear"></i>
         </p>
       </div>
       <Transition name="slide-fade">
