@@ -269,10 +269,10 @@ async getusrChan( @MessageBody('login') login:string) {
   const test =await  this.getusrChan(user.login);
  // console.log(test);
   this.server.in(client.id).emit("leavetheChan", test); // enlever ourchan
-  //this.server.in(client.id).emit("userleaveChan", ); // pour la personne qui part
+  this.server.in(client.id).emit("userleaveChan", ); // pour la personne qui part
   this.server.emit("userleavetheChan",chan, chanPartleave.participant ); 
  // this.server.in(client.id).emit("userleaveChan", ); // pour la personne qui part
-  this.server.emit("userleavetheChan",chan, chanPartleave.participant );  // pour que les autres aient la notif
+ // this.server.emit("userleavetheChan",chan, chanPartleave.participant );  // pour que les autres aient la notif
   }  
 }
   

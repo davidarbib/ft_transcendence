@@ -70,6 +70,7 @@ userStore.chatsocket.on("newUser", (usr: never, chan) => {
   if (chan.name == getName.value) userIn.value.push(usr);
 });
 userStore.chatsocket.on("userleavetheChan", (chan: never, user: never) => {
+  userIn.value = []; 
   if (userStore.user.login !== user.login && chan.name === getName.value) {
     userStore.chatsocket.emit("getUserChan", { name: chan.name }, (data) => {
       userIn.value = data;

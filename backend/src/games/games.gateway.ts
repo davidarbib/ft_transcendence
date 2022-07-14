@@ -352,7 +352,7 @@ export class GamesGateway {
 
   async gameLoop(gameId: string) {
     const gameClock = setInterval(() => {
-      const { endGame, details } = this.gamesService.games[gameId].loop();
+      const { endGame, details } = this.gamesService.getGame(gameId).loop();
       if (!endGame) this.handleLoopOutput(gameId, details);
       else {
         clearInterval(gameClock);
